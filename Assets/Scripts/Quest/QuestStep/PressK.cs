@@ -1,15 +1,15 @@
 using UnityEngine;
 
-public class PressF : QuestInfo
+public class PressK : QuestInfo
 {
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(KeyCode.K))
         {
             FinishQuest();
         }
 
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.J))
         {
             BrokenQuest();
         }

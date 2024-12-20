@@ -3,9 +3,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewQuest", menuName = "ScriptableObjects/Quest")]
 public class Quest : ScriptableObject
 {
-    public string Id;
-    public string Name;
-    public QuestInfo QuestInfo;
+    [SerializeField] private string Name;
+    [SerializeField] private string Description;
+    [SerializeField] private string GameObjectName;
+    private QuestInfo QuestInfo = null;
     public bool QuestStatus { get; private set; } = false;
     public event System.Action<bool> StatusChanged;
 
@@ -31,6 +32,22 @@ public class Quest : ScriptableObject
         {
             Debug.LogError("QuestInfo is not assigned.");
         }
+    }
+
+    public QuestInfo GetQuestInfo()
+    {
+        return QuestInfo;
+    }
+
+    public string GetGameObjectName()
+    {
+        return GameObjectName;
+    }
+
+    public void SetQuestInfo(QuestInfo NewQuestInfo)
+    {
+        QuestInfo = NewQuestInfo;
+        QuestInfo.OnQuestStatusChanged += HandleQuestStatusChanged;
     }
 
     private void HandleQuestStatusChanged(bool Status)

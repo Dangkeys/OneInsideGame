@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,29 +7,13 @@ public class QuestSystem : NetworkBehaviour
 
     private Scrollbar ScrollBar;
     [SerializeField] private Quest[] Quests;
-    private Dictionary<string, Quest> KeyAndQuests = new Dictionary<string, Quest>();
     private NetworkVariable<int> QuestFinished = new NetworkVariable<int>(0);
     private int AllQuest;
 
     private void Start()
     {
         ScrollBar = GetComponent<Scrollbar>();
-        foreach (Quest Quest in Quests)
-        {
-            if(!Quest)
-            {
-                Debug.LogError("Quest is null");
-            }
-            if (KeyAndQuests.ContainsKey(Quest.Id))
-            {
-                Debug.Log($"Same Quest Id : {Quest.Id}");
-            }
-            else
-            {
-                KeyAndQuests[Quest.Id] = Quest;
-            }
-        }
-        AllQuest = KeyAndQuests.Count;
+        AllQuest = Quests.Length;
         UpdateProgressBar();
     }
 
@@ -40,6 +23,10 @@ public class QuestSystem : NetworkBehaviour
         {
             if (Quest != null)
             {
+                if(Quest.GetQuestInfo() == null)
+                {
+                    Quest.SetQuestInfo(GameObject.Find(Quest.GetGameObjectName()).GetComponent<QuestInfo>());
+                }
                 Quest.StatusChanged += HandleQuestStatusChanged;
             }
         }
@@ -65,6 +52,14 @@ public class QuestSystem : NetworkBehaviour
     }
 
     private void HandleQuestStatusChanged(bool Status)
+    {
+        if (IsServer)
+        {
+            UpdateQuestFinished(Status);
+        }
+    }
+
+    private void UpdateQuestFinished(bool Status)
     {
         if (Status)
         {

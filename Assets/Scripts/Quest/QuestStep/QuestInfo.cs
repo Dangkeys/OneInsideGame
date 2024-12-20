@@ -23,17 +23,15 @@ public abstract class QuestInfo : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void UpdateQuestStatusServerRpc(bool status)
+    private void UpdateQuestStatusServerRpc(bool Status)
     {
-        Debug.Log($"Server: Quest status changed to {status}");
-        UpdateQuestStatusClientRpc(status);
+        UpdateQuestStatusClientRpc(Status);
     }
 
     [ClientRpc]
-    private void UpdateQuestStatusClientRpc(bool status)
+    private void UpdateQuestStatusClientRpc(bool Status)
     {
-        Debug.Log($"Client: Quest status changed to {status}");
-        QuestStatus = status;
-        OnQuestStatusChanged?.Invoke(status);
+        QuestStatus = Status;
+        OnQuestStatusChanged?.Invoke(Status);
     }
 }
