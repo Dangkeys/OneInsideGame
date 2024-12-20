@@ -690,8 +690,28 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1906384758145082, guid: d19c36dc5f97d444fa54380cf09bd828, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1479775405}
   m_SourcePrefab: {fileID: 100100000, guid: d19c36dc5f97d444fa54380cf09bd828, type: 3}
+--- !u!1 &1479775400 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1906384758145082, guid: d19c36dc5f97d444fa54380cf09bd828, type: 3}
+  m_PrefabInstance: {fileID: 904900691}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1479775405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1479775400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 794aefcd80ccc504185ed306accb6457, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1535795442
 GameObject:
   m_ObjectHideFlags: 0
@@ -1381,7 +1401,7 @@ MonoBehaviour:
     NetworkProfilingMetrics: 1
     OldPrefabList: []
   RunInBackground: 1
-  LogLevel: 0
+  LogLevel: 1
 --- !u!4 &1969325782
 Transform:
   m_ObjectHideFlags: 0
