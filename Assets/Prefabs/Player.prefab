@@ -48,6 +48,7 @@ GameObject:
   - component: {fileID: 8666795281303897910}
   - component: {fileID: 7861200216632741600}
   - component: {fileID: 851638477132477178}
+  - component: {fileID: 3378184907274422936}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -85,7 +86,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3463517192
+  GlobalObjectIdHash: 10364231
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -244,6 +245,20 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!114 &3378184907274422936
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 837731845563932383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f739c64bfd8bebc4e8b4a3e00f5ef45c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <InputReader>k__BackingField: {fileID: 3937043524520739152}
+  <InteractionRadius>k__BackingField: 2
 --- !u!1 &5586246770640912673
 GameObject:
   m_ObjectHideFlags: 0
@@ -274,8 +289,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5586246770640912673}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.018422788, y: 0.7196568, z: -0.019108756, w: 0.69382244}
-  m_LocalPosition: {x: -2.561373, y: 1.6352091, z: 0.093660384}
+  m_LocalRotation: {x: 0.4699103, y: 0.2662988, z: -0.1511488, w: 0.82790303}
+  m_LocalPosition: {x: -1.5791054, y: 6.0416346, z: -2.2033644}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -358,7 +373,7 @@ MonoBehaviour:
     SplineCurvature: 0.5
   RecenteringTarget: 2
   HorizontalAxis:
-    Value: 92.09417
+    Value: 35.62838
     Center: 0
     Range: {x: -180, y: 180}
     Wrap: 1
@@ -368,7 +383,7 @@ MonoBehaviour:
       Time: 2
     Restrictions: 0
   VerticalAxis:
-    Value: -9.171968
+    Value: 37.10564
     Center: 17.5
     Range: {x: -10, y: 45}
     Wrap: 0
@@ -423,7 +438,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5586246770640912673}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a076c17fe76165e4f8ed21498b877bf9, type: 3}
   m_Name: 
