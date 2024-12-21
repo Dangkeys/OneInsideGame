@@ -53,8 +53,6 @@ public class PlayerMovement : NetworkBehaviour
         ApplyGravity();
     }
 
-    public event Action<bool> OnJumpEvent;
-
     public override void OnNetworkDespawn()
     {
         if (!IsOwner) return;
