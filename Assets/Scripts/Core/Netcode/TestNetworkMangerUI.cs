@@ -21,7 +21,7 @@ public class TestNetworkMangerUI : MonoBehaviour
     void Start()
     {
         ResetNetworkState();
-        
+
         NetworkManager.Singleton.OnClientConnectedCallback += Network_ClientConnected;
         NetworkManager.Singleton.OnClientDisconnectCallback += Network_ClientDisconnect;
         NetworkManager.Singleton.OnServerStarted += Network_OnServerStarted;
@@ -35,7 +35,7 @@ public class TestNetworkMangerUI : MonoBehaviour
         startClientButton.onClick.AddListener(StartClient);
         startServerButton.onClick.AddListener(StartServer);
         disconnectButton.onClick.AddListener(Disconnect);
-        
+
         ShowStartButtons(true);
         disconnectButton.gameObject.SetActive(false);
     }
@@ -84,8 +84,8 @@ public class TestNetworkMangerUI : MonoBehaviour
     void Update()
     {
         // Failsafe check for disconnection
-        if (NetworkManager.Singleton != null && 
-            !NetworkManager.Singleton.IsConnectedClient && 
+        if (NetworkManager.Singleton != null &&
+            !NetworkManager.Singleton.IsConnectedClient &&
             !NetworkManager.Singleton.IsServer &&
             !isServer && !isClient)
         {
