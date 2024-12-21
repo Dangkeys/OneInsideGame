@@ -10,7 +10,7 @@ public class QuestSystem : NetworkBehaviour
     private NetworkVariable<int> QuestFinished = new NetworkVariable<int>(0);
     private int AllQuest;
 
-    private void Start()
+    private void Awake()
     {
         ScrollBar = GetComponent<Scrollbar>();
         AllQuest = Quests.Length;
