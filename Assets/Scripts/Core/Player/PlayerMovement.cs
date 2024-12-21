@@ -16,10 +16,14 @@ public class PlayerMovement : NetworkBehaviour
     [field: SerializeField] public float RunSpeed { get; private set; } = 6f;
     [field: SerializeField] public float RotationSpeed { get; private set; } = 15f;
     [field: SerializeField] public float TurnSmoothTime { get; private set; } = .1f;
+    [field: SerializeField] public float JumpHeight { get; private set; } = 6f;
 
     [Header("Gravity Settings")]
     [SerializeField] private float gravityMultiplier = 1f;
     [SerializeField] private float groundedGravity = -0.5f;
+
+    [Header("Ground Check Settings")]
+    [SerializeField] private float groundCheckDistance = 0.05f;
 
     private float moveSpeed;
     private float turnSmoothVelocity;
@@ -32,6 +36,7 @@ public class PlayerMovement : NetworkBehaviour
         MainCameraTransform = Camera.main.transform;
         moveSpeed = WalkSpeed;
         InputReader.SprintEvent += Sprint;
+        InputReader.JumpEvent += Jump;
     }
 
     private void Update()
@@ -41,16 +46,13 @@ public class PlayerMovement : NetworkBehaviour
         ApplyGravity();
     }
 
+    public event Action<bool> OnJumpEvent;
+
     public override void OnNetworkDespawn()
     {
         if (!IsOwner) return;
         InputReader.SprintEvent -= Sprint;
-    }
-
-    private void Sprint(bool shouldSprint)
-    {
-        if (!IsOwner) return;
-        moveSpeed = shouldSprint ? RunSpeed : WalkSpeed;
+        InputReader.JumpEvent -= Jump;
     }
 
     private void Move()
@@ -67,18 +69,44 @@ public class PlayerMovement : NetworkBehaviour
         }
     }
 
+    private void Sprint(bool shouldSprint)
+    {
+        if (!IsOwner) return;
+        moveSpeed = shouldSprint ? RunSpeed : WalkSpeed;
+    }
+
+
+    private bool isJumping = false;
+    private void Jump(bool value)
+    {
+        if (!IsOwner) return;
+        isJumping = true;
+    }
+
+    bool IsGrounded()
+    {
+        return Physics.Raycast(transform.position, Vector3.down, groundCheckDistance);
+    }
+
     private void ApplyGravity()
     {
-        if (CharacterController.isGrounded)
+        if (IsGrounded() && verticalVelocity < 0f)
         {
             verticalVelocity = groundedGravity;
+            if (isJumping)
+            {
+                verticalVelocity = JumpHeight;
+            }
         }
         else
         {
             verticalVelocity += Physics.gravity.y * gravityMultiplier * Time.deltaTime;
             verticalVelocity = Mathf.Max(verticalVelocity, terminalVelocity);
         }
+
         Vector3 verticalMovement = new Vector3(0f, verticalVelocity, 0f);
         CharacterController.Move(verticalMovement * Time.deltaTime);
+
+        isJumping = false;
     }
 }
