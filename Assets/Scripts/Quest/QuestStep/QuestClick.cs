@@ -1,4 +1,3 @@
-using System;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -53,7 +52,7 @@ public class QuestClick : QuestInfo
 
     private void Interface()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        if (!QuestStatus && Input.GetKeyDown(KeyCode.E))
         {
             CircleClickGameObject.SetActive(true);
         }
@@ -66,7 +65,7 @@ public class QuestClick : QuestInfo
 
     private void HandleQuestClick(InputAction.CallbackContext context)
     {
-        if(Word.ToLower() == context.control.displayName.ToLower())
+        if(CircleClickGameObject.activeInHierarchy && Word.ToLower() == context.control.displayName.ToLower())
         {
             CircleClick.UpdateScore(true);
         }
