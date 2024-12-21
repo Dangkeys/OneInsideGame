@@ -1,14 +1,13 @@
 using Unity.Netcode;
-using UnityEngine;
 
 public abstract class QuestInfo : NetworkBehaviour
 {
-    private bool QuestStatus = false;
+    protected bool QuestStatus = false;
     public event System.Action<bool> OnQuestStatusChanged;
 
     protected void BrokenQuest()
     {
-        if (QuestStatus)
+        if (IsSpawned && QuestStatus)
         {
             UpdateQuestStatusServerRpc(false);
         }
@@ -16,7 +15,7 @@ public abstract class QuestInfo : NetworkBehaviour
 
     protected void FinishQuest()
     {
-        if (!QuestStatus)
+        if (IsSpawned && !QuestStatus)
         {
             UpdateQuestStatusServerRpc(true);
         }

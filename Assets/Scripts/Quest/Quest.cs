@@ -18,7 +18,7 @@ public class Quest : ScriptableObject
         }
         else
         {
-            Debug.LogError("QuestInfo is not assigned.");
+            Debug.Log("QuestInfo is not assigned.");
         }
     }
 
@@ -30,7 +30,7 @@ public class Quest : ScriptableObject
         }
         else
         {
-            Debug.LogError("QuestInfo is not assigned.");
+            Debug.Log("QuestInfo is not assigned.");
         }
     }
 
