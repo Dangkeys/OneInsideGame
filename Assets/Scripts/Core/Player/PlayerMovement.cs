@@ -1,5 +1,6 @@
 using System;
 using QFSW.QC;
+using Unity.Mathematics;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -30,9 +31,15 @@ public class PlayerMovement : NetworkBehaviour
     private float verticalVelocity;
     private readonly float terminalVelocity = -53f;
 
+    private Animator Player_Animator;
+
+
+    private bool isJumping = false;
+
     public override void OnNetworkSpawn()
     {
         if (!IsOwner) return;
+        Player_Animator = GetComponent<Animator>();
         MainCameraTransform = Camera.main.transform;
         moveSpeed = WalkSpeed;
         InputReader.SprintEvent += Sprint;
@@ -66,6 +73,12 @@ public class PlayerMovement : NetworkBehaviour
             transform.rotation = Quaternion.Euler(0f, angle, 0f);
             Vector3 moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
             CharacterController.Move(moveDirection * moveSpeed * Time.deltaTime);
+
+            Player_Animator.SetBool("Walking", true);
+        }
+        else
+        {
+            Player_Animator.SetBool("Walking", false);
         }
     }
 
@@ -73,29 +86,34 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (!IsOwner) return;
         moveSpeed = shouldSprint ? RunSpeed : WalkSpeed;
+        Player_Animator.SetBool("Running", shouldSprint);
     }
 
-
-    private bool isJumping = false;
     private void Jump(bool value)
     {
         if (!IsOwner) return;
         isJumping = true;
     }
 
-    bool IsGrounded()
+    bool CheckGrounded()
     {
-        return Physics.Raycast(transform.position, Vector3.down, groundCheckDistance);
+        return Physics.Raycast(transform.position, Vector3.down, groundCheckDistance) || CharacterController.isGrounded || math.abs(verticalVelocity) < 0.1f;
     }
 
+    bool isGrounded;
     private void ApplyGravity()
     {
-        if (IsGrounded() && verticalVelocity < 0f)
+        isGrounded = CheckGrounded();
+
+        Player_Animator.SetBool("Floating", !isGrounded);
+
+        if (isGrounded && verticalVelocity < 0f)
         {
             verticalVelocity = groundedGravity;
             if (isJumping)
             {
                 verticalVelocity = JumpHeight;
+                Player_Animator.SetTrigger("Jump");
             }
         }
         else
