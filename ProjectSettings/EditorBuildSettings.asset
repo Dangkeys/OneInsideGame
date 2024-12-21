@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Test/Tajdang/TajdangTestScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
@@ -17,6 +17,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Test/Jui/JuiScene.unity
     guid: c91d3f0b955a7ee4c912428d07ff9d76
+  - enabled: 1
+    path: Assets/Scenes/Test/Tajdang/SceneFlow/SetupNetworkScene.unity
+    guid: 1d70492a69041684f8e8bf7ef2bc9df8
+  - enabled: 1
+    path: Assets/Scenes/Test/Tajdang/SceneFlow/MainMenuScene.unity
+    guid: 32a646bffbbe3274fa57624fb10c3e52
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
