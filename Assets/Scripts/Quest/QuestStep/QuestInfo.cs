@@ -8,7 +8,7 @@ public abstract class QuestInfo : NetworkBehaviour
 
     protected void BrokenQuest()
     {
-        if (QuestStatus)
+        if (IsSpawned && QuestStatus)
         {
             UpdateQuestStatusServerRpc(false);
         }
@@ -16,7 +16,7 @@ public abstract class QuestInfo : NetworkBehaviour
 
     protected void FinishQuest()
     {
-        if (!QuestStatus)
+        if (IsSpawned && !QuestStatus)
         {
             UpdateQuestStatusServerRpc(true);
         }
