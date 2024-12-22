@@ -1,11 +1,32 @@
+using Mono.CSharp;
 using Unity.Cinemachine;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : NetworkBehaviour
 {
+    [Header("References")]
     [field: SerializeField] public CinemachineCamera VirtualCamera { get; private set; }
-    public NetworkVariable<bool> Ragdoll = new NetworkVariable<bool>(false,
+    [field: SerializeField] public InputReader InputReader { get; private set; }
+    [field: SerializeField] public Object Hitbox { get; private set; }
+
+    [Header("Settings")]
+    // public NetworkVariable<string> PlayerUUID = new NetworkVariable<string>(UUID.Create_ID(),
+    //     NetworkVariableReadPermission.Everyone,
+    //     NetworkVariableWritePermission.Server
+    // );
+    // public NetworkVariable<string> PlayerName = new NetworkVariable<string>("Unnamed Player",
+    //     NetworkVariableReadPermission.Everyone,
+    //     NetworkVariableWritePermission.Server
+    // );
+
+    [Header("State")]
+    public NetworkVariable<bool> Attacking = new NetworkVariable<bool>(false,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
+    public NetworkVariable<bool> Dead = new NetworkVariable<bool>(false,
         NetworkVariableReadPermission.Everyone,
         NetworkVariableWritePermission.Server
     );
@@ -13,6 +34,7 @@ public class Player : NetworkBehaviour
     private Rigidbody[] _ragdollRigidbodies;
     private PlayerMovement _playerMovement;
     private Animator _playerAnimator;
+    private BoxCollider[] _hitboxes;
 
     //--------------------------------------
 
@@ -38,7 +60,7 @@ public class Player : NetworkBehaviour
         }
     }
 
-    private void UpdateRagdoll(bool oldValue, bool newValue)
+    private void UpdateDead(bool oldValue, bool newValue)
     {
         if (newValue)
         {
@@ -49,6 +71,26 @@ public class Player : NetworkBehaviour
             DisableRagdoll();
         }
     }
+    //--------------------------------------
+
+    public async void On_Attack_Local()
+    {
+        if (Attacking.Value) return;
+
+        _playerAnimator.SetTrigger("Attack");
+
+        Attacking.Value = true;
+
+        // Attack_ServerRpc(true);
+        // _playerMovement.enabled = false;
+
+        await Awaitable.WaitForSecondsAsync(1);
+
+         Attacking.Value = false;
+
+        // Attack_ServerRpc(false);
+        // _playerMovement.enabled = true;
+    }
 
     //--------------------------------------
 
@@ -58,20 +100,37 @@ public class Player : NetworkBehaviour
         _playerMovement = GetComponent<PlayerMovement>();
         _playerAnimator = GetComponent<Animator>();
 
-        Ragdoll.OnValueChanged += UpdateRagdoll;
-        UpdateRagdoll(false, Ragdoll.Value);
+        Dead.OnValueChanged += UpdateDead;
+        UpdateDead(false, Dead.Value);
 
+        //----------------------
+
+        _hitboxes = Hitbox.GetComponents<BoxCollider>();
+
+        //----------------------
         if (!IsOwner)
         {
+            // Other Player
             VirtualCamera.Priority = int.MinValue;
+            return;
         }
+        //----------------------
+
+        Debug.Log($"IsServer: {IsServer}, IsClient: {IsClient}, IsOwner: {IsOwner}");
+        InputReader.AttackEvent += On_Attack_Local;
+
+        //----------------------
+
+
     }
 
     public override void OnNetworkDespawn()
     {
-        Ragdoll.OnValueChanged -= UpdateRagdoll;
+        Dead.OnValueChanged -= UpdateDead;
 
+        //----------------------
         if (!IsOwner) return;
+        //----------------------
     }
 
     private void Update()
@@ -80,13 +139,36 @@ public class Player : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            ToggleRagdollServerRpc();
+            Dead_ServerRpc(Dead.Value = !Dead.Value);
         }
     }
 
     [ServerRpc]
-    public void ToggleRagdollServerRpc(ServerRpcParams serverRpcParams = default)
+    public void Dead_ServerRpc(bool value = true)
     {
-        Ragdoll.Value = !Ragdoll.Value;
+        Dead.Value = value;
+    }
+    [ServerRpc(RequireOwnership = false)]
+    public void Attack_ServerRpc(bool value = true)
+    {
+        Attacking.Value = value;
+
+        if (!value) return;
+        Attack_ClientRpc();
+    }
+
+    [ClientRpc]
+    void Attack_ClientRpc()
+    {
+        Debug.Log(_playerAnimator);
+        _playerAnimator.SetTrigger("Attack");
+
+        // if (IsLocalPlayer)
+        // {
+        //     Debug.Log(_hitboxes);
+        //     var touchingColliders = Az_Hitbox.Get_Touching_Colliders(_hitboxes, "Player");
+        //     Debug.Log(touchingColliders);
+        // }
+
     }
 }

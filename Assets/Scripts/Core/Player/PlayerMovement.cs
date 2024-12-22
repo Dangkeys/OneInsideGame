@@ -31,7 +31,7 @@ public class PlayerMovement : NetworkBehaviour
     private float verticalVelocity;
     private readonly float terminalVelocity = -53f;
 
-    private Animator Player_Animator;
+    private Animator _playerAnimator;
 
 
     private bool isJumping = false;
@@ -39,7 +39,8 @@ public class PlayerMovement : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         if (!IsOwner) return;
-        Player_Animator = GetComponent<Animator>();
+        _playerAnimator = GetComponent<Animator>();
+        Debug.Log(_playerAnimator);
         MainCameraTransform = Camera.main.transform;
         moveSpeed = WalkSpeed;
         InputReader.SprintEvent += Sprint;
@@ -72,11 +73,11 @@ public class PlayerMovement : NetworkBehaviour
             Vector3 moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
             CharacterController.Move(moveDirection * moveSpeed * Time.deltaTime);
 
-            Player_Animator.SetBool("Walking", true);
+            _playerAnimator.SetBool("Walking", true);
         }
         else
         {
-            Player_Animator.SetBool("Walking", false);
+            _playerAnimator.SetBool("Walking", false);
         }
     }
 
@@ -84,7 +85,7 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (!IsOwner) return;
         moveSpeed = shouldSprint ? RunSpeed : WalkSpeed;
-        Player_Animator.SetBool("Running", shouldSprint);
+        _playerAnimator.SetBool("Running", shouldSprint);
     }
 
     private void Jump(bool value)
@@ -103,7 +104,7 @@ public class PlayerMovement : NetworkBehaviour
     {
         isGrounded = CheckGrounded();
 
-        Player_Animator.SetBool("Floating", !isGrounded);
+        _playerAnimator.SetBool("Floating", !isGrounded);
 
         if (isGrounded && verticalVelocity < 0f)
         {
@@ -111,7 +112,7 @@ public class PlayerMovement : NetworkBehaviour
             if (isJumping)
             {
                 verticalVelocity = JumpHeight;
-                Player_Animator.SetTrigger("Jump");
+                _playerAnimator.SetTrigger("Jump");
             }
         }
         else
