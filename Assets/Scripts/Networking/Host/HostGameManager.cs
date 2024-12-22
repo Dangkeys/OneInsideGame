@@ -13,7 +13,7 @@ public class HostGameManager
     private Allocation allocation;
     private string joinCode;
 
-    private const int MaxConnections = 20;
+    private const int MaxConnections = 12;
     private const string GameSceneName = "TajdangScene";
 
     public async Task StartHostAsync()
@@ -44,7 +44,7 @@ public class HostGameManager
 
         RelayServerData relayServerData = AllocationUtils.ToRelayServerData(allocation, "udp");
         transport.SetRelayServerData(relayServerData);
-
+        
         NetworkManager.Singleton.StartHost();
 
         NetworkManager.Singleton.SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
