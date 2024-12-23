@@ -2,7 +2,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class QuestClick : QuestInfo
+public class QuestClick : QuestInfo, IInteractable
 {
     [SerializeField] private InputActionReference InputActionReference;
     [SerializeField] private CircleClick CircleClick;
@@ -16,11 +16,6 @@ public class QuestClick : QuestInfo
             string buttonName = pathSegments[pathSegments.Length - 1];
             CircleClick.AddWordList(buttonName);
         }
-    }
-
-    private void Update()
-    {
-        Interface();
     }
 
     private void OnEnable()
@@ -40,24 +35,24 @@ public class QuestClick : QuestInfo
     [ServerRpc(RequireOwnership = false)]
     private void HandleWinServerRpc(bool Win)
     {
-        FinishQuest();
+        if (!IsHost)
+        {
+            Winning(Win);
+        }
         HandleWinClientRpc(Win);
     }
 
     [ClientRpc]
     private void HandleWinClientRpc(bool Win)
     {
+        Winning(Win);
+    }
+
+    private void Winning(bool Win)
+    {
+        FinishQuest();
         CircleClickGameObject.SetActive(false);
     }
-
-    private void Interface()
-    {
-        if (!QuestStatus && Input.GetKeyDown(KeyCode.E))
-        {
-            CircleClickGameObject.SetActive(true);
-        }
-    }
-
     private void HandleWordChange(string NewWord)
     {
         Word = NewWord;
@@ -68,6 +63,14 @@ public class QuestClick : QuestInfo
         if(CircleClickGameObject.activeInHierarchy && Word.ToLower() == context.control.displayName.ToLower())
         {
             CircleClick.UpdateScore(true);
+        }
+    }
+
+    public void Interact()
+    {
+        if(!QuestStatus)
+        {
+            CircleClickGameObject.SetActive(true);
         }
     }
 }
