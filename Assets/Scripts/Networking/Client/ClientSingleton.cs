@@ -14,4 +14,9 @@ public class ClientSingleton : SingletonPersistent<ClientSingleton>
 
         return await GameManager.InitAsync();
     }
+    private void OnDestroy()
+    {
+        GameManager?.Dispose();
+    }
+
 }
