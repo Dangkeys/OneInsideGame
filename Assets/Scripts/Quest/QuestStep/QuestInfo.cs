@@ -1,9 +1,11 @@
 using Unity.Netcode;
+using UnityEngine;
 
 public abstract class QuestInfo : NetworkBehaviour
 {
     protected bool QuestStatus = false;
     public event System.Action<bool> OnQuestStatusChanged;
+    public event System.Action<bool> OnDoQuest;
 
     protected void BrokenQuest()
     {
@@ -17,6 +19,7 @@ public abstract class QuestInfo : NetworkBehaviour
     {
         if (IsSpawned && !QuestStatus)
         {
+            UpdateDoQuest(false);
             UpdateQuestStatusServerRpc(true);
         }
     }
@@ -41,5 +44,11 @@ public abstract class QuestInfo : NetworkBehaviour
     {
         QuestStatus = Status;
         OnQuestStatusChanged?.Invoke(Status);
+    }
+
+    protected void UpdateDoQuest(bool DoQuest)
+    {
+        OnDoQuest?.Invoke(DoQuest);
+        Debug.Log(NetworkManager.Singleton.LocalClientId);
     }
 }
