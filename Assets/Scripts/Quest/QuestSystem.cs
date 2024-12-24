@@ -10,7 +10,7 @@ public class QuestSystem : NetworkBehaviour
     private NetworkVariable<int> QuestFinished = new NetworkVariable<int>(0);
     private int AllQuest;
 
-    private void Start()
+    private void Awake()
     {
         ScrollBar = GetComponent<Scrollbar>();
         AllQuest = Quests.Length;
@@ -30,13 +30,6 @@ public class QuestSystem : NetworkBehaviour
                 Quest.StatusChanged += HandleQuestStatusChanged;
             }
         }
-        QuestFinished.OnValueChanged += HandleQuestFinishedChanged;
-
-    }
-
-    private void HandleQuestFinishedChanged(int oldValue, int newValue)
-    {
-        UpdateProgressBar();
     }
 
     private void OnDisable()
@@ -48,7 +41,21 @@ public class QuestSystem : NetworkBehaviour
                 Quest.StatusChanged += HandleQuestStatusChanged;
             }
         }
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        QuestFinished.OnValueChanged += HandleQuestFinishedChanged;
+    }
+
+    public override void OnNetworkDespawn()
+    {
         QuestFinished.OnValueChanged -= HandleQuestFinishedChanged;
+    }
+
+    private void HandleQuestFinishedChanged(int oldValue, int newValue)
+    {
+        UpdateProgressBar();
     }
 
     private void HandleQuestStatusChanged(bool Status)

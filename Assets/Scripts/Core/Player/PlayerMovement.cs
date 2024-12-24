@@ -2,6 +2,7 @@ using System;
 using QFSW.QC;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(InputReader), typeof(CharacterController))]
 public class PlayerMovement : NetworkBehaviour
@@ -37,6 +38,7 @@ public class PlayerMovement : NetworkBehaviour
     private void Update()
     {
         if (!IsOwner) return;
+
         Move();
         ApplyGravity();
     }
@@ -59,6 +61,10 @@ public class PlayerMovement : NetworkBehaviour
 
         if (direction.magnitude >= 0.1f)
         {
+            if(MainCameraTransform == null)
+            {
+                MainCameraTransform = Camera.main.transform;
+            }
             float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + MainCameraTransform.eulerAngles.y;
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, TurnSmoothTime);
             transform.rotation = Quaternion.Euler(0f, angle, 0f);
