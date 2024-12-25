@@ -11,9 +11,7 @@ public class Player : NetworkBehaviour
         {
             VirtualCamera.Priority = int.MinValue;
         }
-
     }
-
 
     private void Update()
     {
