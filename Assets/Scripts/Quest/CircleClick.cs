@@ -17,7 +17,7 @@ public class CircleClick : MonoBehaviour
     public event System.Action<bool> OnWin;
     private List<string> WordList = new List<string>();
     [SerializeField] private int WinScore = 1;
-    [SerializeField] private Scrollbar ScoreBar;
+    private Scrollbar ScoreBar;
 
     private void Awake()
     {

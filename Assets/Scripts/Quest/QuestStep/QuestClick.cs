@@ -59,9 +59,9 @@ public class QuestClick : QuestInfo, IInteractable
         Word = NewWord;
     }
 
-    private void HandleQuestClick(InputAction.CallbackContext context)
+    private void HandleQuestClick(InputAction.CallbackContext Context)
     {
-        if(CircleClickGameObject.activeInHierarchy && Word.ToLower() == context.control.displayName.ToLower())
+        if(CircleClickGameObject.activeInHierarchy && Word.ToLower() == Context.control.displayName.ToLower())
         {
             CircleClick.UpdateScore(true);
         }
@@ -76,5 +76,8 @@ public class QuestClick : QuestInfo, IInteractable
         }
     }
 
-    
+    public void CancelQuest()
+    {
+        UpdateDoQuest(false);
+    }
 }

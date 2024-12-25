@@ -53,7 +53,7 @@ public class QuestSystem : NetworkBehaviour
         QuestFinished.OnValueChanged -= HandleQuestFinishedChanged;
     }
 
-    private void HandleQuestFinishedChanged(int oldValue, int newValue)
+    private void HandleQuestFinishedChanged(int OldValue, int NewValue)
     {
         UpdateProgressBar();
     }
@@ -83,6 +83,7 @@ public class QuestSystem : NetworkBehaviour
         if (ScrollBar != null)
         {
             ScrollBar.size = (float)QuestFinished.Value / AllQuest;
+            ScrollBar.value = 0;
         }
         else
         {
