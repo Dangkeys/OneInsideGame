@@ -8,12 +8,12 @@ public class QuestDodge : QuestInfo, IInteractable
 
     private void OnEnable()
     {
-        QuestDodgeManager.OnWin += HandleWinServerRpc;
+        QuestDodgeManager.OnFinishedQuest += HandleWinServerRpc;
     }
 
     private void OnDisable()
     {
-        QuestDodgeManager.OnWin -= HandleWinServerRpc;
+        QuestDodgeManager.OnFinishedQuest -= HandleWinServerRpc;
     }
 
     [ServerRpc(RequireOwnership = false)]

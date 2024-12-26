@@ -11,7 +11,7 @@ public class QuestDodgeManager : MonoBehaviour
     [SerializeField] private int LossScore = 1;
     private float Timer = 0f;
     [SerializeField] private float TimeGetScore = 1f;
-    public event System.Action<bool> OnWin;
+    public event System.Action<bool> OnFinishedQuest;
 
     private void Awake()
     {
@@ -62,7 +62,7 @@ public class QuestDodgeManager : MonoBehaviour
             Score++;
             if(Score >= MaxScore)
             {
-                OnWin?.Invoke(true);
+                OnFinishedQuest?.Invoke(true);
             }
         }
         else

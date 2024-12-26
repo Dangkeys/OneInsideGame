@@ -15,7 +15,6 @@ public class Meteorite : MonoBehaviour
         Rigidbody2D = GetComponent<Rigidbody2D>();
         MyRectTransform = GetComponent<RectTransform>();
         Field = transform.parent.GetComponent<RectTransform>();
-        NewSpawn();
     }
 
     private void OnEnable()

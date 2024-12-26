@@ -23,14 +23,14 @@ public class QuestClick : QuestInfo, IInteractable
     {
         InputActionReference.action.started += HandleQuestClick;
         CircleClick.OnWordChange += HandleWordChange;
-        CircleClick.OnWin += HandleWinServerRpc;
+        CircleClick.OnFinishedQuest += HandleWinServerRpc;
     }
 
     private void OnDisable()
     {
         InputActionReference.action.started -= HandleQuestClick;
         CircleClick.OnWordChange -= HandleWordChange;
-        CircleClick.OnWin -= HandleWinServerRpc;
+        CircleClick.OnFinishedQuest -= HandleWinServerRpc;
     }
 
     [ServerRpc(RequireOwnership = false)]
