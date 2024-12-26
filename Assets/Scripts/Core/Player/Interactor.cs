@@ -1,19 +1,21 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.Netcode;
 
 /// <summary>
 /// Handles interaction with nearby interactable objects in the game world
 /// </summary>
-public class Interactor : MonoBehaviour
+public class Interactor : NetworkBehaviour
 {
     [field: SerializeField, Tooltip("Reference to the input system")]
     public InputReader InputReader { get; private set; }
 
-    [field: SerializeField, Tooltip("Maximum distance at which interactions can occur")] 
+    [field: SerializeField, Tooltip("Maximum distance at which interactions can occur")]
     public float InteractionRadius { get; private set; }
 
-    private void Start()
+    public override void OnNetworkSpawn()
     {
+        if(!IsOwner) return;
         InputReader.InteractEvent += HandleInteractionAttempt;
     }
 
@@ -87,8 +89,9 @@ public class Interactor : MonoBehaviour
         Gizmos.DrawRay(transform.position, transform.forward * InteractionRadius);
     }
 
-    private void OnDestroy()
+    public override void OnNetworkDespawn()
     {
+        if (!IsOwner) return;
         InputReader.InteractEvent -= HandleInteractionAttempt;
     }
 }
