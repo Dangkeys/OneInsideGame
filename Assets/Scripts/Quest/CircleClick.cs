@@ -14,10 +14,10 @@ public class CircleClick : MonoBehaviour
     private float CurrentTime = 0;
     private int Score = 0;
     public event System.Action<string> OnWordChange;
-    public event System.Action<bool> OnWin;
+    public event System.Action<bool> OnFinishedQuest;
     private List<string> WordList = new List<string>();
     [SerializeField] private int WinScore = 1;
-    [SerializeField] private Scrollbar ScoreBar;
+    private Scrollbar ScoreBar;
 
     private void Awake()
     {
@@ -116,6 +116,6 @@ public class CircleClick : MonoBehaviour
 
     private void HandleWin()
     {
-        OnWin?.Invoke(true);
+        OnFinishedQuest?.Invoke(true);
     }
 }
