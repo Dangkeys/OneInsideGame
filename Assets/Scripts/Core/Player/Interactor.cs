@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 /// <summary>
 /// Handles interaction with nearby interactable objects in the game world
@@ -22,7 +23,7 @@ public class Interactor : MonoBehaviour
         IInteractable nearestInteractable = FindNearestInteractable();
         if (nearestInteractable != null)
         {
-            nearestInteractable.Interact();
+            nearestInteractable.Interact(new InteractionData(this));
         }
     }
 

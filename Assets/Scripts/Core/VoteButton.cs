@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class TestInteratable : MonoBehaviour, IInteractable
+public class VoteButton : MonoBehaviour, IInteractable
 {
     public void Interact(InteractionData interactionData)
     {
-        Debug.Log("Interact");
+        PlayerManager.Instance.ResetAllPlayerToSpawnPointServerRPC();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

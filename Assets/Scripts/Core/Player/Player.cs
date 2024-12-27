@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Player : NetworkBehaviour
 {
+    [field: SerializeField] public CharacterController CharacterController {get; private set;}
     [field: SerializeField] public CinemachineCamera VirtualCamera {get; private set;}
     public override void OnNetworkSpawn()
     {
@@ -22,5 +23,12 @@ public class Player : NetworkBehaviour
     {
         if (!IsOwner) return;
 
+    }
+    public void ResetToSpawnPoint()
+    {
+        Debug.Log("MEow");
+        CharacterController.enabled = false;
+        transform.position = SpawnPoint.GetRandomSpawnPos();
+        CharacterController.enabled = true;
     }
 }
