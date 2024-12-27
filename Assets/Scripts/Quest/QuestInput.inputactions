@@ -1,0 +1,67 @@
+{
+    "name": "QuestInput",
+    "maps": [
+        {
+            "name": "Keyboard",
+            "id": "26a8dc99-020e-4112-80bd-ca8de41f5022",
+            "actions": [
+                {
+                    "name": "QuestClick",
+                    "type": "Button",
+                    "id": "551eab3e-9665-42cd-a1a6-d9e59fe1b07c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "e5c646a8-2a27-4ea2-a462-775c7ec84646",
+                    "path": "<Keyboard>/j",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "QuestClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "125eb22a-1527-4177-bc22-f0c586c5ec9f",
+                    "path": "<Keyboard>/k",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "QuestClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d6fbfc01-a130-4501-b5ff-d99b0319cafa",
+                    "path": "<Keyboard>/u",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "QuestClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e29f3bff-6eb0-4043-bcb7-1b80defabdca",
+                    "path": "<Keyboard>/i",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "QuestClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

@@ -46,7 +46,7 @@ public class InputReader : MonoBehaviour, IPlayerActions
     }
     public void OnAttack(InputAction.CallbackContext context)
     {
-        if (context.performed)
+        if (context.started)
         {
             AttackEvent?.Invoke();
         }
@@ -54,7 +54,7 @@ public class InputReader : MonoBehaviour, IPlayerActions
 
     public void OnInteract(InputAction.CallbackContext context)
     {
-        if (context.performed)
+        if (context.started)
         {
             InteractEvent?.Invoke();
         }
