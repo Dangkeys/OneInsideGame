@@ -4,6 +4,7 @@ using Unity.Cinemachine;
 using Unity.Collections;
 using Unity.Netcode;
 using Unity.VisualScripting;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class Player : NetworkBehaviour
@@ -15,7 +16,7 @@ public class Player : NetworkBehaviour
      [field: SerializeField] public Object CharacterRoot { get; private set; }
 
      [Header("Settings")]
-     public NetworkVariable<FixedString64Bytes> PlayerUUID = new NetworkVariable<FixedString64Bytes>("Test");
+     public NetworkVariable<FixedString64Bytes> PLayerID = new NetworkVariable<FixedString64Bytes>("Test");
      public NetworkVariable<FixedString64Bytes> PlayerName = new NetworkVariable<FixedString64Bytes>("Unknown");
      public NetworkVariable<int> PlayerHealth = new NetworkVariable<int>(3);
 
@@ -111,12 +112,10 @@ public class Player : NetworkBehaviour
           {
                Debug.Log(Closest_Character.name);
 
-               // Get the target's Player script or component and set Dead to true
-               Player targetPlayer = Closest_Character.GetComponent<Player>();
-               if (targetPlayer)
+               Player targetPlayerScript = Closest_Character.GetComponent<Player>();
+               if (targetPlayerScript)
                {
-                    // Mark the target as dead on the server
-                    targetPlayer.Take_Damage_ServerRpc();
+                    targetPlayerScript.Take_Damage_ServerRpc();
                }
           }
 
@@ -149,12 +148,11 @@ public class Player : NetworkBehaviour
 
           if (IsServer)
           {
-               // Generate and set the PlayerUUID on the server
-               PlayerUUID.Value = UUID.Create_ID();
+               PLayerID.Value = OwnerClientId.ToString();
           }
 
-          PlayerUUID.OnValueChanged += UpdatePlayerName;
-          UpdatePlayerName(PlayerUUID.Value, PlayerUUID.Value);
+          PLayerID.OnValueChanged += UpdatePlayerName;
+          UpdatePlayerName(PLayerID.Value, PLayerID.Value);
 
           Dead.OnValueChanged += UpdateDead;
           UpdateDead(false, Dead.Value);
@@ -182,7 +180,6 @@ public class Player : NetworkBehaviour
 
      public override void OnNetworkDespawn()
      {
-          PlayerUUID.OnValueChanged -= UpdatePlayerName;
           Dead.OnValueChanged -= UpdateDead;
 
           //----------------------
@@ -215,13 +212,7 @@ public class Player : NetworkBehaviour
      [ServerRpc(RequireOwnership = false)]
      public void Take_Damage_ServerRpc(int Damage = 1)
      {
-          ProcessDamageAsync(Damage);
-     }
-
-     private async void ProcessDamageAsync(int Damage = 1)
-     {
           if (!_playerMovement.enabled) return;
-
           PlayerHealth.Value -= Damage;
 
           if (PlayerHealth.Value <= 0)
@@ -230,6 +221,17 @@ public class Player : NetworkBehaviour
                return;
           }
 
+          Take_Damage_ClientRpc(Damage);
+     }
+
+     [ClientRpc]
+     public void Take_Damage_ClientRpc(int Damage = 1)
+     {
+          ProcessDamageAsync(Damage);
+     }
+
+     private async void ProcessDamageAsync(int Damage)
+     {
           _playerAnimator.SetTrigger("Stun");
 
           _playerMovement.enabled = false;
