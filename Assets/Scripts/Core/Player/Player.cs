@@ -4,13 +4,17 @@ using UnityEngine;
 
 public class Player : NetworkBehaviour
 {
-    [field: SerializeField] public CharacterController CharacterController {get; private set;}
-    [field: SerializeField] public CinemachineCamera VirtualCamera {get; private set;}
+    [field: SerializeField] public CharacterController CharacterController { get; private set; }
+    [field: SerializeField] public CinemachineCamera VirtualCamera { get; private set; }
     public override void OnNetworkSpawn()
     {
         if (!IsOwner)
         {
             VirtualCamera.Priority = int.MinValue;
+        }
+        else
+        {
+            PlayerManager.Instance.OnSetAllPlayersToSpawnPos += ResetToSpawnPoint;
         }
     }
 
@@ -28,7 +32,7 @@ public class Player : NetworkBehaviour
     {
         Debug.Log("MEow");
         CharacterController.enabled = false;
-        transform.position = SpawnPoint.GetRandomSpawnPos();
+        transform.position = SpawnPoint.GetClientSpawnPos(NetworkManager.Singleton.LocalClientId);
         CharacterController.enabled = true;
     }
 }

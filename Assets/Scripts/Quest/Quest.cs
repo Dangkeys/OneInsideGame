@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewQuest", menuName = "ScriptableObjects/Quest")]
 public class Quest : ScriptableObject
 {
-    [SerializeField] private string Name;
+    [SerializeField] private string name;
     [SerializeField] private string Description;
     [SerializeField] private string GameObjectName;
     private QuestInfo QuestInfo = null;

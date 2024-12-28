@@ -1,40 +1,25 @@
+using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerManager : NetworkBehaviour
 {
+    public event Action OnSetAllPlayersToSpawnPos;
     public static PlayerManager Instance { get; private set; }
-    public override void OnNetworkSpawn()
-    {
+    private void Start() {
         Instance = this;
     }
-
     [ServerRpc(RequireOwnership = false)]
-    public void ResetAllPlayerToSpawnPointServerRPC()
+    public void OnSetAllPlayersToSpawnPosServerRPC()
     {
-        Debug.Log(NetworkManager.Singleton.LocalClientId);
-        var players = FindObjectsByType<Player>(FindObjectsSortMode.None);
-
-        foreach (var player in players)
-        {
-            if (player.TryGetComponent<NetworkObject>(out var networkObject))
-            {
-                ResetPlayerToSpawnPointClientRPC(networkObject.NetworkObjectId);
-            }
-        }
+        OnSetAllPlayersToSpawnPosClientRPC();
     }
-
     [ClientRpc]
-    public void ResetPlayerToSpawnPointClientRPC(ulong playerNetworkId)
+    private void OnSetAllPlayersToSpawnPosClientRPC()
     {
-        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(
-            playerNetworkId, out NetworkObject networkObject))
-        {
-            if (networkObject.TryGetComponent<Player>(out var player))
-            {
-                player.ResetToSpawnPoint();
-            }
-        }
+        OnSetAllPlayersToSpawnPos?.Invoke();
     }
+
+
 }

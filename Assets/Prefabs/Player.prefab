@@ -87,7 +87,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 10364231
+  GlobalObjectIdHash: 3463517192
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -115,6 +115,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   <InputReader>k__BackingField: {fileID: 3937043524520739152}
   <CharacterController>k__BackingField: {fileID: 4450134948998468091}
+  <MainCameraTransform>k__BackingField: {fileID: 0}
   <WalkSpeed>k__BackingField: 4
   <RunSpeed>k__BackingField: 6
   <RotationSpeed>k__BackingField: 15
@@ -277,9 +278,9 @@ MonoBehaviour:
   SyncRotAngleX: 1
   SyncRotAngleY: 1
   SyncRotAngleZ: 1
-  SyncScaleX: 0
-  SyncScaleY: 0
-  SyncScaleZ: 0
+  SyncScaleX: 1
+  SyncScaleY: 1
+  SyncScaleZ: 1
   PositionThreshold: 0.001
   RotAngleThreshold: 0.01
   ScaleThreshold: 0.01
