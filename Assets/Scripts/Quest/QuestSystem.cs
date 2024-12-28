@@ -15,6 +15,13 @@ public class QuestSystem : NetworkBehaviour
         ScrollBar = GetComponent<Scrollbar>();
         AllQuest = Quests.Length;
         UpdateProgressBar();
+        foreach (Quest Quest in Quests)
+        {
+            if (Quest != null)
+            {
+                Quest.SetQuestInfo(GameObject.Find(Quest.GetGameObjectName()).GetComponent<QuestInfo>());
+            }
+        }
     }
 
     private void OnEnable()
@@ -23,10 +30,6 @@ public class QuestSystem : NetworkBehaviour
         {
             if (Quest != null)
             {
-                if(Quest.GetQuestInfo() == null)
-                {
-                    Quest.SetQuestInfo(GameObject.Find(Quest.GetGameObjectName()).GetComponent<QuestInfo>());
-                }
                 Quest.StatusChanged += HandleQuestStatusChanged;
             }
         }
@@ -38,7 +41,7 @@ public class QuestSystem : NetworkBehaviour
         {
             if (Quest != null)
             {
-                Quest.StatusChanged += HandleQuestStatusChanged;
+                Quest.StatusChanged -= HandleQuestStatusChanged;
             }
         }
     }

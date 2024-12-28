@@ -7,7 +7,6 @@ public class Quest : ScriptableObject
     [SerializeField] private string Description;
     [SerializeField] private string GameObjectName;
     private QuestInfo QuestInfo = null;
-    public bool QuestStatus { get; private set; } = false;
     public event System.Action<bool> StatusChanged;
 
     private void OnEnable()
@@ -16,10 +15,6 @@ public class Quest : ScriptableObject
         {
             QuestInfo.OnQuestStatusChanged += HandleQuestStatusChanged;
         }
-        else
-        {
-            Debug.Log("QuestInfo is not assigned.");
-        }
     }
 
     private void OnDisable()
@@ -27,10 +22,6 @@ public class Quest : ScriptableObject
         if (QuestInfo != null)
         {
             QuestInfo.OnQuestStatusChanged -= HandleQuestStatusChanged;
-        }
-        else
-        {
-            Debug.Log("QuestInfo is not assigned.");
         }
     }
 
@@ -47,12 +38,10 @@ public class Quest : ScriptableObject
     public void SetQuestInfo(QuestInfo NewQuestInfo)
     {
         QuestInfo = NewQuestInfo;
-        QuestInfo.OnQuestStatusChanged += HandleQuestStatusChanged;
     }
 
     private void HandleQuestStatusChanged(bool Status)
     {
-        QuestStatus = Status;
         StatusChanged?.Invoke(Status);
     }
 }

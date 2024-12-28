@@ -27,7 +27,8 @@ public abstract class QuestInfo : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void UpdateQuestStatusServerRpc(bool Status)
     {
-        if(!IsHost)
+        OnQuestStatusChanged?.Invoke(Status);
+        if (!IsHost)
         {
             UpdateQuest(Status);
         }
@@ -43,7 +44,6 @@ public abstract class QuestInfo : NetworkBehaviour
     private void UpdateQuest(bool Status)
     {
         QuestStatus = Status;
-        OnQuestStatusChanged?.Invoke(Status);
     }
 
     protected void UpdateDoQuest(bool DoQuest)
