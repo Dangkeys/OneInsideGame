@@ -6,7 +6,7 @@ public class Quest : ScriptableObject
     [SerializeField] private string Name;
     [SerializeField] private string Description;
     [SerializeField] private string GameObjectName;
-    private QuestInfo QuestInfo = null;
+    private QuestInfo QuestInfo;
     public event System.Action<bool> StatusChanged;
 
     private void OnEnable()
@@ -25,11 +25,6 @@ public class Quest : ScriptableObject
         }
     }
 
-    public QuestInfo GetQuestInfo()
-    {
-        return QuestInfo;
-    }
-
     public string GetGameObjectName()
     {
         return GameObjectName;
@@ -38,6 +33,7 @@ public class Quest : ScriptableObject
     public void SetQuestInfo(QuestInfo NewQuestInfo)
     {
         QuestInfo = NewQuestInfo;
+        QuestInfo.OnQuestStatusChanged += HandleQuestStatusChanged;
     }
 
     private void HandleQuestStatusChanged(bool Status)
