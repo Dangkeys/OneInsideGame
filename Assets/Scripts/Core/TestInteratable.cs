@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class TestInteratable : MonoBehaviour, IInteractable
 {
-    public void Interact()
+    public void Interact(InteractionData interactionData)
     {
         Debug.Log("Interact");
     }

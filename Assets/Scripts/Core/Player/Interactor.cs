@@ -22,7 +22,7 @@ public class Interactor : MonoBehaviour
         IInteractable nearestInteractable = FindNearestInteractable();
         if (nearestInteractable != null)
         {
-            nearestInteractable.Interact();
+            nearestInteractable.Interact(new InteractionData(this));
         }
     }
 
