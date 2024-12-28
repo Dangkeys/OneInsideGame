@@ -63,7 +63,7 @@ public class QuestSystem : NetworkBehaviour
 
     private void HandleQuestStatusChanged(bool Status)
     {
-        if (IsServer)
+        if(IsServer)
         {
             UpdateQuestFinished(Status);
         }
@@ -86,7 +86,6 @@ public class QuestSystem : NetworkBehaviour
         if (ScrollBar != null)
         {
             ScrollBar.size = (float)QuestFinished.Value / AllQuest;
-            ScrollBar.value = 0;
         }
         else
         {
