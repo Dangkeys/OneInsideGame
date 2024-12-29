@@ -9,6 +9,7 @@ public class Player : NetworkBehaviour
     [field: SerializeField] public InputReader InputReader { get; private set; }
     [field: SerializeField] public PlayerMovement PlayerMovement { get; private set; }
     [field: SerializeField] public CinemachineCamera VirtualCamera { get; private set; }
+    [field: SerializeField] public CinemachineInputAxisController CinemachineInputAxisController { get; private set; }
     public override void OnNetworkSpawn()
     {
         if (!IsOwner)
@@ -29,11 +30,13 @@ public class Player : NetworkBehaviour
         if (!shouldMove)
         {
             InputReader.DisableGameplayInput();
+
         }
         else
         {
             InputReader.EnableGameplayInput();
         }
+        CinemachineInputAxisController.enabled = shouldMove;
     }
 
     private void Update()

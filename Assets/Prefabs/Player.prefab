@@ -198,6 +198,7 @@ MonoBehaviour:
   <InputReader>k__BackingField: {fileID: 3937043524520739152}
   <PlayerMovement>k__BackingField: {fileID: 295962568890882461}
   <VirtualCamera>k__BackingField: {fileID: 4749395338926886000}
+  <CinemachineInputAxisController>k__BackingField: {fileID: 2089346930791355492}
 --- !u!114 &7861200216632741600
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -323,8 +324,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5586246770640912673}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.47006842, y: 0.26604035, z: -0.15105091, w: 0.8279142}
-  m_LocalPosition: {x: -1.5791054, y: 6.0416346, z: -2.2033644}
+  m_LocalRotation: {x: 0.3986468, y: 0.4273163, z: -0.21793242, w: 0.7816566}
+  m_LocalPosition: {x: -2.561186, y: 5.6934066, z: -1.6424142}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -407,7 +408,7 @@ MonoBehaviour:
     SplineCurvature: 0.5
   RecenteringTarget: 2
   HorizontalAxis:
-    Value: 35.62838
+    Value: 57.32912
     Center: 0
     Range: {x: -180, y: 180}
     Wrap: 1
@@ -417,7 +418,7 @@ MonoBehaviour:
       Time: 2
     Restrictions: 0
   VerticalAxis:
-    Value: 37.10564
+    Value: 33.513203
     Center: 17.5
     Range: {x: -10, y: 45}
     Wrap: 0
@@ -502,7 +503,7 @@ MonoBehaviour:
       Owner: {fileID: 8011606362786207064}
       Enabled: 1
       Input:
-        InputAction: {fileID: -5630151704836100654, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
+        InputAction: {fileID: -5630151704836100654, guid: 052faaac586de48259a63d0c4782560b, type: 3}
         Gain: 1
         LegacyInput: Mouse X
         LegacyGain: 200
@@ -515,7 +516,7 @@ MonoBehaviour:
       Owner: {fileID: 8011606362786207064}
       Enabled: 1
       Input:
-        InputAction: {fileID: -5630151704836100654, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
+        InputAction: {fileID: -5630151704836100654, guid: 052faaac586de48259a63d0c4782560b, type: 3}
         Gain: -1
         LegacyInput: Mouse Y
         LegacyGain: -200
@@ -632,6 +633,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2383991533042498037, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2873614647388709523, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3425398391930324162, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3948867240539601849, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

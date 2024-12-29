@@ -62,7 +62,7 @@ public class VoteManager : NetworkBehaviour
 
                         if (VotingTimer.Value < 0)
                         {
-                            VotingTimer.Value = 0;
+                            VotingTimer.Value = votingTimerMax;
 
                             state.Value = State.VoteOver;
                         }
