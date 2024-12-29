@@ -1,3 +1,4 @@
+using System;
 using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
@@ -5,6 +6,8 @@ using UnityEngine;
 public class Player : NetworkBehaviour
 {
     [field: SerializeField] public CharacterController CharacterController { get; private set; }
+    [field: SerializeField] public InputReader InputReader { get; private set; }
+    [field: SerializeField] public PlayerMovement PlayerMovement { get; private set; }
     [field: SerializeField] public CinemachineCamera VirtualCamera { get; private set; }
     public override void OnNetworkSpawn()
     {
@@ -14,23 +17,41 @@ public class Player : NetworkBehaviour
         }
         else
         {
-            PlayerManager.Instance.OnSetAllPlayersToSpawnPos += ResetToSpawnPoint;
+            if (!OneInsideLevelManager.Instance)
+                return;
+            OneInsideLevelManager.Instance.PlayerManager.OnSetAllPlayersToSpawnPos += ResetToSpawnPoint;
+            OneInsideLevelManager.Instance.PlayerManager.OnEnableAllPlayersMovement += EnablePlayerMovement;
+        }
+    }
+
+    private void EnablePlayerMovement(bool shouldMove)
+    {
+        if (!shouldMove)
+        {
+            InputReader.DisableGameplayInput();
+        }
+        else
+        {
+            InputReader.EnableGameplayInput();
         }
     }
 
     private void Update()
     {
-        if (!IsOwner) return;
+        if (!IsOwner)
+            return;
 
     }
     public override void OnNetworkDespawn()
     {
-        if (!IsOwner) return;
-
+        if (!IsOwner)
+            return;
+        if (!OneInsideLevelManager.Instance)
+            return;
+        OneInsideLevelManager.Instance.PlayerManager.OnSetAllPlayersToSpawnPos -= ResetToSpawnPoint;
     }
     public void ResetToSpawnPoint()
     {
-        Debug.Log("MEow");
         CharacterController.enabled = false;
         transform.position = SpawnPoint.GetClientSpawnPos(NetworkManager.Singleton.LocalClientId);
         CharacterController.enabled = true;
