@@ -2,33 +2,33 @@ using UnityEngine;
 
 public class SingletonPersistent<T> : MonoBehaviour where T : MonoBehaviour
 {
-    private static T _instance;
+    private static T instance;
 
     public static T Instance
     {
         get
         {
-            if (_instance == null)
+            if (instance == null)
             {
-                _instance = FindFirstObjectByType<T>();
+                instance = FindFirstObjectByType<T>();
 
-                if (_instance == null)
+                if (instance == null)
                 {
                     GameObject singletonObject = new GameObject(typeof(T).Name);
-                    _instance = singletonObject.AddComponent<T>();
+                    instance = singletonObject.AddComponent<T>();
                 }
 
-                DontDestroyOnLoad(_instance.gameObject);
+                DontDestroyOnLoad(instance.gameObject);
             }
-            return _instance;
+            return instance;
         }
     }
 
     protected virtual void Awake()
     {
-        if (_instance == null)
+        if (instance == null)
         {
-            _instance = this as T;
+            instance = this as T;
             DontDestroyOnLoad(gameObject);
         }
         else
