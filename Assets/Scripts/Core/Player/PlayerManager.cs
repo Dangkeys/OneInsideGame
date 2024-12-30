@@ -8,20 +8,29 @@ public class PlayerManager : NetworkBehaviour
     public event Action OnSetAllPlayersToSpawnPos;
     public event Action<bool> OnEnableAllPlayersMovement;
 
+    public List<Player> Players = new List<Player>();
+
     public override void OnNetworkSpawn()
     {
         if (!OneInsideLevelManager.Instance)
             return;
-        OneInsideLevelManager.Instance.VoteManager.OnStateChanged += OnVoteStateChangedServerRPC;
+        NetworkManager.Singleton.OnConnectionEvent += NetworkOnConnectionEvent;
+        OneInsideLevelManager.Instance.VoteManager.OnStateChanged += OnVoteStateChangedServerRpc;
     }
+
+    private void NetworkOnConnectionEvent(NetworkManager manager, ConnectionEventData data)
+    {
+        
+    }
+
     [ServerRpc(RequireOwnership = false)]
-    private void OnVoteStateChangedServerRPC(VoteManager.State state)
+    private void OnVoteStateChangedServerRpc(VoteManager.State state)
     {
 
-        OnVoteStateChangedClientRPC(state);
+        OnVoteStateChangedClientRpc(state);
     }
     [ClientRpc]
-    private void OnVoteStateChangedClientRPC(VoteManager.State state)
+    private void OnVoteStateChangedClientRpc(VoteManager.State state)
     {
         switch (state)
         {
@@ -40,6 +49,6 @@ public class PlayerManager : NetworkBehaviour
     {
         if (!OneInsideLevelManager.Instance)
             return;
-        OneInsideLevelManager.Instance.VoteManager.OnStateChanged -= OnVoteStateChangedServerRPC;
+        OneInsideLevelManager.Instance.VoteManager.OnStateChanged -= OnVoteStateChangedServerRpc;
     }
 }

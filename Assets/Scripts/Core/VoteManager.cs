@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,7 +20,7 @@ public class VoteManager : NetworkBehaviour
     [field: SerializeField] private float votingTimerMax = 60f;
     public NetworkVariable<float> VotingTimer = new NetworkVariable<float>();
     private NetworkVariable<State> state = new NetworkVariable<State>(State.WaitingToVote);
-
+    private NetworkVariable<Dictionary<ulong, ulong?>> voteDictionary = new NetworkVariable<Dictionary<ulong, ulong?>>();
     [SerializeField] private Slider slider;
     public override void OnNetworkSpawn()
     {
@@ -27,10 +28,13 @@ public class VoteManager : NetworkBehaviour
         {
             VotingTimer.Value = votingTimerMax;
         }
-        state.OnValueChanged += State_OnValueChanged;
+        state.OnValueChanged += StateChanged;
+        voteDictionary.OnValueChanged += VoteDictionaryChanged;
     }
 
-    private void State_OnValueChanged(State previousValue, State newValue)
+    private void VoteDictionaryChanged(Dictionary<ulong, ulong?> previousValue, Dictionary<ulong, ulong?> newValue) => throw new NotImplementedException();
+
+    private void StateChanged(State previousValue, State newValue)
     {
         switch (newValue)
         {
@@ -38,6 +42,10 @@ public class VoteManager : NetworkBehaviour
                 break;
             case State.Voting:
                 slider.gameObject.SetActive(true);
+                foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+                {
+                    voteDictionary.Value.Add(clientId, null);
+                }
                 break;
             case State.VoteOver:
                 slider.gameObject.SetActive(false);
@@ -79,7 +87,7 @@ public class VoteManager : NetworkBehaviour
         }
     }
     [ServerRpc(RequireOwnership = false)]
-    public void RaiseVoteStartServerRPC()
+    public void RaiseVoteStartServerRpc()
     {
         RaiseVoteStart();
     }
@@ -88,5 +96,4 @@ public class VoteManager : NetworkBehaviour
         if (state.Value != State.Voting)
             state.Value = State.Voting;
     }
-
 }
