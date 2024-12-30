@@ -737,7 +737,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9ff74a955786314bbf5d40611b7eeb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
   voteItemPrefab: {fileID: 7918360046853580956, guid: 26fb5c74dd6fd7047afd0ee29555700b, type: 3}
   voteItemParent: {fileID: 45542119}
   votingTimerSlider: {fileID: 1084344742}
@@ -1015,7 +1014,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &563817768
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2444,7 +2443,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7854955619060697809, guid: 46667e224a981274396553c200eccc56, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00016021729
+      value: -0.00012207031
       objectReference: {fileID: 0}
     - target: {fileID: 7855106681706247033, guid: 46667e224a981274396553c200eccc56, type: 3}
       propertyPath: m_Pivot.x

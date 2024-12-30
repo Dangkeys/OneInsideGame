@@ -27,7 +27,7 @@ public class VoteManagerUI : MonoBehaviour
 
     private void VoteDictionaryChanged(Dictionary<ulong, ulong> previousValue, Dictionary<ulong, ulong> newValue)
     {
-        Show();
+        RefreshVoteItems();
     }
 
     private void VotingTimerChanged(float previousValue, float newValue)
@@ -51,7 +51,7 @@ public class VoteManagerUI : MonoBehaviour
         }
     }
 
-    private void Show()
+    private void RefreshVoteItems()
     {
         foreach (Transform child in voteItemParent)
         {
