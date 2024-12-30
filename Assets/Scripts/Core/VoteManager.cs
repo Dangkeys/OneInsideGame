@@ -1,99 +1,197 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class VoteManager : NetworkBehaviour
 {
-
-
     public enum State
     {
         WaitingToVote,
         Voting,
         VoteOver,
     }
+
     public event Action<State> OnStateChanged;
 
-
-    [field: SerializeField] private float votingTimerMax = 60f;
+    [field: SerializeField] public float VotingTimerMax = 60f;
     public NetworkVariable<float> VotingTimer = new NetworkVariable<float>();
     private NetworkVariable<State> state = new NetworkVariable<State>(State.WaitingToVote);
-    private NetworkVariable<Dictionary<ulong, ulong?>> voteDictionary = new NetworkVariable<Dictionary<ulong, ulong?>>();
-    [SerializeField] private Slider slider;
+    public NetworkVariable<Dictionary<ulong, ulong>> VoteRegistry { get; private set; } =
+        new NetworkVariable<Dictionary<ulong, ulong>>(new Dictionary<ulong, ulong>());
+
+    public const ulong NO_VOTE = ulong.MaxValue;
+
     public override void OnNetworkSpawn()
     {
         if (IsServer)
         {
-            VotingTimer.Value = votingTimerMax;
+            VotingTimer.Value = VotingTimerMax;
         }
+
         state.OnValueChanged += StateChanged;
-        voteDictionary.OnValueChanged += VoteDictionaryChanged;
+        VoteRegistry.OnValueChanged += VoteDictionaryChanged;
     }
-
-    private void VoteDictionaryChanged(Dictionary<ulong, ulong?> previousValue, Dictionary<ulong, ulong?> newValue) => throw new NotImplementedException();
-
-    private void StateChanged(State previousValue, State newValue)
-    {
-        switch (newValue)
-        {
-            case State.WaitingToVote:
-                break;
-            case State.Voting:
-                slider.gameObject.SetActive(true);
-                foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
-                {
-                    voteDictionary.Value.Add(clientId, null);
-                }
-                break;
-            case State.VoteOver:
-                slider.gameObject.SetActive(false);
-                break;
-        }
-        OnStateChanged?.Invoke(newValue);
-    }
-
-
     private void Update()
     {
-        switch (state.Value)
+        if (!IsServer || state.Value != State.Voting)
+            return;
+
+        UpdateVotingTimer();
+    }
+
+
+
+    public override void OnNetworkDespawn()
+    {
+        state.OnValueChanged -= StateChanged;
+        VoteRegistry.OnValueChanged -= VoteDictionaryChanged;
+    }
+    private void UpdateVotingTimer()
+    {
+        if (VotingTimer.Value <= 0)
+            return;
+
+        VotingTimer.Value -= Time.deltaTime;
+
+        if (VotingTimer.Value < 0)
         {
-            case State.WaitingToVote:
-                break;
+            VotingTimer.Value = VotingTimerMax;
+            state.Value = State.VoteOver;
+        }
+    }
+    private void VoteDictionaryChanged(Dictionary<ulong, ulong> previousValue, Dictionary<ulong, ulong> newValue)
+    {
+        if (!IsServer)
+            return;
+
+        bool allVoted = newValue.Values.All(vote => vote != NO_VOTE);
+        if (allVoted && state.Value == State.Voting)
+        {
+            state.Value = State.VoteOver;
+        }
+    }
+
+    private void StateChanged(State previousValue, State newState)
+    {
+        OnStateChanged?.Invoke(newState);
+        if (!IsServer)
+            return;
+
+        switch (newState)
+        {
             case State.Voting:
-                if (IsServer)
-                {
-                    if (VotingTimer.Value > 0)
-                    {
-                        VotingTimer.Value -= Time.deltaTime;
-
-                        if (VotingTimer.Value < 0)
-                        {
-                            VotingTimer.Value = votingTimerMax;
-
-                            state.Value = State.VoteOver;
-                        }
-                    }
-                }
-
-                if (slider != null)
-                {
-                    slider.value = VotingTimer.Value / votingTimerMax;
-                }
+                InitializeVotingDictionary();
                 break;
             case State.VoteOver:
+                ProcessVoteResults();
+                state.Value = State.WaitingToVote;
+                break;
+        }
+
+    }
+
+
+    private void InitializeVotingDictionary()
+    {
+        Dictionary<ulong, ulong> newDictionary = NetworkManager.Singleton.ConnectedClientsIds
+            .ToDictionary(clientId => clientId, _ => NO_VOTE);
+        VoteRegistry.Value = newDictionary;
+    }
+
+
+
+    private void ProcessVoteResults()
+    {
+        Dictionary<ulong, ulong> voteResults = CalculateVoteResults();
+        ulong highestVoteCount = FindHighestVoteCount(voteResults);
+        List<ulong> mostVotedPlayers = FindMostVotedPlayers(voteResults, highestVoteCount);
+        LogVoteResults(highestVoteCount, mostVotedPlayers);
+    }
+
+    private Dictionary<ulong, ulong> CalculateVoteResults()
+    {
+        Dictionary<ulong, ulong> voteResults = new Dictionary<ulong, ulong>();
+
+        foreach (KeyValuePair<ulong, ulong> vote in VoteRegistry.Value.Where(v => v.Value != NO_VOTE))
+        {
+            if (voteResults.ContainsKey(vote.Value))
+            {
+                voteResults[vote.Value]++;
+            }
+            else
+            {
+                voteResults[vote.Value] = 1;
+            }
+        }
+
+        return voteResults;
+    }
+
+    private ulong FindHighestVoteCount(Dictionary<ulong, ulong> voteResults)
+    {
+        if (!voteResults.Any())
+        {
+            return 0;
+        }
+        return voteResults.Max(v => v.Value);
+    }
+
+    private List<ulong> FindMostVotedPlayers(Dictionary<ulong, ulong> voteResults, ulong highestVoteCount)
+    {
+        if (!voteResults.Any())
+        {
+            return new List<ulong>();
+        }
+
+        return voteResults
+            .Where(v => v.Value == highestVoteCount)
+            .Select(v => v.Key)
+            .ToList();
+    }
+
+    private void LogVoteResults(ulong highestVoteCount, List<ulong> mostVotedPlayers)
+    {
+        switch (mostVotedPlayers.Count)
+        {
+            case 0:
+                Debug.Log("No votes were cast");
+                break;
+            case 1:
+                Debug.Log($"Player {mostVotedPlayers[0]} has been voted to be the impostor by {highestVoteCount} players");
+                break;
+            default:
+                string tiedPlayers = string.Join(", ", mostVotedPlayers);
+                Debug.Log($"Tie vote! Players {tiedPlayers} each received {highestVoteCount} votes");
                 break;
         }
     }
+
     [ServerRpc(RequireOwnership = false)]
     public void RaiseVoteStartServerRpc()
     {
-        RaiseVoteStart();
-    }
-    private void RaiseVoteStart()
-    {
         if (state.Value != State.Voting)
+        {
             state.Value = State.Voting;
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void VoteTargetPlayerServerRpc(ulong clientId, ServerRpcParams serverRpcParams = default)
+    {
+        ulong votingPlayerId = serverRpcParams.Receive.SenderClientId;
+
+        if (votingPlayerId == clientId)
+        {
+            Debug.LogWarning($"Player {votingPlayerId} attempted to vote for themselves");
+            return;
+        }
+
+        Dictionary<ulong, ulong> newDictionary = new Dictionary<ulong, ulong>(VoteRegistry.Value)
+        {
+            [votingPlayerId] = clientId
+        };
+        VoteRegistry.Value = newDictionary;
     }
 }
