@@ -57,8 +57,8 @@ public class ClientGameManager : IDisposable
 
         UserData userData = new UserData
         {
-            userName = "Tajdang",
-            userAuthId = AuthenticationService.Instance.PlayerId
+            UserName = "Tajdang",
+            UserAuthId = AuthenticationService.Instance.PlayerId
         };
         string payload = JsonUtility.ToJson(userData);
         byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);
