@@ -29,7 +29,8 @@ public class PlayerMovement : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (!IsOwner) return;
+        if (!IsOwner)
+            return;
         MainCameraTransform = Camera.main.transform;
         moveSpeed = WalkSpeed;
         InputReader.SprintEvent += Sprint;
@@ -37,7 +38,8 @@ public class PlayerMovement : NetworkBehaviour
 
     private void Update()
     {
-        if (!IsOwner) return;
+        if (!IsOwner)
+            return;
 
         Move();
         ApplyGravity();
@@ -45,13 +47,15 @@ public class PlayerMovement : NetworkBehaviour
 
     public override void OnNetworkDespawn()
     {
-        if (!IsOwner) return;
+        if (!IsOwner)
+            return;
         InputReader.SprintEvent -= Sprint;
     }
 
     private void Sprint(bool shouldSprint)
     {
-        if (!IsOwner) return;
+        if (!IsOwner)
+            return;
         moveSpeed = shouldSprint ? RunSpeed : WalkSpeed;
     }
 
@@ -61,7 +65,7 @@ public class PlayerMovement : NetworkBehaviour
 
         if (direction.magnitude >= 0.1f)
         {
-            if(MainCameraTransform == null)
+            if (MainCameraTransform == null)
             {
                 MainCameraTransform = Camera.main.transform;
             }
