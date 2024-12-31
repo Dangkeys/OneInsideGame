@@ -22,62 +22,56 @@ public class HostGameManager : IDisposable
     private const int MaxConnections = 12;
     private const string GameSceneName = "TajdangScene";
     private NetworkServer networkServer;
-
-    public async Task StartHostAsync()
+    public async Task StartHostAsync(LobbyConfig config)
     {
-        Debug.Log(AuthenticationService.Instance.PlayerId);
+        if (string.IsNullOrWhiteSpace(config.RoomName))
+        {
+            throw new ArgumentException("Room name cannot be null or empty");
+        }
+
         try
         {
-            allocation = await RelayService.Instance.CreateAllocationAsync(MaxConnections);
+            allocation = await RelayService.Instance.CreateAllocationAsync(config.PlayerAmount);
         }
         catch (Exception e)
         {
-            Debug.Log(e);
-            return;
+            Debug.LogError($"Failed to create allocation: {e}");
+            throw;
         }
 
         try
         {
             joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
-            Debug.Log(joinCode);
+            Debug.Log($"Join code: {joinCode}");
         }
         catch (Exception e)
         {
-
-            Debug.Log(e);
-            return;
+            Debug.LogError($"Failed to get join code: {e}");
+            throw;
         }
 
         UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-
         RelayServerData relayServerData = AllocationUtils.ToRelayServerData(allocation, "dtls");
         transport.SetRelayServerData(relayServerData);
 
         try
         {
-            CreateLobbyOptions lobbyOptions = new CreateLobbyOptions();
-            lobbyOptions.IsPrivate = false;
-            lobbyOptions.Data = new Dictionary<string, DataObject>()
-            {
-                {
-                    "JoinCode", new DataObject(
-                        visibility: DataObject.VisibilityOptions.Member,
-                        value: joinCode
-                    )
-                }
-            };
+            var lobbyOptions = LobbyCustomization.GenerateCreateLobbyOptions(config, joinCode);
 
             Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(
-                "My Lobby", MaxConnections, lobbyOptions);
-            lobbyId = lobby.Id;
+                config.RoomName,
+                config.PlayerAmount,
+                lobbyOptions);
 
+            lobbyId = lobby.Id;
             HostSingleton.Instance.StartCoroutine(HearbeatLobby(15));
         }
         catch (LobbyServiceException e)
         {
-            Debug.Log(e);
-            return;
+            Debug.LogError($"Failed to create lobby: {e}");
+            throw;
         }
+
         networkServer = new NetworkServer(NetworkManager.Singleton);
 
         UserData userData = new UserData
@@ -89,10 +83,7 @@ public class HostGameManager : IDisposable
         byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);
 
         NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
-
-
         NetworkManager.Singleton.StartHost();
-
         NetworkManager.Singleton.SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
     }
     private IEnumerator HearbeatLobby(float waitTimeSeconds)
