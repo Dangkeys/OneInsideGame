@@ -22,14 +22,21 @@ public class QuestClick : QuestInfo, IInteractable
     {
         inputActionReference.action.started += HandleClick;
         questClickManager.onChangedWord += HandleWord;
-        questClickManager.OnFinishedQuest += HandleFinishedServerRpc;
+        questClickManager.OnFinishedQuest += Finished;
     }
 
     private void OnDisable()
     {
         inputActionReference.action.started -= HandleClick;
         questClickManager.onChangedWord -= HandleWord;
-        questClickManager.OnFinishedQuest -= HandleFinishedServerRpc;
+        questClickManager.OnFinishedQuest -= Finished;
+    }
+
+    private void Finished(bool finished)
+    {
+        FinishQuest();
+        CancelQuest();
+        HandleFinishedServerRpc(finished);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -37,7 +44,7 @@ public class QuestClick : QuestInfo, IInteractable
     {
         if (!IsHost)
         {
-            Finished(finished);
+            HandleFinished(finished);
         }
         HandleFinishedClientRpc(finished);
     }
@@ -45,12 +52,11 @@ public class QuestClick : QuestInfo, IInteractable
     [ClientRpc]
     private void HandleFinishedClientRpc(bool finished)
     {
-        Finished(finished);
+        HandleFinished(finished);
     }
 
-    private void Finished(bool finished)
+    private void HandleFinished(bool finished)
     {
-        FinishQuest();
         questClickUI.SetActive(false);
     }
     private void HandleWord(string newWord)

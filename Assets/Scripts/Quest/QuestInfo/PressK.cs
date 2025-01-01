@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using UnityEngine;
 
 public class PressK : QuestInfo
@@ -6,7 +7,7 @@ public class PressK : QuestInfo
     {
         if (Input.GetKeyDown(KeyCode.K))
         {
-            FinishQuest();
+            Finished(true);
         }
 
         if (Input.GetKeyDown(KeyCode.J))
@@ -15,6 +16,11 @@ public class PressK : QuestInfo
         }
     }
 
+    private void Finished(bool finished)
+    {
+        FinishQuest();
+        CancelQuest();
+    }
     public override void CancelQuest()
     {
         UpdateDoQuest(false);

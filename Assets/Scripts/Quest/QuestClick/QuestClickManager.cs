@@ -17,6 +17,7 @@ public class QuestClickManager : MonoBehaviour
     public event System.Action<bool> OnFinishedQuest;
     private List<string> wordList = new List<string>();
     [SerializeField] private int winScore = 10;
+    [SerializeField] private int loseScore = 1;
     private Scrollbar scoreBar;
 
     private void Awake()
@@ -48,6 +49,7 @@ public class QuestClickManager : MonoBehaviour
     private void OnDisable()
     {
         currentScore = 0;
+        UpdateScore(false);
     }
 
     public void UpdateScore(bool getScore)
@@ -56,9 +58,13 @@ public class QuestClickManager : MonoBehaviour
         {
             currentScore++;
         }
-        else if (currentScore > 0)
+        else if (currentScore > loseScore)
         {
-            currentScore--;
+            currentScore-= loseScore;
+        }
+        else
+        {
+            currentScore = 0;
         }
 
         scoreBar.size = (float)currentScore / winScore;

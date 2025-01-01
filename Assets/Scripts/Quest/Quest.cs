@@ -9,22 +9,6 @@ public class Quest : ScriptableObject
     private QuestInfo questInfo;
     public event System.Action<bool> questStatus;
 
-    private void OnEnable()
-    {
-        if (questInfo != null)
-        {
-            questInfo.questInfoStatus += HandleQuestStatus;
-        }
-    }
-
-    private void OnDisable()
-    {
-        if (questInfo != null)
-        {
-            questInfo.questInfoStatus -= HandleQuestStatus;
-        }
-    }
-
     public string GetGameObjectName()
     {
         return questObjectName;
@@ -32,8 +16,17 @@ public class Quest : ScriptableObject
 
     public void ChangeQuestInfo(QuestInfo newQuestInfo)
     {
+        if (questInfo != null)
+        {
+            questInfo.questInfoStatus -= HandleQuestStatus;
+        }
+
         questInfo = newQuestInfo;
-        questInfo.questInfoStatus += HandleQuestStatus;
+
+        if (questInfo != null)
+        {
+            questInfo.questInfoStatus += HandleQuestStatus;
+        }
     }
 
     private void HandleQuestStatus(bool status)

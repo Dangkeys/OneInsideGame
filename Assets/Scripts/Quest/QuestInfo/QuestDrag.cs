@@ -1,19 +1,19 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public class QuestDodge : QuestInfo, IInteractable
+public class QuestDrag : QuestInfo, IInteractable
 {
-    [SerializeField] private QuestDodgeManager questDodgeManager;
-    [SerializeField] private GameObject questDodgeUI;
+    [SerializeField] private QuestDragManager questDragManager;
+    [SerializeField] private GameObject questDragUI;
 
     private void OnEnable()
     {
-        questDodgeManager.OnFinishedQuest += Finished;
+        questDragManager.OnFinishedQuest += Finished;
     }
 
     private void OnDisable()
     {
-        questDodgeManager.OnFinishedQuest -= Finished;
+        questDragManager.OnFinishedQuest -= Finished;
     }
 
     private void Finished(bool finished)
@@ -26,7 +26,6 @@ public class QuestDodge : QuestInfo, IInteractable
     [ServerRpc(RequireOwnership = false)]
     private void HandleFinishedServerRpc(bool finished)
     {
-        
         if (!IsHost)
         {
             HandleFinished(finished);
@@ -42,7 +41,7 @@ public class QuestDodge : QuestInfo, IInteractable
 
     private void HandleFinished(bool finished)
     {
-        questDodgeUI.SetActive(false);
+        questDragUI.SetActive(false);
     }
 
     public void Interact(InteractionData interactionData)
@@ -50,7 +49,7 @@ public class QuestDodge : QuestInfo, IInteractable
         if (!currentStatus)
         {
             UpdateDoQuest(true);
-            questDodgeUI.SetActive(true);
+            questDragUI.SetActive(true);
         }
     }
 

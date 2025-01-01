@@ -1,3 +1,5 @@
+using Unity.Netcode;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 public class PressF : QuestInfo
@@ -6,13 +8,19 @@ public class PressF : QuestInfo
     {
         if(Input.GetKeyDown(KeyCode.F))
         {
-            FinishQuest();
+            Finished(true);
         }
 
         if (Input.GetKeyDown(KeyCode.E))
         {
             BreakQuest();
         }
+    }
+
+    private void Finished(bool finished)
+    {
+        FinishQuest();
+        CancelQuest();
     }
 
     public override void CancelQuest()

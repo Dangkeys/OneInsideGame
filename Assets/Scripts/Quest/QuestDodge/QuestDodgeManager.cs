@@ -31,6 +31,7 @@ public class QuestDodgeManager : MonoBehaviour
     private void OnDisable()
     {
         currentScore = 0;
+        UpdateScoreBar(false);
         foreach (Meteorite meteorite in meteorites)
         {
             meteorite.onHit -= HandleHit;
@@ -62,14 +63,22 @@ public class QuestDodgeManager : MonoBehaviour
             currentScore++;
             if(currentScore >= maxScore)
             {
-                OnFinishedQuest?.Invoke(true);
+                HandleFinishedQuest();
             }
+        }
+        else if(currentScore > loseScore) 
+        {
+            currentScore -= loseScore;
         }
         else
         {
-            int newScore = currentScore - loseScore;
-            currentScore = Math.Max(0, newScore);
+            currentScore = 0;
         }
         scoreBar.size = (float)currentScore / maxScore;
+    }
+
+    private void HandleFinishedQuest()
+    {
+        OnFinishedQuest?.Invoke(true);
     }
 }

@@ -73,10 +73,7 @@ public class QuestSystem : NetworkBehaviour
 
     private void HandleQuestStatus(bool status)
     {
-        if(IsServer)
-        {
-            UpdateFinishedQuest(status);
-        }
+        UpdateFinishedQuest(status);
     }
 
     private void UpdateFinishedQuest(bool status)
