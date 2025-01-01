@@ -7,7 +7,7 @@ using Unity.Services.Lobbies.Models;
 public struct LobbyConfig
 {
     public string RoomName;
-    public int PlayerAmount;
+    public int MaxPlayerAmount;
     public bool IsPrivate;
 }
 

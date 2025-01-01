@@ -46,7 +46,7 @@ public class ClientGameManager : IDisposable
         }
         catch (Exception e)
         {
-            Debug.Log(e);
+            Debug.LogError(e);
             return;
         }
 
@@ -73,5 +73,10 @@ public class ClientGameManager : IDisposable
     {
         networkClient?.Dispose();
     }
+    public void Disconnect()
+    {
+        networkClient.Disconnect();
+    }
+
 
 }

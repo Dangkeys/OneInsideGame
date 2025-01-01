@@ -22,7 +22,7 @@ public class HostGameManager : IDisposable
     private const int MaxConnections = 12;
     private const string GameSceneName = "TajdangScene";
     private NetworkServer networkServer;
-    public async Task StartHostAsync(LobbyConfig config)
+    public async Task<Lobby> StartHostAsync(LobbyConfig config)
     {
         if (string.IsNullOrWhiteSpace(config.RoomName))
         {
@@ -31,7 +31,7 @@ public class HostGameManager : IDisposable
 
         try
         {
-            allocation = await RelayService.Instance.CreateAllocationAsync(config.PlayerAmount);
+            allocation = await RelayService.Instance.CreateAllocationAsync(config.MaxPlayerAmount);
         }
         catch (Exception e)
         {
@@ -54,13 +54,14 @@ public class HostGameManager : IDisposable
         RelayServerData relayServerData = AllocationUtils.ToRelayServerData(allocation, "dtls");
         transport.SetRelayServerData(relayServerData);
 
+        Lobby lobby;
         try
         {
             var lobbyOptions = LobbyCustomization.GenerateCreateLobbyOptions(config, joinCode);
 
-            Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(
+            lobby = await LobbyService.Instance.CreateLobbyAsync(
                 config.RoomName,
-                config.PlayerAmount,
+                config.MaxPlayerAmount,
                 lobbyOptions);
 
             lobbyId = lobby.Id;
@@ -84,8 +85,23 @@ public class HostGameManager : IDisposable
 
         NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
         NetworkManager.Singleton.StartHost();
-        NetworkManager.Singleton.SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
+        networkServer.OnClientLeft += HandleClientLeft;
+        return lobby;
     }
+
+    private async void HandleClientLeft(string authId)
+    {
+        try
+        {
+            await LobbyService.Instance.RemovePlayerAsync(lobbyId, authId);
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+
+    }
+
     private IEnumerator HearbeatLobby(float waitTimeSeconds)
     {
         WaitForSecondsRealtime delay = new WaitForSecondsRealtime(waitTimeSeconds);
@@ -95,7 +111,12 @@ public class HostGameManager : IDisposable
             yield return delay;
         }
     }
-    public async void Dispose()
+    public void Dispose()
+    {
+        Shutdown();
+    }
+
+    public async void Shutdown()
     {
         HostSingleton.Instance.StopCoroutine(nameof(HearbeatLobby));
 
@@ -112,6 +133,8 @@ public class HostGameManager : IDisposable
 
             lobbyId = string.Empty;
         }
+
+        networkServer.OnClientLeft -= HandleClientLeft;
 
         networkServer?.Dispose();
     }

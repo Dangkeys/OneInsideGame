@@ -11,14 +11,15 @@ public class LobbyItem : MonoBehaviour
     [SerializeField] private TMP_Text lobbyPlayersText;
     [field: SerializeField] public Button JoinButton {get; private set;}
 
-    private LobbiesList lobbiesList;
+    private FindMatchUI lobbiesList;
     private Lobby lobby;
+
 
     private void Start() {
         JoinButton.onClick.AddListener(Join);
     }
 
-    public void Initialise(LobbiesList lobbiesList, Lobby lobby)
+    public void Initialise(FindMatchUI lobbiesList, Lobby lobby)
     {
         this.lobbiesList = lobbiesList;
         this.lobby = lobby;

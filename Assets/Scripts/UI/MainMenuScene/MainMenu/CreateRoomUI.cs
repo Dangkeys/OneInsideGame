@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Unity.Services.Lobbies.Models;
 
 public class CreateRoomUI : MonoBehaviour
 {
@@ -13,6 +14,8 @@ public class CreateRoomUI : MonoBehaviour
 
     [field: SerializeField] public Toggle IsPrivateToggle { get; private set; }
     [field: SerializeField] public Button CreateRoomButton { get; private set; }
+    [field: SerializeField] public MainMenuUI MainMenuUI { get; private set; }
+    public event Action<Lobby> OnRoomCreated;
     private int playerAmount = LobbyCustomization.MIN_PLAYERS;
 
     private void Start()
@@ -42,14 +45,16 @@ public class CreateRoomUI : MonoBehaviour
         LobbyConfig config = new LobbyConfig
         {
             RoomName = RoomNameInputField.text.Trim(),
-            PlayerAmount = playerAmount,
+            MaxPlayerAmount = playerAmount,
             IsPrivate = IsPrivateToggle.isOn
         };
 
         try
         {
             CreateRoomButton.interactable = false;
-            await HostSingleton.Instance.GameManager.StartHostAsync(config);
+            Lobby lobby = await HostSingleton.Instance.GameManager.StartHostAsync(config);
+            gameObject.SetActive(false);
+            OnRoomCreated?.Invoke(lobby);
         }
         catch (Exception e)
         {
@@ -87,7 +92,7 @@ public class CreateRoomUI : MonoBehaviour
     {
         DecreasePlayerAmountButton.interactable = playerAmount > LobbyCustomization.MIN_PLAYERS;
         IncreasePlayerAmountButton.interactable = playerAmount < LobbyCustomization.MAX_PLAYERS;
-        
+
         // Ensure create button is only enabled if room name is valid
         CreateRoomButton.interactable = !string.IsNullOrWhiteSpace(RoomNameInputField.text);
     }
