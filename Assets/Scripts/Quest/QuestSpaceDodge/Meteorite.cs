@@ -2,70 +2,71 @@ using UnityEngine;
 
 public class Meteorite : MonoBehaviour
 {
-    private Rigidbody2D Rigidbody2D;
-    [SerializeField] private float MinSpeed = 1000f;
-    [SerializeField] private float MaxSpeed = 2000f;
-    [SerializeField] private RectTransform Field;
-    [SerializeField] private RectTransform MyRectTransform;
-    public event System.Action<bool> OnHit;
-    private float Speed;
+    private Rigidbody2D meteoriteRigidbody2D;
+    [SerializeField] private float minSpeed = 1000f;
+    [SerializeField] private float maxSpeed = 2000f;
+    private RectTransform field;
+    private RectTransform rectTransform;
+    public event System.Action<bool> onHit;
+    private float speed;
 
     private void Awake()
     {
-        Rigidbody2D = GetComponent<Rigidbody2D>();
-        MyRectTransform = GetComponent<RectTransform>();
-        Field = transform.parent.GetComponent<RectTransform>();
+        meteoriteRigidbody2D = GetComponent<Rigidbody2D>();
+        rectTransform = GetComponent<RectTransform>();
+        field = transform.parent.GetComponent<RectTransform>();
     }
 
     private void OnEnable()
     {
-        NewSpawn();
+        NewSpawnMeteorite();
     }
 
     private void FixedUpdate()
     {
         if(IsInField())
         {
-            Rigidbody2D.linearVelocity = Vector3.left * Speed;
+            meteoriteRigidbody2D.linearVelocity = Vector3.left * speed;
         }
         else
         {
-            Rigidbody2D.linearVelocity = Vector3.left * 0;
-            OnHit?.Invoke(false);
-            NewSpawn();
+            meteoriteRigidbody2D.linearVelocity = Vector3.left * 0;
+            onHit?.Invoke(false);
+            NewSpawnMeteorite();
         }
     }
 
     private bool IsInField()
     {
-        Vector2 LocalPosition = Field.InverseTransformPoint(MyRectTransform.position);
+        Vector2 localPosition = field.InverseTransformPoint(rectTransform.position);
 
-        return Field.rect.Contains(LocalPosition);
+        return field.rect.Contains(localPosition);
     }
 
-    private void NewSpawn()
+    private void NewSpawnMeteorite()
     {
-        Vector3[] Corners = new Vector3[4];
-        Field.GetWorldCorners(Corners);
-        float PositionY = Random.Range(Corners[3].y + MyRectTransform.rect.height, Corners[2].y - MyRectTransform.rect.height);
-        float PositionX = Corners[3].x + MyRectTransform.rect.x;
-        transform.position = new Vector3(PositionX, PositionY, 0);
-        Speed = Random.Range(MinSpeed, MaxSpeed);
-        MyRectTransform.localScale = Vector3.one * (1 + MapToRange(Speed, MinSpeed, MaxSpeed));
+        Vector3[] corners = new Vector3[4];
+        field.GetWorldCorners(corners);
+        float positionY = Random.Range(corners[3].y + rectTransform.rect.height, corners[2].y - rectTransform.rect.height);
+        float positionX = corners[3].x + rectTransform.rect.x;
+        transform.position = new Vector3(positionX, positionY, 0);
+        speed = Random.Range(minSpeed, maxSpeed);
+        rectTransform.localScale = Vector3.one * (1 + MapToRange(speed, minSpeed, maxSpeed));
     }
 
-    float MapToRange(float Value, float Min, float Max)
+    float MapToRange(float value, float min, float max)
     {
-        Value = Mathf.Clamp(Value, Min, Max);
+        value = Mathf.Clamp(value, min, max);
 
-        return (1 - (Value - Min) / (Max - Min));
+        return (1 - (value - min) / (max - min));
     }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Spaceship"))
         {
-            OnHit?.Invoke(true);
-            NewSpawn();
+            onHit?.Invoke(true);
+            NewSpawnMeteorite();
         }
     }
 }

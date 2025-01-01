@@ -3,13 +3,13 @@ using UnityEngine;
 
 public abstract class QuestInfo : NetworkBehaviour
 {
-    protected bool QuestStatus = false;
-    public event System.Action<bool> OnQuestStatusChanged;
-    public event System.Action<bool> OnDoQuest;
+    protected bool currentStatus = false;
+    public event System.Action<bool> questInfoStatus;
+    public event System.Action<bool> onDoQuest;
 
-    protected void BrokenQuest()
+    protected void BreakQuest()
     {
-        if (IsSpawned && QuestStatus)
+        if (IsSpawned && currentStatus)
         {
             UpdateQuestStatusServerRpc(false);
         }
@@ -17,7 +17,7 @@ public abstract class QuestInfo : NetworkBehaviour
 
     protected void FinishQuest()
     {
-        if (IsSpawned && !QuestStatus)
+        if (IsSpawned && !currentStatus)
         {
             UpdateDoQuest(false);
             UpdateQuestStatusServerRpc(true);
@@ -25,30 +25,32 @@ public abstract class QuestInfo : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void UpdateQuestStatusServerRpc(bool Status)
+    private void UpdateQuestStatusServerRpc(bool status)
     {
-        OnQuestStatusChanged?.Invoke(Status);
+        questInfoStatus?.Invoke(status);
         if (!IsHost)
         {
-            UpdateQuest(Status);
+            UpdateQuestStatus(status);
         }
-        UpdateQuestStatusClientRpc(Status);
+        UpdateQuestStatusClientRpc(status);
     }
 
     [ClientRpc]
-    private void UpdateQuestStatusClientRpc(bool Status)
+    private void UpdateQuestStatusClientRpc(bool status)
     {
-        UpdateQuest(Status);
+        UpdateQuestStatus(status);
     }
 
-    private void UpdateQuest(bool Status)
+    private void UpdateQuestStatus(bool status)
     {
-        QuestStatus = Status;
+        currentStatus = status;
     }
 
-    protected void UpdateDoQuest(bool DoQuest)
+    protected void UpdateDoQuest(bool doQuest)
     {
-        OnDoQuest?.Invoke(DoQuest);
+        onDoQuest?.Invoke(doQuest);
         Debug.Log(NetworkManager.Singleton.LocalClientId);
     }
+
+    public abstract void CancelQuest();
 }

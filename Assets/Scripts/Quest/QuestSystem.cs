@@ -7,97 +7,97 @@ using UnityEngine.UI;
 public class QuestSystem : NetworkBehaviour
 {
 
-    private Scrollbar ScrollBar;
-    [SerializeField] private Quest[] Quests;
-    private NetworkVariable<int> QuestFinished = new NetworkVariable<int>(0);
-    [SerializeField] private int MaxQuest;
-    private List<GameObject> QuestList = new List<GameObject>();
-    private NetworkVariable<List<int>> QuestNotUse = new NetworkVariable<List<int>>(new List<int>());
+    private Scrollbar scoreBar;
+    [SerializeField] private Quest[] quests;
+    private NetworkVariable<int> finishedQuest = new NetworkVariable<int>(0);
+    [SerializeField] private int maxQuest;
+    private List<GameObject> questList = new List<GameObject>();
+    private NetworkVariable<List<int>> questDisable = new NetworkVariable<List<int>>(new List<int>());
 
     private void Awake()
     {
-        ScrollBar = GetComponent<Scrollbar>();
-        UpdateProgressBar();
-        foreach (Quest Quest in Quests)
+        scoreBar = GetComponent<Scrollbar>();
+        UpdateProgressScoreBar();
+        foreach (Quest quest in quests)
         {
-            if (Quest != null)
+            if (quest != null)
             {
-                GameObject UseQuest = GameObject.Find(Quest.GetGameObjectName());
-                QuestList.Add(UseQuest);
-                Quest.SetQuestInfo(UseQuest.GetComponent<QuestInfo>());
+                GameObject foundQuest = GameObject.Find(quest.GetGameObjectName());
+                questList.Add(foundQuest);
+                quest.ChangeQuestInfo(foundQuest.GetComponent<QuestInfo>());
             }
         }
     }
 
     private void OnEnable()
     {
-        foreach (Quest Quest in Quests)
+        foreach (Quest quest in quests)
         {
-            if (Quest != null)
+            if (quest != null)
             {
-                Quest.questStatus += HandleQuestStatusChanged;
+                quest.questStatus += HandleQuestStatus;
             }
         }
     }
 
     private void OnDisable()
     {
-        foreach (Quest Quest in Quests)
+        foreach (Quest quest in quests)
         {
-            if (Quest != null)
+            if (quest != null)
             {
-                Quest.questStatus -= HandleQuestStatusChanged;
+                quest.questStatus -= HandleQuestStatus;
             }
         }
     }
 
     public override void OnNetworkSpawn()
     {
-        QuestFinished.OnValueChanged += HandleQuestFinishedChanged;
+        finishedQuest.OnValueChanged += HandleQuestFinished;
         if(IsServer || IsHost)
         {
             RandomQuest();
         }
-        QuestNotToSeeServerRpc();
+        DisableQuestServerRpc();
     }
 
     public override void OnNetworkDespawn()
     {
-        QuestFinished.OnValueChanged -= HandleQuestFinishedChanged;
+        finishedQuest.OnValueChanged -= HandleQuestFinished;
     }
 
-    private void HandleQuestFinishedChanged(int OldValue, int NewValue)
+    private void HandleQuestFinished(int oldValue, int newValue)
     {
-        UpdateProgressBar();
+        UpdateProgressScoreBar();
     }
 
-    private void HandleQuestStatusChanged(bool Status)
+    private void HandleQuestStatus(bool status)
     {
         if(IsServer)
         {
-            UpdateQuestFinished(Status);
+            UpdateFinishedQuest(status);
         }
     }
 
-    private void UpdateQuestFinished(bool Status)
+    private void UpdateFinishedQuest(bool status)
     {
-        if (Status)
+        if (status)
         {
-            QuestFinished.Value += 1;
+            finishedQuest.Value += 1;
         }
         else
         {
-            QuestFinished.Value -= 1;
+            finishedQuest.Value -= 1;
         }
     }
 
-    private void UpdateProgressBar()
+    private void UpdateProgressScoreBar()
     {
-        if (ScrollBar != null)
+        if (scoreBar != null)
         {
-            float Percent = (float)QuestFinished.Value / MaxQuest;
-            ScrollBar.size = Percent;
-            if(Percent >= 1)
+            float percent = (float)finishedQuest.Value / maxQuest;
+            scoreBar.size = percent;
+            if(percent >= 1)
             {
                 Debug.Log("Win");
             }
@@ -110,41 +110,43 @@ public class QuestSystem : NetworkBehaviour
 
     private void RandomQuest()
     {
-        if (QuestNotUse.Value.Count > 0)
+        if (questDisable.Value.Count > 0)
         {
-            QuestNotUse.Value.Clear();
+            questDisable.Value.Clear();
         }
-        int Amount = QuestList.Count - MaxQuest;
-        List<int> AllIndex = Enumerable.Range(0, QuestList.Count).ToList();
-        for (int i = 0; i < Amount; i++)
+
+        int amount = questList.Count - maxQuest;
+        List<int> possibleIndex = Enumerable.Range(0, questList.Count).ToList();
+
+        for (int i = 0; i < amount; i++)
         {
-            int Index = Random.Range(0, AllIndex.Count);
-            QuestNotUse.Value.Add(AllIndex[Index]);
-            AllIndex.RemoveAt(Index);
+            int index = Random.Range(0, possibleIndex.Count);
+            questDisable.Value.Add(possibleIndex[index]);
+            possibleIndex.RemoveAt(index);
         }
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void QuestNotToSeeServerRpc()
+    private void DisableQuestServerRpc()
     {
         if (!IsHost)
         {
-            QuestNotToSee();
+            DisableQuest();
         }
-        QuestNotToSeeClientRpc();
+        DisableQuestClientRpc();
     }
 
     [ClientRpc]
-    private void QuestNotToSeeClientRpc()
+    private void DisableQuestClientRpc()
     {
-        QuestNotToSee();
+        DisableQuest();
     }
 
-    private void QuestNotToSee()
+    private void DisableQuest()
     {
-        foreach (var Item in QuestNotUse.Value)
+        foreach (int index in questDisable.Value)
         {
-            QuestList[Item].SetActive(false);
+            questList[index].SetActive(false);
         }
     }
 }

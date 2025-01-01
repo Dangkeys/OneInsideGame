@@ -13,7 +13,7 @@ public class Quest : ScriptableObject
     {
         if (questInfo != null)
         {
-            questInfo.OnQuestStatusChanged += HandleQuestStatus;
+            questInfo.questInfoStatus += HandleQuestStatus;
         }
     }
 
@@ -21,7 +21,7 @@ public class Quest : ScriptableObject
     {
         if (questInfo != null)
         {
-            questInfo.OnQuestStatusChanged -= HandleQuestStatus;
+            questInfo.questInfoStatus -= HandleQuestStatus;
         }
     }
 
@@ -30,10 +30,10 @@ public class Quest : ScriptableObject
         return questObjectName;
     }
 
-    public void SetQuestInfo(QuestInfo newQuestInfo)
+    public void ChangeQuestInfo(QuestInfo newQuestInfo)
     {
         questInfo = newQuestInfo;
-        questInfo.OnQuestStatusChanged += HandleQuestStatus;
+        questInfo.questInfoStatus += HandleQuestStatus;
     }
 
     private void HandleQuestStatus(bool status)

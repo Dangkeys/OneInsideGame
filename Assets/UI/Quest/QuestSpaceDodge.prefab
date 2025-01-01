@@ -92,10 +92,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 311515cbc360d32428ccb403f61ea640, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Meteorites: []
-  MaxScore: 5
-  LossScore: 1
-  TimeGetScore: 1
+  meteorites: []
+  maxScore: 5
+  loseScore: 1
+  timeToGetScore: 1
 --- !u!114 &3085369363040710309
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -275,8 +275,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6062678775562ef46ae0de06867d628b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InputActionReference: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  Speed: 1000
+  inputActionReference: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  speed: 1000
 --- !u!1 &1441208826395238504
 GameObject:
   m_ObjectHideFlags: 0
@@ -440,10 +440,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa3334032c82d7046a7a4784b732dec2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MinSpeed: 500
-  MaxSpeed: 2000
-  Field: {fileID: 0}
-  MyRectTransform: {fileID: 0}
+  minSpeed: 1000
+  maxSpeed: 2000
 --- !u!1 &2722269239132249439
 GameObject:
   m_ObjectHideFlags: 0
@@ -1020,10 +1018,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa3334032c82d7046a7a4784b732dec2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MinSpeed: 500
-  MaxSpeed: 2000
-  Field: {fileID: 0}
-  MyRectTransform: {fileID: 0}
+  minSpeed: 1000
+  maxSpeed: 2000
 --- !u!1 &7129984498606579540
 GameObject:
   m_ObjectHideFlags: 0
@@ -1223,10 +1219,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa3334032c82d7046a7a4784b732dec2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MinSpeed: 500
-  MaxSpeed: 2000
-  Field: {fileID: 0}
-  MyRectTransform: {fileID: 0}
+  minSpeed: 1000
+  maxSpeed: 2000
 --- !u!1 &7882985884313699992
 GameObject:
   m_ObjectHideFlags: 0
@@ -1426,7 +1420,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa3334032c82d7046a7a4784b732dec2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MinSpeed: 500
-  MaxSpeed: 2000
-  Field: {fileID: 0}
-  MyRectTransform: {fileID: 0}
+  minSpeed: 1000
+  maxSpeed: 2000

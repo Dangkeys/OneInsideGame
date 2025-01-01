@@ -3,64 +3,64 @@ using UnityEngine.InputSystem;
 
 public class Spaceship : MonoBehaviour
 {
-    [SerializeField] private InputActionReference InputActionReference;
-    private Rigidbody2D Rigidbody2D;
-    [SerializeField] private float Speed = 1000f;
-    private Vector2 Movement = Vector2.zero;
-    private RectTransform Field;
-    private RectTransform MyRectTransform;
+    [SerializeField] private InputActionReference inputActionReference;
+    private Rigidbody2D spaceshipRigidbody2D;
+    [SerializeField] private float speed = 1000f;
+    private Vector2 movement = Vector2.zero;
+    private RectTransform field;
+    private RectTransform rectTransform;
 
     private void Awake()
     {
-        Rigidbody2D = GetComponent<Rigidbody2D>();
-        MyRectTransform = GetComponent<RectTransform>();
-        Field = transform.parent.GetComponent<RectTransform>();
+        spaceshipRigidbody2D = GetComponent<Rigidbody2D>();
+        rectTransform = GetComponent<RectTransform>();
+        field = transform.parent.GetComponent<RectTransform>();
     }
 
     private void OnEnable()
     {
-        InputActionReference.action.performed += HandleMove;
-        InputActionReference.action.canceled += StopMove;
+        inputActionReference.action.performed += HandleMove;
+        inputActionReference.action.canceled += StopMove;
     }
 
     private void OnDisable()
     {
-        InputActionReference.action.performed -= HandleMove;
-        InputActionReference.action.canceled -= StopMove;
+        inputActionReference.action.performed -= HandleMove;
+        inputActionReference.action.canceled -= StopMove;
     }
 
     private void FixedUpdate()
     {
-        Vector2 DesiredPosition = Rigidbody2D.position + Movement * Speed * Time.fixedDeltaTime;
+        Vector2 desiredPosition = spaceshipRigidbody2D.position + movement * speed * Time.fixedDeltaTime;
 
-        Vector2 ClampedPosition = ClampPosition(DesiredPosition);
+        Vector2 clampedPosition = ClampPosition(desiredPosition);
 
-        Rigidbody2D.linearVelocity = (ClampedPosition - Rigidbody2D.position) / Time.fixedDeltaTime;
+        spaceshipRigidbody2D.linearVelocity = (clampedPosition - spaceshipRigidbody2D.position) / Time.fixedDeltaTime;
     }
 
-    private void HandleMove(InputAction.CallbackContext Context)
+    private void HandleMove(InputAction.CallbackContext context)
     {
-        Movement = Context.ReadValue<Vector2>();
+        movement = context.ReadValue<Vector2>();
     }
 
-    private void StopMove(InputAction.CallbackContext Context)
+    private void StopMove(InputAction.CallbackContext context)
     {
-        Movement = Vector2.zero;
+        movement = Vector2.zero;
     }
 
-    private Vector2 ClampPosition(Vector2 DesiredPosition)
+    private Vector2 ClampPosition(Vector2 desiredPosition)
     {
-        Vector3[] Corners = new Vector3[4];
-        Field.GetWorldCorners(Corners);
+        Vector3[] corners = new Vector3[4];
+        field.GetWorldCorners(corners);
 
-        float MinX = Corners[0].x + MyRectTransform.rect.width / 2;
-        float MaxX = Corners[2].x - MyRectTransform.rect.width / 2;
-        float MinY = Corners[0].y + MyRectTransform.rect.height / 2;
-        float MaxY = Corners[2].y - MyRectTransform.rect.height / 2;
+        float minX = corners[0].x + rectTransform.rect.width / 2;
+        float maxX = corners[2].x - rectTransform.rect.width / 2;
+        float minY = corners[0].y + rectTransform.rect.height / 2;
+        float maxY = corners[2].y - rectTransform.rect.height / 2;
 
-        DesiredPosition.x = Mathf.Clamp(DesiredPosition.x, MinX, MaxX);
-        DesiredPosition.y = Mathf.Clamp(DesiredPosition.y, MinY, MaxY);
+        desiredPosition.x = Mathf.Clamp(desiredPosition.x, minX, maxX);
+        desiredPosition.y = Mathf.Clamp(desiredPosition.y, minY, maxY);
 
-        return DesiredPosition;
+        return desiredPosition;
     }
 }

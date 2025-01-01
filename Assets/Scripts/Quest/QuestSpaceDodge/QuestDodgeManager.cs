@@ -4,42 +4,42 @@ using UnityEngine.UI;
 
 public class QuestDodgeManager : MonoBehaviour
 {
-    [SerializeField] private Meteorite[] Meteorites;
-    private Scrollbar ScoreBar;
-    private int Score = 0;
-    [SerializeField] private int MaxScore = 5;
-    [SerializeField] private int LossScore = 1;
-    private float Timer = 0f;
-    [SerializeField] private float TimeGetScore = 1f;
+    private Meteorite[] meteorites;
+    private Scrollbar scoreBar;
+    private int currentScore = 0;
+    [SerializeField] private int maxScore = 5;
+    [SerializeField] private int loseScore = 1;
+    private float currentTime = 0f;
+    [SerializeField] private float timeToGetScore = 1f;
     public event System.Action<bool> OnFinishedQuest;
 
     private void Awake()
     {
-        Meteorites = GetComponentsInChildren<Meteorite>();
-        ScoreBar = GetComponentInChildren<Scrollbar>();
+        meteorites = GetComponentsInChildren<Meteorite>();
+        scoreBar = GetComponentInChildren<Scrollbar>();
     }
 
     private void OnEnable()
     {
-        Score = 0;
-        foreach (var Meteorite in Meteorites)
+        currentScore = 0;
+        foreach (Meteorite meteorite in meteorites)
         {
-            Meteorite.OnHit += HandleHit;
+            meteorite.onHit += HandleHit;
         }
     }
 
     private void OnDisable()
     {
-        Score = 0;
-        foreach (var Meteorite in Meteorites)
+        currentScore = 0;
+        foreach (Meteorite meteorite in meteorites)
         {
-            Meteorite.OnHit -= HandleHit;
+            meteorite.onHit -= HandleHit;
         }
     }
 
-    private void HandleHit(bool Hit)
+    private void HandleHit(bool hit)
     {
-        if (Hit)
+        if (hit)
         {
             UpdateScoreBar(false);
         }
@@ -47,29 +47,29 @@ public class QuestDodgeManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Timer += Time.fixedDeltaTime;
-        if(Timer > TimeGetScore)
+        currentTime += Time.fixedDeltaTime;
+        if(currentTime > timeToGetScore)
         {
             UpdateScoreBar(true);
-            Timer = 0f;
+            currentTime = 0f;
         }
     }
 
-    private void UpdateScoreBar(bool GetScore)
+    private void UpdateScoreBar(bool getScore)
     {
-        if(GetScore)
+        if(getScore)
         {
-            Score++;
-            if(Score >= MaxScore)
+            currentScore++;
+            if(currentScore >= maxScore)
             {
                 OnFinishedQuest?.Invoke(true);
             }
         }
         else
         {
-            int NewScore = Score - LossScore;
-            Score = Math.Max(0, NewScore);
+            int newScore = currentScore - loseScore;
+            currentScore = Math.Max(0, newScore);
         }
-        ScoreBar.size = (float)Score / MaxScore;
+        scoreBar.size = (float)currentScore / maxScore;
     }
 }

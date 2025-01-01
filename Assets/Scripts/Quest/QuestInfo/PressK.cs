@@ -11,7 +11,12 @@ public class PressK : QuestInfo
 
         if (Input.GetKeyDown(KeyCode.J))
         {
-            BrokenQuest();
+            BreakQuest();
         }
+    }
+
+    public override void CancelQuest()
+    {
+        UpdateDoQuest(false);
     }
 }

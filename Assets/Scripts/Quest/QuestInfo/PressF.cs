@@ -11,7 +11,12 @@ public class PressF : QuestInfo
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            BrokenQuest();
+            BreakQuest();
         }
+    }
+
+    public override void CancelQuest()
+    {
+        UpdateDoQuest(false);
     }
 }

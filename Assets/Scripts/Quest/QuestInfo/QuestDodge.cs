@@ -3,51 +3,51 @@ using UnityEngine;
 
 public class QuestDodge : QuestInfo, IInteractable
 {
-    [SerializeField] private QuestDodgeManager QuestDodgeManager;
-    [SerializeField] private GameObject QuestDodgeManagerGameObject;
+    [SerializeField] private QuestDodgeManager questDodgeManager;
+    [SerializeField] private GameObject questDodgeUI;
 
     private void OnEnable()
     {
-        QuestDodgeManager.OnFinishedQuest += HandleWinServerRpc;
+        questDodgeManager.OnFinishedQuest += HandleFinishedServerRpc;
     }
 
     private void OnDisable()
     {
-        QuestDodgeManager.OnFinishedQuest -= HandleWinServerRpc;
+        questDodgeManager.OnFinishedQuest -= HandleFinishedServerRpc;
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void HandleWinServerRpc(bool Win)
+    private void HandleFinishedServerRpc(bool finished)
     {
         if (!IsHost)
         {
-            Winning(Win);
+            Finished(finished);
         }
-        HandleWinClientRpc(Win);
+        HandleFinishedClientRpc(finished);
     }
 
     [ClientRpc]
-    private void HandleWinClientRpc(bool Win)
+    private void HandleFinishedClientRpc(bool finished)
     {
-        Winning(Win);
+        Finished(finished);
     }
 
-    private void Winning(bool Win)
+    private void Finished(bool finished)
     {
         FinishQuest();
-        QuestDodgeManagerGameObject.SetActive(false);
+        questDodgeUI.SetActive(false);
     }
 
     public void Interact(InteractionData interactionData)
     {
-        if (!QuestStatus)
+        if (!currentStatus)
         {
             UpdateDoQuest(true);
-            QuestDodgeManagerGameObject.SetActive(true);
+            questDodgeUI.SetActive(true);
         }
     }
 
-    public void CancelQuest()
+    public override void CancelQuest()
     {
         UpdateDoQuest(false);
     }
