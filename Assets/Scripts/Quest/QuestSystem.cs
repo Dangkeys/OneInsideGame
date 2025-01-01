@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
@@ -5,89 +7,143 @@ using UnityEngine.UI;
 public class QuestSystem : NetworkBehaviour
 {
 
-    private Scrollbar ScrollBar;
-    [SerializeField] private Quest[] Quests;
-    private NetworkVariable<int> QuestFinished = new NetworkVariable<int>(0);
-    private int AllQuest;
+    private Scrollbar scoreBar;
+    [SerializeField] private Quest[] quests;
+    private NetworkVariable<int> finishedQuest = new NetworkVariable<int>(0);
+    [SerializeField] private int maxQuest;
+    private List<GameObject> questList = new List<GameObject>();
+    private NetworkVariable<List<int>> questDisable = new NetworkVariable<List<int>>(new List<int>());
 
     private void Awake()
     {
-        ScrollBar = GetComponent<Scrollbar>();
-        AllQuest = Quests.Length;
-        UpdateProgressBar();
+        scoreBar = GetComponent<Scrollbar>();
+        UpdateProgressScoreBar();
+        foreach (Quest quest in quests)
+        {
+            if (quest != null)
+            {
+                GameObject foundQuest = GameObject.Find(quest.GetGameObjectName());
+                questList.Add(foundQuest);
+                quest.ChangeQuestInfo(foundQuest.GetComponent<QuestInfo>());
+            }
+        }
     }
 
     private void OnEnable()
     {
-        foreach (Quest Quest in Quests)
+        foreach (Quest quest in quests)
         {
-            if (Quest != null)
+            if (quest != null)
             {
-                if(Quest.GetQuestInfo() == null)
-                {
-                    Quest.SetQuestInfo(GameObject.Find(Quest.GetGameObjectName()).GetComponent<QuestInfo>());
-                }
-                Quest.StatusChanged += HandleQuestStatusChanged;
+                quest.questStatus += HandleQuestStatus;
             }
         }
     }
 
     private void OnDisable()
     {
-        foreach (Quest Quest in Quests)
+        foreach (Quest quest in quests)
         {
-            if (Quest != null)
+            if (quest != null)
             {
-                Quest.StatusChanged += HandleQuestStatusChanged;
+                quest.questStatus -= HandleQuestStatus;
             }
         }
     }
 
     public override void OnNetworkSpawn()
     {
-        QuestFinished.OnValueChanged += HandleQuestFinishedChanged;
+        finishedQuest.OnValueChanged += HandleQuestFinished;
+        if(IsServer || IsHost)
+        {
+            RandomQuest();
+        }
+        DisableQuestServerRpc();
     }
 
     public override void OnNetworkDespawn()
     {
-        QuestFinished.OnValueChanged -= HandleQuestFinishedChanged;
+        finishedQuest.OnValueChanged -= HandleQuestFinished;
     }
 
-    private void HandleQuestFinishedChanged(int OldValue, int NewValue)
+    private void HandleQuestFinished(int oldValue, int newValue)
     {
-        UpdateProgressBar();
+        UpdateProgressScoreBar();
     }
 
-    private void HandleQuestStatusChanged(bool Status)
+    private void HandleQuestStatus(bool status)
     {
-        if (IsServer)
+        UpdateFinishedQuest(status);
+    }
+
+    private void UpdateFinishedQuest(bool status)
+    {
+        if (status)
         {
-            UpdateQuestFinished(Status);
-        }
-    }
-
-    private void UpdateQuestFinished(bool Status)
-    {
-        if (Status)
-        {
-            QuestFinished.Value += 1;
+            finishedQuest.Value += 1;
         }
         else
         {
-            QuestFinished.Value -= 1;
+            finishedQuest.Value -= 1;
         }
     }
 
-    private void UpdateProgressBar()
+    private void UpdateProgressScoreBar()
     {
-        if (ScrollBar != null)
+        if (scoreBar != null)
         {
-            ScrollBar.size = (float)QuestFinished.Value / AllQuest;
-            ScrollBar.value = 0;
+            float percent = (float)finishedQuest.Value / maxQuest;
+            scoreBar.size = percent;
+            if(percent >= 1)
+            {
+                Debug.Log("Win");
+            }
         }
         else
         {
             Debug.LogWarning("ScrollBar is not assigned.");
+        }
+    }
+
+    private void RandomQuest()
+    {
+        if (questDisable.Value.Count > 0)
+        {
+            questDisable.Value.Clear();
+        }
+
+        int amount = questList.Count - maxQuest;
+        List<int> possibleIndex = Enumerable.Range(0, questList.Count).ToList();
+
+        for (int i = 0; i < amount; i++)
+        {
+            int index = Random.Range(0, possibleIndex.Count);
+            questDisable.Value.Add(possibleIndex[index]);
+            possibleIndex.RemoveAt(index);
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void DisableQuestServerRpc()
+    {
+        if (!IsHost)
+        {
+            DisableQuest();
+        }
+        DisableQuestClientRpc();
+    }
+
+    [ClientRpc]
+    private void DisableQuestClientRpc()
+    {
+        DisableQuest();
+    }
+
+    private void DisableQuest()
+    {
+        foreach (int index in questDisable.Value)
+        {
+            questList[index].SetActive(false);
         }
     }
 }

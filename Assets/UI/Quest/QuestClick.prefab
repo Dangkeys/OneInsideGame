@@ -563,7 +563,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -583,7 +583,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 2622525543552023632}
   m_HandleRect: {fileID: 1395217216902367077}
   m_Direction: 0
@@ -721,10 +721,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f14c454ddb705d41b9821cac6c86138, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Size: 5
-  Duration: 2
-  WinScore: 0
-  ScoreBar: {fileID: 0}
+  scale: 5
+  duration: 2
+  winScore: 10
 --- !u!114 &8552457852133474644
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -737,7 +736,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2126687575
+  GlobalObjectIdHash: 1759597519
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1

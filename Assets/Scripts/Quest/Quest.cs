@@ -3,56 +3,34 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewQuest", menuName = "ScriptableObjects/Quest")]
 public class Quest : ScriptableObject
 {
-    [SerializeField] private string name;
-    [SerializeField] private string Description;
-    [SerializeField] private string GameObjectName;
-    private QuestInfo QuestInfo = null;
-    public bool QuestStatus { get; private set; } = false;
-    public event System.Action<bool> StatusChanged;
-
-    private void OnEnable()
-    {
-        if (QuestInfo != null)
-        {
-            QuestInfo.OnQuestStatusChanged += HandleQuestStatusChanged;
-        }
-        else
-        {
-            Debug.Log("QuestInfo is not assigned.");
-        }
-    }
-
-    private void OnDisable()
-    {
-        if (QuestInfo != null)
-        {
-            QuestInfo.OnQuestStatusChanged -= HandleQuestStatusChanged;
-        }
-        else
-        {
-            Debug.Log("QuestInfo is not assigned.");
-        }
-    }
-
-    public QuestInfo GetQuestInfo()
-    {
-        return QuestInfo;
-    }
+    [SerializeField] private string questName;
+    [SerializeField] private string questDescription;
+    [SerializeField] private string questObjectName;
+    private QuestInfo questInfo;
+    public event System.Action<bool> questStatus;
 
     public string GetGameObjectName()
     {
-        return GameObjectName;
+        return questObjectName;
     }
 
-    public void SetQuestInfo(QuestInfo NewQuestInfo)
+    public void ChangeQuestInfo(QuestInfo newQuestInfo)
     {
-        QuestInfo = NewQuestInfo;
-        QuestInfo.OnQuestStatusChanged += HandleQuestStatusChanged;
+        if (questInfo != null)
+        {
+            questInfo.questInfoStatus -= HandleQuestStatus;
+        }
+
+        questInfo = newQuestInfo;
+
+        if (questInfo != null)
+        {
+            questInfo.questInfoStatus += HandleQuestStatus;
+        }
     }
 
-    private void HandleQuestStatusChanged(bool Status)
+    private void HandleQuestStatus(bool status)
     {
-        QuestStatus = Status;
-        StatusChanged?.Invoke(Status);
+        questStatus?.Invoke(status);
     }
 }
