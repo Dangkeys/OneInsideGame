@@ -35,7 +35,7 @@ public class QuestSystem : NetworkBehaviour
         {
             if (Quest != null)
             {
-                Quest.StatusChanged += HandleQuestStatusChanged;
+                Quest.questStatus += HandleQuestStatusChanged;
             }
         }
     }
@@ -46,7 +46,7 @@ public class QuestSystem : NetworkBehaviour
         {
             if (Quest != null)
             {
-                Quest.StatusChanged -= HandleQuestStatusChanged;
+                Quest.questStatus -= HandleQuestStatusChanged;
             }
         }
     }
