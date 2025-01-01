@@ -66,7 +66,7 @@ public class QuestClick : QuestInfo, IInteractable
         }
     }
 
-    public void Interact()
+    public void Interact(InteractionData interactionData)
     {
         if(!QuestStatus)
         {

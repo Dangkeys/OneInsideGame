@@ -38,7 +38,7 @@ public class QuestDodge : QuestInfo, IInteractable
         QuestDodgeManagerGameObject.SetActive(false);
     }
 
-    public void Interact()
+    public void Interact(InteractionData interactionData)
     {
         if (!QuestStatus)
         {
