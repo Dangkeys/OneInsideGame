@@ -20,6 +20,20 @@ public class WaitingRoomUI : MonoBehaviour
         StartGameButton.onClick.AddListener(StartGame);
         LeaveRoomButton.onClick.AddListener(LeaveRoom);
         ReadyButton.onClick.AddListener(Ready);
+        MainMenuUI.Instance.OnLobbyValueChanged += OnLobbyValueChanged;
+        gameObject.SetActive(false);
+    }
+
+    private void OnLobbyValueChanged(Lobby lobby)
+    {
+        if (lobby == null)
+        {
+            gameObject.SetActive(false);
+        }
+        else
+        {
+            gameObject.SetActive(true);
+        }
     }
 
     private async void OnEnable()
@@ -36,6 +50,11 @@ public class WaitingRoomUI : MonoBehaviour
     {
         LobbyPollingWrapper.OnLobbyUpdated -= OnLobbyUpdated;
         LobbyPollingWrapper.StopPolling();
+    }
+
+    private void OnDestroy()
+    {
+        MainMenuUI.Instance.OnLobbyValueChanged -= OnLobbyValueChanged;
     }
 
     private void OnLobbyUpdated(Lobby lobby)

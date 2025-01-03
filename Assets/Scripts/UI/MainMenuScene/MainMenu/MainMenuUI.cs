@@ -9,9 +9,10 @@ public class MainMenuUI : Singleton<MainMenuUI>
     [field: SerializeField] public CreateRoomUI CreateRoomUI { get; private set; }
     [field: SerializeField] public WaitingRoomUI WaitingRoomUI { get; private set; }
     [field: SerializeField] public FindMatchUI FindMatchUI { get; private set; }
+    public event Action<Lobby> OnLobbyValueChanged;
 
     public LobbyConfig LobbyConfig { get; private set; } = new LobbyConfig();
-    public Lobby Lobby { get; private set; } = new Lobby();
+    public Lobby Lobby { get; private set; } = null;
 
     private void Start()
     {
@@ -39,6 +40,6 @@ public class MainMenuUI : Singleton<MainMenuUI>
     public void SetLobby(Lobby lobby)
     {
         Lobby = lobby;
-        WaitingRoomUI.gameObject.SetActive(true);
+        OnLobbyValueChanged?.Invoke(Lobby);
     }
 }

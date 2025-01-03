@@ -24,9 +24,24 @@ public class CreateRoomUI : MonoBehaviour
         DecreasePlayerAmountButton.onClick.AddListener(DecreasePlayerAmount);
         CreateRoomButton.onClick.AddListener(CreateRoom);
         RoomNameInputField.onValueChanged.AddListener(OnRoomNameChanged);
+        MainMenuUI.Instance.OnLobbyValueChanged += OnLobbyValueChanged;
 
         UpdatePlayerAmountUI();
         UpdateButtonInteractability();
+    }
+    private void OnDestroy() {
+        MainMenuUI.Instance.OnLobbyValueChanged -= OnLobbyValueChanged;
+    }
+    private void OnLobbyValueChanged(Lobby lobby)
+    {
+        if (lobby == null)
+        {
+            gameObject.SetActive(true);
+        }
+        else
+        {
+            gameObject.SetActive(false);
+        }
     }
 
     private void OnRoomNameChanged(string newValue)

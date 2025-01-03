@@ -8972,18 +8972,30 @@ MonoBehaviour:
     - {fileID: 292213008}
     - {fileID: 794547876}
     valueData:
-    - Parent: {fileID: 2035188098}
-      Target: {fileID: 845249714}
-    - Parent: {fileID: 2035188098}
-      Target: {fileID: 1895893520}
-    - Parent: {fileID: 849497469}
-      Target: {fileID: 643753803}
-    - Parent: {fileID: 1507097009}
-      Target: {fileID: 1823243590}
-    - Parent: {fileID: 1507097009}
-      Target: {fileID: 2107641847}
-    - Parent: {fileID: 849497469}
-      Target: {fileID: 431777328}
+    - Parents:
+      - {fileID: 2035188098}
+      Targets:
+      - {fileID: 845249714}
+    - Parents:
+      - {fileID: 2035188098}
+      Targets:
+      - {fileID: 1895893520}
+    - Parents:
+      - {fileID: 849497469}
+      Targets:
+      - {fileID: 643753803}
+    - Parents:
+      - {fileID: 1507097009}
+      Targets:
+      - {fileID: 1823243590}
+    - Parents:
+      - {fileID: 1507097009}
+      Targets:
+      - {fileID: 2107641847}
+    - Parents:
+      - {fileID: 849497469}
+      Targets:
+      - {fileID: 431777328}
 --- !u!1 &864237713
 GameObject:
   m_ObjectHideFlags: 0
@@ -17133,8 +17145,9 @@ GameObject:
   - component: {fileID: 1492772491}
   - component: {fileID: 1492772493}
   - component: {fileID: 1492772492}
+  - component: {fileID: 1492772494}
   m_Layer: 5
-  m_Name: NavBar
+  m_Name: MainMenuNavBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17203,6 +17216,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1492772490}
   m_CullTransparentMesh: 1
+--- !u!114 &1492772494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1492772490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99c9445cc9fa8f345a2b22a75b0f8485, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <CreateRoomButton>k__BackingField: {fileID: 192503724}
+  <FindMatchButton>k__BackingField: {fileID: 2024346492}
+  <WaitingRoomButton>k__BackingField: {fileID: 2019896797}
 --- !u!1 &1496748658
 GameObject:
   m_ObjectHideFlags: 0
@@ -21041,7 +21069,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1805464738
 RectTransform:
   m_ObjectHideFlags: 0

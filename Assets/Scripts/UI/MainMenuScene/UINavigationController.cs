@@ -37,8 +37,8 @@ public abstract class UnitySerializedDictionary<TKey, TValue> : Dictionary<TKey,
 [Serializable]
 public struct NavigationTarget
 {
-   public Transform? Parent;
-   public GameObject? Target;
+   public List<Transform?> Parents;
+   public List<GameObject?> Targets;
 }
 
 [Serializable]
@@ -67,17 +67,18 @@ public class UINavigationController : MonoBehaviour
 
    private void ActivateUIElements(NavigationTarget elements)
    {
-       if (elements.Parent == null)
-       {
-           elements.Target?.SetActive(true);
-           return;
-       }
-
-       foreach (Transform child in elements.Parent)
-       {
-           child.gameObject.SetActive(false);
-       }
-       
-       elements.Target?.SetActive(true);
+        foreach (var parent in elements.Parents)
+        {
+            if(!parent) return;
+            foreach (Transform child in parent)
+            {
+                child.gameObject.SetActive(false);
+            }
+        }
+        foreach(var target in elements.Targets)
+        {
+            if(!target) return;
+            target.SetActive(true);
+        }
    }
 }
