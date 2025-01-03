@@ -92,10 +92,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 311515cbc360d32428ccb403f61ea640, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Meteorites: []
-  MaxScore: 5
-  LossScore: 1
-  TimeGetScore: 1
+  maxScore: 5
+  loseScore: 1
+  timeToGetScore: 1
 --- !u!114 &3085369363040710309
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -108,7 +107,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3739480875
+  GlobalObjectIdHash: 762995401
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -275,8 +274,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6062678775562ef46ae0de06867d628b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InputActionReference: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  Speed: 1000
+  inputActionReference: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  speed: 1000
 --- !u!1 &1441208826395238504
 GameObject:
   m_ObjectHideFlags: 0
@@ -440,10 +439,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa3334032c82d7046a7a4784b732dec2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MinSpeed: 500
-  MaxSpeed: 2000
-  Field: {fileID: 0}
-  MyRectTransform: {fileID: 0}
+  minSpeed: 1000
+  maxSpeed: 2000
 --- !u!1 &2722269239132249439
 GameObject:
   m_ObjectHideFlags: 0
@@ -695,7 +692,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -715,7 +712,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 4826850075358946169}
   m_HandleRect: {fileID: 3204600019522268163}
   m_Direction: 0
@@ -849,6 +846,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: QuestDodge, Assembly-CSharp
+        m_MethodName: CancelQuest
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1020,10 +1029,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa3334032c82d7046a7a4784b732dec2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MinSpeed: 500
-  MaxSpeed: 2000
-  Field: {fileID: 0}
-  MyRectTransform: {fileID: 0}
+  minSpeed: 1000
+  maxSpeed: 2000
 --- !u!1 &7129984498606579540
 GameObject:
   m_ObjectHideFlags: 0
@@ -1223,10 +1230,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa3334032c82d7046a7a4784b732dec2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MinSpeed: 500
-  MaxSpeed: 2000
-  Field: {fileID: 0}
-  MyRectTransform: {fileID: 0}
+  minSpeed: 1000
+  maxSpeed: 2000
 --- !u!1 &7882985884313699992
 GameObject:
   m_ObjectHideFlags: 0
@@ -1426,7 +1431,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa3334032c82d7046a7a4784b732dec2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MinSpeed: 500
-  MaxSpeed: 2000
-  Field: {fileID: 0}
-  MyRectTransform: {fileID: 0}
+  minSpeed: 1000
+  maxSpeed: 2000

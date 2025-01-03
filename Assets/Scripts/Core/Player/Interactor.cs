@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Unity.Netcode;
+using System;
 
 /// <summary>
 /// Handles interaction with nearby interactable objects in the game world

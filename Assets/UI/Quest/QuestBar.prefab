@@ -98,7 +98,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -118,7 +118,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 7774760094696049637}
   m_HandleRect: {fileID: 4230222045619413060}
   m_Direction: 0
@@ -166,11 +166,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  Quests:
+  quests:
   - {fileID: 11400000, guid: a6bfd21aaa5fb1d4f9c1d41e1666c8db, type: 2}
   - {fileID: 11400000, guid: 9e085d20d63767649a3ca1d2e237ea37, type: 2}
   - {fileID: 11400000, guid: 25f464b649789364f9e1b1e14f43bcbb, type: 2}
   - {fileID: 11400000, guid: c5bb2fc0b07eb974dbf11e354008110c, type: 2}
+  maxQuest: 2
 --- !u!1 &7691068249078687992
 GameObject:
   m_ObjectHideFlags: 0
