@@ -14,7 +14,7 @@ public struct LobbyConfig
 public static class LobbyCustomization
 {
     private const int MAX_QUERY_RESULTS = 25;
-    public const int MIN_PLAYERS = 4;
+    public const int MIN_PLAYERS = 2;
     public const int MAX_PLAYERS = 12;
 
     public static QueryLobbiesOptions GenerateQueryOptions()

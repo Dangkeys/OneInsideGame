@@ -38,7 +38,6 @@ public class FindMatchUI : MonoBehaviour
     {
         currentSearchTerm = searchTerm.Trim();
         currentPage = 1;
-        RefreshList();
     }
 
     private void OnEnable()
@@ -123,7 +122,6 @@ public class FindMatchUI : MonoBehaviour
 
             if (displayCount == 0)
             {
-                // Optionally, show a "No lobbies found" message
                 CreateNoLobbiesFoundMessage();
             }
         }

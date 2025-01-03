@@ -21,7 +21,7 @@ public class HostGameManager : IDisposable
     private string lobbyId;
     private const int MaxConnections = 12;
     private const string GameSceneName = "TajdangScene";
-    private NetworkServer networkServer;
+    public NetworkServer NetworkServer { get; private set; }
     public async Task<Lobby> StartHostAsync(LobbyConfig config)
     {
         if (string.IsNullOrWhiteSpace(config.RoomName))
@@ -73,7 +73,7 @@ public class HostGameManager : IDisposable
             throw;
         }
 
-        networkServer = new NetworkServer(NetworkManager.Singleton);
+        NetworkServer = new NetworkServer(NetworkManager.Singleton);
 
         UserData userData = new UserData
         {
@@ -85,7 +85,7 @@ public class HostGameManager : IDisposable
 
         NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
         NetworkManager.Singleton.StartHost();
-        networkServer.OnClientLeft += HandleClientLeft;
+        NetworkServer.OnClientLeft += HandleClientLeft;
         return lobby;
     }
 
@@ -128,15 +128,18 @@ public class HostGameManager : IDisposable
             }
             catch (LobbyServiceException e)
             {
-                Debug.Log(e);
+                Debug.LogError(e);
             }
 
             lobbyId = string.Empty;
         }
+        if (NetworkServer != null)
+        {
+            NetworkServer.OnClientLeft -= HandleClientLeft;
+        }
 
-        networkServer.OnClientLeft -= HandleClientLeft;
 
-        networkServer?.Dispose();
+        NetworkServer?.Dispose();
     }
 
 }

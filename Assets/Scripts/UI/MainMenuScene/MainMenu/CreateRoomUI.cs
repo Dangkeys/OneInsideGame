@@ -7,14 +7,13 @@ using Unity.Services.Lobbies.Models;
 public class CreateRoomUI : MonoBehaviour
 {
     [field: SerializeField] public TMP_InputField RoomNameInputField { get; private set; }
-
     [field: SerializeField] public Button IncreasePlayerAmountButton { get; private set; }
     [field: SerializeField] public Button DecreasePlayerAmountButton { get; private set; }
     [field: SerializeField] public TMP_Text PlayerAmountText { get; private set; }
-
     [field: SerializeField] public Toggle IsPrivateToggle { get; private set; }
     [field: SerializeField] public Button CreateRoomButton { get; private set; }
     [field: SerializeField] public MainMenuUI MainMenuUI { get; private set; }
+
     public event Action<Lobby> OnRoomCreated;
     private int playerAmount = LobbyCustomization.MIN_PLAYERS;
 
@@ -26,12 +25,28 @@ public class CreateRoomUI : MonoBehaviour
         RoomNameInputField.onValueChanged.AddListener(OnRoomNameChanged);
         MainMenuUI.Instance.OnLobbyValueChanged += OnLobbyValueChanged;
 
+        OnRoomNameChanged(RoomNameInputField.text);
         UpdatePlayerAmountUI();
         UpdateButtonInteractability();
     }
-    private void OnDestroy() {
-        MainMenuUI.Instance.OnLobbyValueChanged -= OnLobbyValueChanged;
+
+    private void OnEnable()
+    {
+        if (RoomNameInputField != null)
+        {
+            OnRoomNameChanged(RoomNameInputField.text);
+        }
+        UpdateButtonInteractability();
     }
+
+    private void OnDestroy()
+    {
+        if (MainMenuUI.Instance != null)
+        {
+            MainMenuUI.Instance.OnLobbyValueChanged -= OnLobbyValueChanged;
+        }
+    }
+
     private void OnLobbyValueChanged(Lobby lobby)
     {
         if (lobby == null)
@@ -46,7 +61,9 @@ public class CreateRoomUI : MonoBehaviour
 
     private void OnRoomNameChanged(string newValue)
     {
-        CreateRoomButton.interactable = !string.IsNullOrWhiteSpace(newValue);
+        bool isValid = !string.IsNullOrWhiteSpace(newValue);
+        CreateRoomButton.interactable = isValid;
+        RoomNameInputField.interactable = true;
     }
 
     private async void CreateRoom()
@@ -108,7 +125,9 @@ public class CreateRoomUI : MonoBehaviour
         DecreasePlayerAmountButton.interactable = playerAmount > LobbyCustomization.MIN_PLAYERS;
         IncreasePlayerAmountButton.interactable = playerAmount < LobbyCustomization.MAX_PLAYERS;
 
-        // Ensure create button is only enabled if room name is valid
-        CreateRoomButton.interactable = !string.IsNullOrWhiteSpace(RoomNameInputField.text);
+        bool isRoomNameValid = !string.IsNullOrWhiteSpace(RoomNameInputField.text);
+        CreateRoomButton.interactable = isRoomNameValid;
+
+        RoomNameInputField.interactable = true;
     }
 }
