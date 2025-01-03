@@ -1,19 +1,22 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.Netcode;
+using System;
 
 /// <summary>
 /// Handles interaction with nearby interactable objects in the game world
 /// </summary>
-public class Interactor : MonoBehaviour
+public class Interactor : NetworkBehaviour
 {
     [field: SerializeField, Tooltip("Reference to the input system")]
     public InputReader InputReader { get; private set; }
 
-    [field: SerializeField, Tooltip("Maximum distance at which interactions can occur")] 
+    [field: SerializeField, Tooltip("Maximum distance at which interactions can occur")]
     public float InteractionRadius { get; private set; }
-
-    private void Start()
+    public override void OnNetworkSpawn()
     {
+        if (!IsOwner)
+            return;
         InputReader.InteractEvent += HandleInteractionAttempt;
     }
 
@@ -22,14 +25,15 @@ public class Interactor : MonoBehaviour
         IInteractable nearestInteractable = FindNearestInteractable();
         if (nearestInteractable != null)
         {
-            nearestInteractable.Interact();
+            nearestInteractable.Interact(new InteractionData(this));
         }
     }
 
     private IInteractable FindNearestInteractable()
     {
         List<IInteractable> nearbyInteractables = FindInteractablesInRadius();
-        if (nearbyInteractables.Count == 0) return null;
+        if (nearbyInteractables.Count == 0)
+            return null;
 
         return FindClosestFrom(nearbyInteractables);
     }
@@ -86,9 +90,10 @@ public class Interactor : MonoBehaviour
         Gizmos.color = Color.blue;
         Gizmos.DrawRay(transform.position, transform.forward * InteractionRadius);
     }
-
-    private void OnDestroy()
+    public override void OnNetworkDespawn()
     {
+        if (!IsOwner)
+            return;
         InputReader.InteractEvent -= HandleInteractionAttempt;
     }
 }
