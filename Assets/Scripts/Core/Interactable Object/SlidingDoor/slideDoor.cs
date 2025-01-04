@@ -1,11 +1,11 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public class slideDoor : NetworkBehaviour, IInteractable
+public class SlideDoor : NetworkBehaviour, IInteractable
 {
     private bool doorOpen;
-    public Animator doorAnim;
-    public void Interact()
+    public Animator DoorAnim;
+    public void Interact(InteractionData interactionData)
     {   
         SlideDoorServerRPC();
     }
@@ -13,14 +13,12 @@ public class slideDoor : NetworkBehaviour, IInteractable
     [ServerRpc(RequireOwnership = false)]
     private void SlideDoorServerRPC(){
         if(!doorOpen){
-            //doorAnim.Play("SlideOpen", 0, 0.0f);
-            doorAnim.SetTrigger("DoorOpen");
+            DoorAnim.SetTrigger("DoorOpen");
             doorOpen = true;
             
         }
         else if(doorOpen){
-            //doorAnim.Play("SlideClose", 0, 0.0f);
-            doorAnim.SetTrigger("DoorClose");
+            DoorAnim.SetTrigger("DoorClose");
             doorOpen = false;
             
         }
