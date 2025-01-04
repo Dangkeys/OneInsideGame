@@ -9,10 +9,8 @@ public class PlayerManager : NetworkBehaviour
     public event Action OnSetAllPlayersToSpawnPos;
     public event Action<bool> OnEnableAllPlayersMovement;
     [field: SerializeField] public Transform PlayerPrefab { get; private set; }
-    public NetworkVariable<List<ulong>> PlayerClientIds = new NetworkVariable<List<ulong>>(new List<ulong>());
     [field: SerializeField] private bool shouldSpawnPlayers = false;
 
-    private Dictionary<ulong, NetworkObject> spawnedPlayers = new Dictionary<ulong, NetworkObject>();
 
     public override void OnNetworkSpawn()
     {
@@ -74,17 +72,6 @@ public class PlayerManager : NetworkBehaviour
         if (OneInsideLevelManager.Instance)
         {
             OneInsideLevelManager.Instance.VoteManager.OnStateChanged -= OnVoteStateChangedServerRpc;
-        }
-        if (IsServer)
-        {
-            foreach (var player in spawnedPlayers.Values)
-            {
-                if (player != null && player.IsSpawned)
-                {
-                    player.Despawn(true);
-                }
-            }
-            spawnedPlayers.Clear();
         }
     }
 }

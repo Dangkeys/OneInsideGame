@@ -47,7 +47,6 @@ public class PlayerItem : MonoBehaviour
         PlayerNameText.text = clientId;
         InitializeReadyManager();
 
-        // Immediately check the current ready state
         if (readyManager != null)
         {
             UpdateVisualState(readyManager.GetCurrentReadyStates());

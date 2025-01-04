@@ -75,10 +75,9 @@ public class ReadyManager : NetworkBehaviour
     {
         bool allPlayersReady = newValue.Count > 0 && newValue.All(kvp => kvp.Value);
 
-        // Notify subscribers that ready states have changed
         OnReadyStateChanged?.Invoke(newValue);
 
-        // Only notify if the all-ready state has changed
+
         if (allPlayersReady != previousAllPlayersReady)
         {
             previousAllPlayersReady = allPlayersReady;
