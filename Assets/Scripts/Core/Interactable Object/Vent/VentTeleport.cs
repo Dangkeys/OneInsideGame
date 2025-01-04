@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 public class VentTeleport : MonoBehaviour, IInteractable
 {
     public Transform WarpPosition;
-    public Player Interactor;
+
     /*private void OnTriggerEnter(Collider other)
     {
         if (other.TryGetComponent<Player>(out Player player))
@@ -18,7 +18,16 @@ public class VentTeleport : MonoBehaviour, IInteractable
         }
     }*/
 
-    public void Interact(InteractionData interactionData){
-        
+    public void Interact(InteractionData interactionData)
+    {
+
+        if (interactionData.Interactor.TryGetComponent<Player>(out Player player))
+        {
+            interactionData.Interactor.TryGetComponent<CharacterController>(out CharacterController cc);
+            cc.enabled = false;
+            player.transform.position = WarpPosition.position;
+            cc.enabled = true;
+        }
+
     }
 }
