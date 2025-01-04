@@ -25,7 +25,7 @@ public class PickupObj : NetworkBehaviour, IInteractable
         if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(interactorID, out NetworkObject interactorObj)) //SpawnedObjects is dict with key as id and value as the obj
         {
             GameObject interactor = interactorObj.gameObject; //change id into its gameobject
-            if (!haveObj)
+            if (!haveObj) //pickup
             {
                 if (interactor.TryGetComponent<Player>(out Player player))
                 {
@@ -34,7 +34,7 @@ public class PickupObj : NetworkBehaviour, IInteractable
                     haveObj = true;
                 }
             }
-            else
+            else //drop
             {
                 if (interactor.TryGetComponent<Player>(out Player player) && NetworkObject.OwnerClientId == player.OwnerClientId)
                 {
