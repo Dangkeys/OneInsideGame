@@ -50,7 +50,6 @@ public class PlayerMovement : NetworkBehaviour
           playerAnimator = GetComponent<Animator>();
           playerState = GetComponent<PlayerState>();
 
-          Debug.Log(playerAnimator);
           MainCameraTransform = Camera.main.transform;
           moveSpeed = WalkSpeed;
           InputReader.SprintEvent += Sprint;
