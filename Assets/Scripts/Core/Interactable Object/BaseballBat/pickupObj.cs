@@ -1,20 +1,50 @@
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class PickupObj : NetworkBehaviour
+public class PickupObj : NetworkBehaviour, IInteractable
 {
-    // public NetworkObject bat;
-    // private void OnTriggerEnter(Collider other){
-    //     PickupObjServerRPC(other);
-    // }
+    private bool haveObj;
+    public void Interact(InteractionData interactionData)
+    {
+        if (interactionData.Interactor.TryGetComponent<Player>(out Player player))
+        {
+            if (player.TryGetComponent<NetworkObject>(out NetworkObject networkObject))
+            {
+                ulong InteractorID = networkObject.NetworkObjectId;
+                PickupObjServerRPC(InteractorID); //pass the id
+            }
 
-    // [ServerRpc(RequireOwnership = false)]
-    // private void PickupObjServerRPC(Collider other){ //Still have error "Only server can reparent and change ownership but it can still change it?
-    //     if(other.TryGetComponent<Player>(out Player player) && bat.transform.parent == null){
-    //         ulong clientId = player.OwnerClientId;
-    //         bat.transform.parent = player.transform;
-    //         bat.ChangeOwnership(clientId);
-    //         Debug.Log("Bat owner is " + bat.OwnerClientId);
-    //     }
-    // }
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+
+    private void PickupObjServerRPC(ulong interactorID)
+    {
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(interactorID, out NetworkObject interactorObj)) //SpawnedObjects is dict with key as id and value as the obj
+        {
+            GameObject interactor = interactorObj.gameObject; //change id into its gameobject
+            if (!haveObj)
+            {
+                if (interactor.TryGetComponent<Player>(out Player player))
+                {
+                    NetworkObject.ChangeOwnership(player.OwnerClientId);
+                    NetworkObject.transform.parent = player.transform;
+                    haveObj = true;
+                }
+            }
+            else
+            {
+                if (interactor.TryGetComponent<Player>(out Player player) && NetworkObject.OwnerClientId == player.OwnerClientId)
+                {
+                    NetworkObject.RemoveOwnership();
+                    NetworkObject.transform.parent = null;
+                    haveObj = false;
+                }
+            }
+        }
+
+    }
+
 }

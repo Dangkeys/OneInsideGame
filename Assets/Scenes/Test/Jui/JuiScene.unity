@@ -202,7 +202,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6844168069704995285, guid: 6fe4ca5e804ca864da695fde1a826715, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.7
+      value: -3.49
       objectReference: {fileID: 0}
     - target: {fileID: 6844168069704995285, guid: 6fe4ca5e804ca864da695fde1a826715, type: 3}
       propertyPath: m_LocalRotation.w
@@ -541,6 +541,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 706900822392503548, guid: 90a2d1ccdc188294aa6f4c0dcb76a53c, type: 3}
+      propertyPath: WarpPosition
+      value: 
+      objectReference: {fileID: 413437758}
     - target: {fileID: 5298155890475170155, guid: 90a2d1ccdc188294aa6f4c0dcb76a53c, type: 3}
       propertyPath: m_LocalPosition.x
       value: -4.0285316
@@ -1227,7 +1231,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7854955619060697809, guid: 46667e224a981274396553c200eccc56, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: 0.000030517578
       objectReference: {fileID: 0}
     - target: {fileID: 7855106681706247033, guid: 46667e224a981274396553c200eccc56, type: 3}
       propertyPath: m_Pivot.x
@@ -1725,6 +1729,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 706900822392503548, guid: 90a2d1ccdc188294aa6f4c0dcb76a53c, type: 3}
+      propertyPath: WarpPosition
+      value: 
+      objectReference: {fileID: 540976945}
     - target: {fileID: 5298155890475170155, guid: 90a2d1ccdc188294aa6f4c0dcb76a53c, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.4712667
@@ -1773,10 +1781,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Vent
       objectReference: {fileID: 0}
-    - target: {fileID: 7680781910965152368, guid: 90a2d1ccdc188294aa6f4c0dcb76a53c, type: 3}
-      propertyPath: WarpPosition
-      value: 
-      objectReference: {fileID: 540976945}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1797,10 +1801,6 @@ PrefabInstance:
     - target: {fileID: 6094685066176668013, guid: 31d68bead215e7742b2bc016f337d592, type: 3}
       propertyPath: m_Name
       value: BaseballBat
-      objectReference: {fileID: 0}
-    - target: {fileID: 6094685066176668013, guid: 31d68bead215e7742b2bc016f337d592, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8218267226206614418, guid: 31d68bead215e7742b2bc016f337d592, type: 3}
       propertyPath: m_LocalPosition.x

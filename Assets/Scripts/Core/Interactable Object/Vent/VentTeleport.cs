@@ -20,7 +20,6 @@ public class VentTeleport : MonoBehaviour, IInteractable
 
     public void Interact(InteractionData interactionData)
     {
-
         if (interactionData.Interactor.TryGetComponent<Player>(out Player player))
         {
             interactionData.Interactor.TryGetComponent<CharacterController>(out CharacterController cc);
