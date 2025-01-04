@@ -16,105 +16,29 @@ public class PlayerManager : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+
+
+        NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnSceneLoadComplete;
+
         if (!OneInsideLevelManager.Instance)
             return;
-
-        NetworkManager.Singleton.OnConnectionEvent += NetworkOnConnectionEvent;
-        NetworkManager.Singleton.SceneManager.OnSceneEvent += OnSceneEvent;
-
         OneInsideLevelManager.Instance.VoteManager.OnStateChanged += OnVoteStateChangedServerRpc;
     }
 
-    private void OnSceneEvent(SceneEvent sceneEvent)
+    private void OnSceneLoadComplete(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
     {
-        if (sceneEvent.SceneEventType == SceneEventType.UnloadComplete)
+        if (IsServer && sceneName == "TajdangScene")
         {
-            if (IsServer)
+
+            foreach (ulong id in clientsCompleted)
             {
-                foreach (var player in spawnedPlayers.Values)
+                if (shouldSpawnPlayers)
                 {
-                    if (player != null && player.IsSpawned)
-                    {
-                        player.Despawn(true);
-                    }
+                    GameObject player = Instantiate(PlayerPrefab.gameObject, SpawnPoint.GetClientSpawnPos(id), Quaternion.identity);
+                    player.GetComponent<NetworkObject>().SpawnAsPlayerObject(id, true);
                 }
-                spawnedPlayers.Clear();
+
             }
-        }
-        else if (sceneEvent.SceneEventType == SceneEventType.LoadComplete)
-        {
-            if (IsServer)
-            {
-                SpawnAllPlayers();
-            }
-        }
-    }
-
-    private void SpawnAllPlayers()
-    {
-        if (!IsServer)
-
-            Debug.Log("SpawnAllPlayers");
-        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
-        {
-            SpawnPlayer(clientId);
-        }
-    }
-
-    private void SpawnPlayer(ulong clientId)
-    {
-        if (!IsServer || !shouldSpawnPlayers)
-            return;
-
-        if (spawnedPlayers.TryGetValue(clientId, out NetworkObject existingPlayer))
-        {
-            if (existingPlayer != null && existingPlayer.IsSpawned)
-            {
-                existingPlayer.Despawn(true);
-            }
-            spawnedPlayers.Remove(clientId);
-        }
-
-
-        if (!PlayerClientIds.Value.Contains(clientId))
-        {
-            PlayerClientIds.Value.Add(clientId);
-        }
-
-        Vector3 spawnPosition = SpawnPoint.GetClientSpawnPos(clientId);
-        Transform playerTransform = Instantiate(PlayerPrefab, spawnPosition, Quaternion.identity);
-        NetworkObject networkObject = playerTransform.GetComponent<NetworkObject>();
-        networkObject.SpawnAsPlayerObject(clientId, true);
-        spawnedPlayers[clientId] = networkObject;
-    }
-
-    private void NetworkOnConnectionEvent(NetworkManager manager, ConnectionEventData data)
-    {
-        switch (data.EventType)
-        {
-            case ConnectionEvent.ClientConnected:
-                if (IsServer)
-                {
-                    SpawnPlayer(data.ClientId);
-                }
-                break;
-            case ConnectionEvent.ClientDisconnected:
-                if (IsServer)
-                {
-                    if (spawnedPlayers.TryGetValue(data.ClientId, out NetworkObject player))
-                    {
-                        if (player != null && player.IsSpawned)
-                        {
-                            player.Despawn(true);
-                        }
-                        spawnedPlayers.Remove(data.ClientId);
-                    }
-                    if (PlayerClientIds.Value.Contains(data.ClientId))
-                    {
-                        PlayerClientIds.Value.Remove(data.ClientId);
-                    }
-                }
-                break;
         }
     }
 
@@ -145,8 +69,6 @@ public class PlayerManager : NetworkBehaviour
     {
         if (NetworkManager.Singleton != null)
         {
-            NetworkManager.Singleton.OnConnectionEvent -= NetworkOnConnectionEvent;
-            NetworkManager.Singleton.SceneManager.OnSceneEvent -= OnSceneEvent;
         }
 
         if (OneInsideLevelManager.Instance)

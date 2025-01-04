@@ -17,6 +17,9 @@ public class MainMenuNavBar : MonoBehaviour
     {
         MainMenuUI.Instance.OnLobbyValueChanged += OnLobbyValueChanged;
     }
+    private void OnDestroy() {
+        MainMenuUI.Instance.OnLobbyValueChanged -= OnLobbyValueChanged;
+    }
 
     private void OnLobbyValueChanged(Lobby lobby)
     {

@@ -17,7 +17,7 @@ using Unity.Services.Authentication;
 public class HostGameManager : IDisposable
 {
     private Allocation allocation;
-    private string joinCode;
+    private string relayJoinCode;
     private string lobbyId;
     private const int MaxConnections = 12;
     private const string GameSceneName = "TajdangScene";
@@ -41,8 +41,7 @@ public class HostGameManager : IDisposable
 
         try
         {
-            joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
-            Debug.Log($"Join code: {joinCode}");
+            relayJoinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
         }
         catch (Exception e)
         {
@@ -57,7 +56,7 @@ public class HostGameManager : IDisposable
         Lobby lobby;
         try
         {
-            var lobbyOptions = LobbyCustomization.GenerateCreateLobbyOptions(config, joinCode);
+            var lobbyOptions = LobbyCustomization.GenerateCreateLobbyOptions(config, relayJoinCode);
 
             lobby = await LobbyService.Instance.CreateLobbyAsync(
                 config.RoomName,
@@ -91,8 +90,13 @@ public class HostGameManager : IDisposable
 
     private async void HandleClientLeft(string authId)
     {
+        if (string.IsNullOrEmpty(lobbyId))
+        {
+            return;
+        }
         try
         {
+
             await LobbyService.Instance.RemovePlayerAsync(lobbyId, authId);
         }
         catch (LobbyServiceException e)
@@ -116,7 +120,11 @@ public class HostGameManager : IDisposable
         Shutdown();
     }
 
-    public async void Shutdown()
+    public void Shutdown()
+    {
+        NetworkServer?.Dispose();
+    }
+    public async void DeleteLobbyAsync()
     {
         HostSingleton.Instance.StopCoroutine(nameof(HearbeatLobby));
 
@@ -133,13 +141,5 @@ public class HostGameManager : IDisposable
 
             lobbyId = string.Empty;
         }
-        if (NetworkServer != null)
-        {
-            NetworkServer.OnClientLeft -= HandleClientLeft;
-        }
-
-
-        NetworkServer?.Dispose();
     }
-
 }

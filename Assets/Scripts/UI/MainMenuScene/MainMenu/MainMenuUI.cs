@@ -14,18 +14,32 @@ public class MainMenuUI : Singleton<MainMenuUI>
 
     public LobbyConfig LobbyConfig { get; private set; } = new LobbyConfig();
     public Lobby Lobby { get; private set; } = null;
-    private const string GAME_SCENE = "TajdangScene";
 
     private void Start()
     {
         CreateRoomUI.OnRoomCreated += OnRoomCreated;
         FindMatchUI.OnLobbyJoined += OnLobbyJoined;
+        NetworkManager.Singleton.OnConnectionEvent += OnConnectionEvent;
+    }
+
+    private void OnConnectionEvent(NetworkManager manager, ConnectionEventData data)
+    {
+        switch (data.EventType)
+        {
+            case ConnectionEvent.ClientDisconnected:
+                if (data.ClientId == NetworkManager.Singleton.LocalClientId)
+                {
+                    SetLobby(null);
+                }
+                break;
+        }
     }
 
     private void OnDestroy()
     {
         CreateRoomUI.OnRoomCreated -= OnRoomCreated;
         FindMatchUI.OnLobbyJoined -= OnLobbyJoined;
+
     }
     private void OnRoomCreated(Lobby lobby)
     {

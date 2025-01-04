@@ -35,7 +35,7 @@ public static class LobbyCustomization
         return options;
     }
 
-    public static CreateLobbyOptions GenerateCreateLobbyOptions(LobbyConfig config, string joinCode)
+    public static CreateLobbyOptions GenerateCreateLobbyOptions(LobbyConfig config, string relayJoinCode)
     {
         var options = new CreateLobbyOptions
         {
@@ -43,9 +43,10 @@ public static class LobbyCustomization
             Data = new Dictionary<string, DataObject>
             {
                 {
-                    "JoinCode", new DataObject(
+                    "RelayJoinCode", new DataObject(
                         visibility: DataObject.VisibilityOptions.Member,
-                        value: joinCode
+                        value: relayJoinCode,
+                        index: DataObject.IndexOptions.S1
                     )
                 }
             }

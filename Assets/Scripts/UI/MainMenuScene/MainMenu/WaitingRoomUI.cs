@@ -109,10 +109,9 @@ public class WaitingRoomUI : MonoBehaviour
     {
         if (MainMenuUI.Instance.Lobby == null)
             return;
-
         RoomNameText.text = MainMenuUI.Instance.Lobby.Name;
         PlayerAmountText.text = $"{MainMenuUI.Instance.Lobby.Players.Count}/{MainMenuUI.Instance.Lobby.MaxPlayers} Players";
-        JoinCodeText.text = $"JoinCode: {MainMenuUI.Instance.Lobby.Data["JoinCode"].Value}";
+        JoinCodeText.text = $"JoinCode: {MainMenuUI.Instance.Lobby.LobbyCode}";
 
         foreach (Transform child in PlayerItemParent)
         {
@@ -131,6 +130,8 @@ public class WaitingRoomUI : MonoBehaviour
 
         if (NetworkManager.Singleton.IsHost)
         {
+            ReadyManager.Instance.StartGameClientRpc();
+            HostSingleton.Instance.GameManager.DeleteLobbyAsync();
             NetworkManager.Singleton.SceneManager.LoadScene(GAME_SCENE, LoadSceneMode.Single);
         }
 
@@ -141,9 +142,10 @@ public class WaitingRoomUI : MonoBehaviour
         MainMenuUI.Instance.SetLobby(null);
         if (NetworkManager.Singleton.IsHost)
         {
+            HostSingleton.Instance.GameManager.DeleteLobbyAsync();
             HostSingleton.Instance.GameManager.Shutdown();
         }
-        else
+        else if(NetworkManager.Singleton.IsClient)
         {
             ClientSingleton.Instance.GameManager.Disconnect();
         }

@@ -46,7 +46,6 @@ public static class AuthenticationWrapper
         // Check if we have cached credentials
         if (!AuthenticationService.Instance.SessionTokenExists)
         {
-            Debug.Log("No cached credentials found");
             return false;
         }
 
@@ -55,7 +54,6 @@ public static class AuthenticationWrapper
         try
         {
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
-            Debug.Log($"Cached sign-in successful. Player ID: {AuthenticationService.Instance.PlayerId}");
             AuthState = AuthState.Authenticated;
             return true;
         }

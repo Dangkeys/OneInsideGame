@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using UnityEditor.PackageManager;
 
 public class FindMatchUI : MonoBehaviour
 {
@@ -16,6 +17,8 @@ public class FindMatchUI : MonoBehaviour
     [field: SerializeField] public Button PreviousPageButton { get; private set; }
     [field: SerializeField] public TMP_Text PageNumberText { get; private set; }
     [field: SerializeField] public TMP_InputField SearchInputField { get; private set; }
+    [field: SerializeField] public TMP_InputField JoinCodeInputField { get; private set; }
+    [field: SerializeField] public Button JoinButton { get; private set; }
 
     private const int LOBBIES_PER_PAGE = 10;
     private int currentPage = 1;
@@ -23,6 +26,7 @@ public class FindMatchUI : MonoBehaviour
     private bool isJoining;
     private bool isRefreshing;
     private string currentSearchTerm = "";
+    private string joinCode;
     public event Action<Lobby> OnLobbyJoined;
 
     private void Start()
@@ -31,7 +35,19 @@ public class FindMatchUI : MonoBehaviour
         NextPageButton.onClick.AddListener(NextPage);
         PreviousPageButton.onClick.AddListener(PreviousPage);
         SearchInputField.onValueChanged.AddListener(OnSearchValueChanged);
+        JoinCodeInputField.onValueChanged.AddListener(OnJoinCodeValueChanged);
+        JoinButton.onClick.AddListener(JoinAsync);
         UpdatePageUI();
+    }
+
+    private void JoinAsync()
+    {
+        JoinByCode(joinCode);
+    }
+
+    private void OnJoinCodeValueChanged(string joinCode)
+    {
+        this.joinCode = joinCode.Trim();
     }
 
     private void OnSearchValueChanged(string searchTerm)
@@ -44,6 +60,7 @@ public class FindMatchUI : MonoBehaviour
     {
         currentPage = 1;
         currentSearchTerm = "";
+        joinCode = "";
         if (SearchInputField != null)
         {
             SearchInputField.text = "";
@@ -53,14 +70,16 @@ public class FindMatchUI : MonoBehaviour
 
     private void NextPage()
     {
-        if (!hasMorePages) return;
+        if (!hasMorePages)
+            return;
         currentPage++;
         RefreshList();
     }
 
     private void PreviousPage()
     {
-        if (currentPage <= 1) return;
+        if (currentPage <= 1)
+            return;
         currentPage--;
         RefreshList();
     }
@@ -74,7 +93,8 @@ public class FindMatchUI : MonoBehaviour
 
     public async void RefreshList()
     {
-        if (isRefreshing) { return; }
+        if (isRefreshing)
+        { return; }
 
         isRefreshing = true;
         UpdateButtonsInteractable(false);
@@ -112,7 +132,7 @@ public class FindMatchUI : MonoBehaviour
             ClearCurrentLobbies();
 
             hasMorePages = lobbies.Results.Count > LOBBIES_PER_PAGE;
-            
+
             int displayCount = Mathf.Min(lobbies.Results.Count, LOBBIES_PER_PAGE);
             for (int i = 0; i < displayCount; i++)
             {
@@ -160,16 +180,17 @@ public class FindMatchUI : MonoBehaviour
 
     public async void JoinAsync(Lobby lobby)
     {
-        if (isJoining) { return; }
+        if (isJoining)
+        { return; }
 
         isJoining = true;
 
         try
         {
             Lobby joiningLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobby.Id);
-            string joinCode = joiningLobby.Data["JoinCode"].Value;
+            string RelayJoinCode = joiningLobby.Data["RelayJoinCode"].Value;
 
-            await ClientSingleton.Instance.GameManager.StartClientAsync(joinCode);
+            await ClientSingleton.Instance.GameManager.StartClientAsync(RelayJoinCode);
             OnLobbyJoined?.Invoke(joiningLobby);
             gameObject.SetActive(false);
         }
@@ -179,5 +200,15 @@ public class FindMatchUI : MonoBehaviour
         }
 
         isJoining = false;
+    }
+    private async void JoinByCode(string joinCode)
+    {
+        Lobby lobby = await LobbyService.Instance.JoinLobbyByCodeAsync(joinCode);
+        if (lobby == null)
+        {
+            Debug.Log("Failed to join lobby");
+            return;
+        }
+        JoinAsync(lobby);
     }
 }
