@@ -13,8 +13,8 @@ public class PlayerMovement : NetworkBehaviour
     [field: SerializeField] public Transform MainCameraTransform { get; private set; }
 
     [Header("Movement Settings")]
-    [field: SerializeField] public float WalkSpeed { get; private set; } = 3f;
-    [field: SerializeField] public float RunSpeed { get; private set; } = 6f;
+    [field: SerializeField] public float WalkSpeed { get; private set; } = 6f;
+    [field: SerializeField] public float RunSpeed { get; private set; } = 12f;
     [field: SerializeField] public float RotationSpeed { get; private set; } = 15f;
     [field: SerializeField] public float TurnSmoothTime { get; private set; } = .1f;
 
