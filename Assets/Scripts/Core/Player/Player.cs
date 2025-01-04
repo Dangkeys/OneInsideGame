@@ -9,7 +9,6 @@ public class Player : NetworkBehaviour
      [field: SerializeField] public CinemachineCamera VirtualCamera { get; private set; }
      [field: SerializeField] public InputReader InputReader { get; private set; }
      [field: SerializeField] public GameObject Hitbox { get; private set; }
-     [field: SerializeField] public Object CharacterRoot { get; private set; }
      [field: SerializeField] public PlayerAnimation PlayerAnimation { get; private set; }
      [field: SerializeField] public PlayerHealth PlayerHealth { get; private set; }
      [field: SerializeField] public CharacterController CharacterController { get; private set; }
