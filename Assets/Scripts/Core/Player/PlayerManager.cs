@@ -2,63 +2,50 @@ using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerManager : NetworkBehaviour
 {
     public event Action OnSetAllPlayersToSpawnPos;
     public event Action<bool> OnEnableAllPlayersMovement;
+    [field: SerializeField] public Transform PlayerPrefab { get; private set; }
+    [field: SerializeField] private bool shouldSpawnPlayers = false;
 
-    public NetworkVariable<List<ulong>> PlayerClientIds = new NetworkVariable<List<ulong>>(new List<ulong>());
 
     public override void OnNetworkSpawn()
     {
+
+
+        NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnSceneLoadComplete;
+
         if (!OneInsideLevelManager.Instance)
             return;
-        NetworkManager.Singleton.OnConnectionEvent += NetworkOnConnectionEvent;
-
         OneInsideLevelManager.Instance.VoteManager.OnStateChanged += OnVoteStateChangedServerRpc;
-        PlayerClientIds.OnValueChanged += OnPlayerClientIdsChanged;
     }
 
-    private void OnPlayerClientIdsChanged(List<ulong> previousValue, List<ulong> newValue)
+    private void OnSceneLoadComplete(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
     {
-        Debug.Log(newValue);
-    }
-
-    private void NetworkOnConnectionEvent(NetworkManager manager, ConnectionEventData data)
-    {
-        //add player to list
-        switch (data.EventType)
+        if (IsServer && sceneName == "TajdangScene")
         {
-            case ConnectionEvent.ClientConnected:
-                if (IsServer)
+
+            foreach (ulong id in clientsCompleted)
+            {
+                if (shouldSpawnPlayers)
                 {
-                    if (PlayerClientIds.Value.Contains(data.ClientId))
-                    {
-                        return;
-                    }
-                    PlayerClientIds.Value.Add(data.ClientId);
+                    GameObject player = Instantiate(PlayerPrefab.gameObject, SpawnPoint.GetClientSpawnPos(id), Quaternion.identity);
+                    player.GetComponent<NetworkObject>().SpawnAsPlayerObject(id, true);
                 }
-                break;
-            case ConnectionEvent.ClientDisconnected:
-                if (IsServer)
-                {
-                    if (!PlayerClientIds.Value.Contains(data.ClientId))
-                    {
-                        return;
-                    }
-                    PlayerClientIds.Value.Remove(data.ClientId);
-                }
-                break;
+
+            }
         }
     }
 
     [ServerRpc(RequireOwnership = false)]
     private void OnVoteStateChangedServerRpc(VoteManager.State state)
     {
-
         OnVoteStateChangedClientRpc(state);
     }
+
     [ClientRpc]
     private void OnVoteStateChangedClientRpc(VoteManager.State state)
     {
@@ -67,18 +54,24 @@ public class PlayerManager : NetworkBehaviour
             case VoteManager.State.WaitingToVote:
                 break;
             case VoteManager.State.Voting:
-                OnEnableAllPlayersMovement(false);
-                OnSetAllPlayersToSpawnPos();
+                OnEnableAllPlayersMovement?.Invoke(false);
+                OnSetAllPlayersToSpawnPos?.Invoke();
                 break;
             case VoteManager.State.VoteOver:
-                OnEnableAllPlayersMovement(true);
+                OnEnableAllPlayersMovement?.Invoke(true);
                 break;
         }
     }
+
     public override void OnNetworkDespawn()
     {
-        if (!OneInsideLevelManager.Instance)
-            return;
-        OneInsideLevelManager.Instance.VoteManager.OnStateChanged -= OnVoteStateChangedServerRpc;
+        if (NetworkManager.Singleton != null)
+        {
+        }
+
+        if (OneInsideLevelManager.Instance)
+        {
+            OneInsideLevelManager.Instance.VoteManager.OnStateChanged -= OnVoteStateChangedServerRpc;
+        }
     }
 }

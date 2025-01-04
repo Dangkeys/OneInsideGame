@@ -17,8 +17,6 @@ public class Player : NetworkBehaviour
         }
         else
         {
-            if (!OneInsideLevelManager.Instance)
-                return;
             OneInsideLevelManager.Instance.PlayerManager.OnSetAllPlayersToSpawnPos += ResetToSpawnPoint;
             OneInsideLevelManager.Instance.PlayerManager.OnEnableAllPlayersMovement += EnablePlayerMovement;
         }

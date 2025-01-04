@@ -17,68 +17,62 @@ using Unity.Services.Authentication;
 public class HostGameManager : IDisposable
 {
     private Allocation allocation;
-    private string joinCode;
+    private string relayJoinCode;
     private string lobbyId;
     private const int MaxConnections = 12;
     private const string GameSceneName = "TajdangScene";
-    private NetworkServer networkServer;
-
-    public async Task StartHostAsync()
+    public NetworkServer NetworkServer { get; private set; }
+    public async Task<Lobby> StartHostAsync(LobbyConfig config)
     {
-        Debug.Log(AuthenticationService.Instance.PlayerId);
-        try
+        if (string.IsNullOrWhiteSpace(config.RoomName))
         {
-            allocation = await RelayService.Instance.CreateAllocationAsync(MaxConnections);
-        }
-        catch (Exception e)
-        {
-            Debug.Log(e);
-            return;
+            throw new ArgumentException("Room name cannot be null or empty");
         }
 
         try
         {
-            joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
-            Debug.Log(joinCode);
+            allocation = await RelayService.Instance.CreateAllocationAsync(config.MaxPlayerAmount);
         }
         catch (Exception e)
         {
+            Debug.LogError($"Failed to create allocation: {e}");
+            throw;
+        }
 
-            Debug.Log(e);
-            return;
+        try
+        {
+            relayJoinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Failed to get join code: {e}");
+            throw;
         }
 
         UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-
         RelayServerData relayServerData = AllocationUtils.ToRelayServerData(allocation, "dtls");
         transport.SetRelayServerData(relayServerData);
 
+        Lobby lobby;
         try
         {
-            CreateLobbyOptions lobbyOptions = new CreateLobbyOptions();
-            lobbyOptions.IsPrivate = false;
-            lobbyOptions.Data = new Dictionary<string, DataObject>()
-            {
-                {
-                    "JoinCode", new DataObject(
-                        visibility: DataObject.VisibilityOptions.Member,
-                        value: joinCode
-                    )
-                }
-            };
+            var lobbyOptions = LobbyCustomization.GenerateCreateLobbyOptions(config, relayJoinCode);
 
-            Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(
-                "My Lobby", MaxConnections, lobbyOptions);
+            lobby = await LobbyService.Instance.CreateLobbyAsync(
+                config.RoomName,
+                config.MaxPlayerAmount,
+                lobbyOptions);
+
             lobbyId = lobby.Id;
-
             HostSingleton.Instance.StartCoroutine(HearbeatLobby(15));
         }
         catch (LobbyServiceException e)
         {
-            Debug.Log(e);
-            return;
+            Debug.LogError($"Failed to create lobby: {e}");
+            throw;
         }
-        networkServer = new NetworkServer(NetworkManager.Singleton);
+
+        NetworkServer = new NetworkServer(NetworkManager.Singleton);
 
         UserData userData = new UserData
         {
@@ -89,12 +83,29 @@ public class HostGameManager : IDisposable
         byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);
 
         NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
-
-
         NetworkManager.Singleton.StartHost();
-
-        NetworkManager.Singleton.SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
+        NetworkServer.OnClientLeft += HandleClientLeft;
+        return lobby;
     }
+
+    private async void HandleClientLeft(string authId)
+    {
+        if (string.IsNullOrEmpty(lobbyId))
+        {
+            return;
+        }
+        try
+        {
+
+            await LobbyService.Instance.RemovePlayerAsync(lobbyId, authId);
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+
+    }
+
     private IEnumerator HearbeatLobby(float waitTimeSeconds)
     {
         WaitForSecondsRealtime delay = new WaitForSecondsRealtime(waitTimeSeconds);
@@ -104,7 +115,16 @@ public class HostGameManager : IDisposable
             yield return delay;
         }
     }
-    public async void Dispose()
+    public void Dispose()
+    {
+        Shutdown();
+    }
+
+    public void Shutdown()
+    {
+        NetworkServer?.Dispose();
+    }
+    public async void DeleteLobbyAsync()
     {
         HostSingleton.Instance.StopCoroutine(nameof(HearbeatLobby));
 
@@ -116,13 +136,10 @@ public class HostGameManager : IDisposable
             }
             catch (LobbyServiceException e)
             {
-                Debug.Log(e);
+                Debug.LogError(e);
             }
 
             lobbyId = string.Empty;
         }
-
-        networkServer?.Dispose();
     }
-
 }
