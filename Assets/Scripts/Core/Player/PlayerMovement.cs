@@ -27,22 +27,30 @@ public class PlayerMovement : NetworkBehaviour
      [Header("Ground Check Settings")]
      [SerializeField] private float groundCheckDistance = 0.05f;
 
+     //--------------------------------------
+     // Private Variables
+     //--------------------------------------
      private float moveSpeed;
      private float turnSmoothVelocity;
      private float verticalVelocity;
      private readonly float terminalVelocity = -53f;
 
-     private Animator _playerAnimator;
-
+     private Animator playerAnimator;
 
      private bool isJumping = false;
+     private bool isGrounded;
+
+     private PlayerState playerState;
 
      public override void OnNetworkSpawn()
      {
           if (!IsOwner)
                return;
-          _playerAnimator = GetComponent<Animator>();
-          Debug.Log(_playerAnimator);
+
+          playerAnimator = GetComponent<Animator>();
+          playerState = GetComponent<PlayerState>();
+
+          Debug.Log(playerAnimator);
           MainCameraTransform = Camera.main.transform;
           moveSpeed = WalkSpeed;
           InputReader.SprintEvent += Sprint;
@@ -54,55 +62,70 @@ public class PlayerMovement : NetworkBehaviour
           if (!IsOwner)
                return;
 
-          Move();
+          Vector3 moveInput = new Vector3(InputReader.MovementValue.x, 0f, InputReader.MovementValue.y);
+          UpdateMovementAnimation(moveInput);
+          UpdateJumpAnimation();
           ApplyGravity();
      }
 
-     public override void OnNetworkDespawn()
+     private void UpdateMovementAnimation(Vector3 moveInput)
      {
-          if (!IsOwner)
-               return;
-          InputReader.SprintEvent -= Sprint;
-          InputReader.JumpEvent -= Jump;
-     }
+          bool isMoving = moveInput != Vector3.zero;
 
-     private void Move()
-     {
-          Vector3 direction = new Vector3(InputReader.MovementValue.x, 0f, InputReader.MovementValue.y).normalized;
-
-          if (direction.magnitude >= 0.1f)
+          if (isMoving)
           {
-               if (MainCameraTransform == null)
-               {
-                    MainCameraTransform = Camera.main.transform;
-               }
-               float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + MainCameraTransform.eulerAngles.y;
+               Vector3 targetDirection = Quaternion.Euler(0f, MainCameraTransform.eulerAngles.y, 0f) * moveInput;
+               float targetAngle = Mathf.Atan2(targetDirection.x, targetDirection.z) * Mathf.Rad2Deg;
+
                float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, TurnSmoothTime);
                transform.rotation = Quaternion.Euler(0f, angle, 0f);
-               Vector3 moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+
+               Vector3 moveDirection = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
                CharacterController.Move(moveDirection * moveSpeed * Time.deltaTime);
 
-               _playerAnimator.SetBool("Walking", true);
+               playerState.SetWalking(true);
           }
           else
           {
-               _playerAnimator.SetBool("Walking", false);
+               playerState.SetWalking(false);
           }
      }
 
-     private void Sprint(bool shouldSprint)
+     private void UpdateJumpAnimation()
+     {
+          isGrounded = CheckGrounded();
+          playerAnimator.SetBool("Floating", !isGrounded);
+
+          if (isGrounded && verticalVelocity < 0f)
+          {
+               verticalVelocity = 0f;
+               if (isJumping)
+               {
+                    verticalVelocity = JumpHeight;
+                    playerAnimator.SetTrigger("Jump");
+               }
+          }
+     }
+
+     private void Sprint(bool sprint)
      {
           if (!IsOwner)
                return;
-          moveSpeed = shouldSprint ? RunSpeed : WalkSpeed;
-          _playerAnimator.SetBool("Running", shouldSprint);
+
+          moveSpeed = sprint ? RunSpeed : WalkSpeed;
+          playerState.SetRunning(sprint);
+
      }
 
      private void Jump(bool value)
      {
           if (!IsOwner)
                return;
+
           isJumping = true;
+
+          playerState.SetWalking(false);
+          playerState.SetRunning(false);
      }
 
      bool CheckGrounded()
@@ -110,21 +133,11 @@ public class PlayerMovement : NetworkBehaviour
           return Physics.Raycast(transform.position, Vector3.down, groundCheckDistance) || CharacterController.isGrounded || math.abs(verticalVelocity) < 0.1f;
      }
 
-     bool isGrounded;
      private void ApplyGravity()
      {
-          isGrounded = CheckGrounded();
-
-          _playerAnimator.SetBool("Floating", !isGrounded);
-
           if (isGrounded && verticalVelocity < 0f)
           {
                verticalVelocity = groundedGravity;
-               if (isJumping)
-               {
-                    verticalVelocity = JumpHeight;
-                    _playerAnimator.SetTrigger("Jump");
-               }
           }
           else
           {
@@ -136,5 +149,13 @@ public class PlayerMovement : NetworkBehaviour
           CharacterController.Move(verticalMovement * Time.deltaTime);
 
           isJumping = false;
+     }
+
+     public override void OnNetworkDespawn()
+     {
+          if (!IsOwner)
+               return;
+          InputReader.SprintEvent -= Sprint;
+          InputReader.JumpEvent -= Jump;
      }
 }

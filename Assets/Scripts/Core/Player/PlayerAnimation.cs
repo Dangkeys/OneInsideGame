@@ -5,40 +5,78 @@ public class PlayerAnimation : NetworkBehaviour
 {
      [Header("References")]
      [field: SerializeField] public GameObject PlayerVisual { get; private set; }
+     [field: SerializeField] public Player PlayerScript { get; private set; }
 
+     //--------------------------------------
+     // Private Variables
+     //--------------------------------------
      private Animator playerAnimator;
      private Rigidbody[] ragdollRigidbodies;
      private Collider[] ragdollColliders;
-     private PlayerMovement playerMovement;
      private CharacterController characterController;
+     private PlayerState playerState;
 
-     public NetworkVariable<bool> IsRagdollEnabled = new NetworkVariable<bool>(false,
-         NetworkVariableReadPermission.Everyone,
-         NetworkVariableWritePermission.Server);
-
+     //--------------------------------------
+     // Network & Lifecycle Methods
+     //--------------------------------------
      public override void OnNetworkSpawn()
      {
           playerAnimator = GetComponent<Animator>();
 
-          if (PlayerVisual != null)
-          {
-               ragdollColliders = PlayerVisual.GetComponentsInChildren<Collider>();
-               ragdollRigidbodies = PlayerVisual.GetComponentsInChildren<Rigidbody>();
-          }
-
-          playerMovement = GetComponent<PlayerMovement>();
           characterController = GetComponent<CharacterController>();
 
-          IsRagdollEnabled.OnValueChanged += On_Update_Ragdoll;
-          On_Update_Ragdoll(false, false);
+          ragdollColliders = PlayerVisual.GetComponentsInChildren<Collider>();
+          ragdollRigidbodies = PlayerVisual.GetComponentsInChildren<Rigidbody>();
+
+          playerState = GetComponent<PlayerState>();
+          playerState.Attacking.OnValueChanged += OnAttackingChanged;
+          playerState.Stunning.OnValueChanged += OnStunningChanged;
+          playerState.Walking.OnValueChanged += OnWalkingChanged;
+          playerState.Running.OnValueChanged += OnRunningChanged;
+          playerState.Ragdoll.OnValueChanged += OnRagdollChanged;
+
+          DisableRagdoll();
      }
 
      public override void OnNetworkDespawn()
      {
-          IsRagdollEnabled.OnValueChanged -= On_Update_Ragdoll;
+          playerState.Attacking.OnValueChanged -= OnAttackingChanged;
+          playerState.Stunning.OnValueChanged -= OnStunningChanged;
+          playerState.Walking.OnValueChanged -= OnWalkingChanged;
+          playerState.Running.OnValueChanged -= OnRunningChanged;
+          playerState.Ragdoll.OnValueChanged -= OnRagdollChanged;
      }
 
-     private void On_Update_Ragdoll(bool previousValue, bool newValue)
+     //--------------------------------------
+     // State Change Handlers
+     //--------------------------------------
+     private void OnAttackingChanged(bool previousValue, bool newValue)
+     {
+          if (newValue)
+          {
+               playerAnimator.SetTrigger("Attack");
+          }
+     }
+
+     private void OnStunningChanged(bool previousValue, bool newValue)
+     {
+          if (newValue)
+          {
+               playerAnimator.SetTrigger("Stun");
+          }
+     }
+
+     private void OnWalkingChanged(bool previousValue, bool newValue)
+     {
+          playerAnimator.SetBool("Walking", newValue);
+     }
+
+     private void OnRunningChanged(bool previousValue, bool newValue)
+     {
+          playerAnimator.SetBool("Running", newValue);
+     }
+
+     private void OnRagdollChanged(bool previousValue, bool newValue)
      {
           if (newValue)
           {
@@ -50,12 +88,9 @@ public class PlayerAnimation : NetworkBehaviour
           }
      }
 
-     [ServerRpc(RequireOwnership = false)]
-     public void Set_Ragdoll_ServerRpc(bool value = true)
-     {
-          IsRagdollEnabled.Value = value;
-     }
-
+     //--------------------------------------
+     // Ragdoll Methods
+     //--------------------------------------
      private void EnableRagdoll()
      {
           playerAnimator.enabled = false;
@@ -90,11 +125,15 @@ public class PlayerAnimation : NetworkBehaviour
           }
      }
 
-     public void TriggerAttackAnimation()
+     [ServerRpc(RequireOwnership = false)]
+     public void Set_Dead_ServerRpc(bool value = true)
      {
-          playerAnimator.SetTrigger("Attack");
+          playerState.SetDeadServerRpc(value);
      }
 
+     //--------------------------------------
+     // Network Methods
+     //--------------------------------------
      [ClientRpc]
      public void TriggerStunAnimationClientRpc()
      {

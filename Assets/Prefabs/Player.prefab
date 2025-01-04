@@ -47,7 +47,7 @@ GameObject:
   - component: {fileID: 3174413878277790459}
   - component: {fileID: 6395460933931600752}
   - component: {fileID: 295962568890882461}
-  - component: {fileID: 42395048482228976}
+  - component: {fileID: 7687890313118411661}
   - component: {fileID: 8666795281303897910}
   - component: {fileID: 3937043524520739152}
   - component: {fileID: 3378184907274422936}
@@ -216,8 +216,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   <PlayerVisual>k__BackingField: {fileID: 8896104640911753412}
-  IsRagdollEnabled:
-    m_InternalValue: 0
+  <PlayerScript>k__BackingField: {fileID: 8666795281303897910}
 --- !u!114 &295962568890882461
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -242,7 +241,7 @@ MonoBehaviour:
   gravityMultiplier: 1.5
   groundedGravity: -0.5
   groundCheckDistance: 0.05
---- !u!114 &42395048482228976
+--- !u!114 &7687890313118411661
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -251,16 +250,98 @@ MonoBehaviour:
   m_GameObject: {fileID: 837731845563932383}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96bd4319f2df1a04384119db47340ebe, type: 3}
+  m_Script: {fileID: 11500000, guid: 610337cc90d0ff94e8c76a3c62d559ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  MaxHealth:
+  <PlayerID>k__BackingField:
+    m_InternalValue: 0
+  <PlayerName>k__BackingField:
+    m_InternalValue:
+      utf8LengthInBytes: 0
+      bytes:
+        offset0000:
+          byte0000: 0
+          byte0001: 0
+          byte0002: 0
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
+          byte0006: 0
+          byte0007: 0
+          byte0008: 0
+          byte0009: 0
+          byte0010: 0
+          byte0011: 0
+          byte0012: 0
+          byte0013: 0
+          byte0014: 0
+          byte0015: 0
+        offset0016:
+          byte0000: 0
+          byte0001: 0
+          byte0002: 0
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
+          byte0006: 0
+          byte0007: 0
+          byte0008: 0
+          byte0009: 0
+          byte0010: 0
+          byte0011: 0
+          byte0012: 0
+          byte0013: 0
+          byte0014: 0
+          byte0015: 0
+        offset0032:
+          byte0000: 0
+          byte0001: 0
+          byte0002: 0
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
+          byte0006: 0
+          byte0007: 0
+          byte0008: 0
+          byte0009: 0
+          byte0010: 0
+          byte0011: 0
+          byte0012: 0
+          byte0013: 0
+          byte0014: 0
+          byte0015: 0
+        byte0048: 0
+        byte0049: 0
+        byte0050: 0
+        byte0051: 0
+        byte0052: 0
+        byte0053: 0
+        byte0054: 0
+        byte0055: 0
+        byte0056: 0
+        byte0057: 0
+        byte0058: 0
+        byte0059: 0
+        byte0060: 0
+        byte0061: 0
+  <Attacking>k__BackingField:
+    m_InternalValue: 0
+  <Stunning>k__BackingField:
+    m_InternalValue: 0
+  <Walking>k__BackingField:
+    m_InternalValue: 0
+  <Running>k__BackingField:
+    m_InternalValue: 0
+  <Ragdoll>k__BackingField:
+    m_InternalValue: 0
+  <CurrentHealth>k__BackingField:
     m_InternalValue: 3
-  CurrentHealth:
+  <MaxHealth>k__BackingField:
+    m_InternalValue: 3
+  <Dead>k__BackingField:
     m_InternalValue: 0
-  Dead:
-    m_InternalValue: 0
+  <PlayerMovement>k__BackingField: {fileID: 295962568890882461}
 --- !u!114 &8666795281303897910
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -277,154 +358,9 @@ MonoBehaviour:
   <VirtualCamera>k__BackingField: {fileID: 4749395338926886000}
   <InputReader>k__BackingField: {fileID: 3937043524520739152}
   <Hitbox>k__BackingField: {fileID: 3435790326839173604}
-  <CharacterRoot>k__BackingField: {fileID: 8484785720225684249}
-  <PlayerAnimation>k__BackingField: {fileID: 6395460933931600752}
-  <PlayerHealth>k__BackingField: {fileID: 42395048482228976}
   <CharacterController>k__BackingField: {fileID: 4450134948998468091}
   <PlayerMovement>k__BackingField: {fileID: 295962568890882461}
   <AxisController>k__BackingField: {fileID: 2089346930791355492}
-  PlayerID:
-    m_InternalValue:
-      utf8LengthInBytes: 4
-      bytes:
-        offset0000:
-          byte0000: 84
-          byte0001: 101
-          byte0002: 115
-          byte0003: 116
-          byte0004: 0
-          byte0005: 0
-          byte0006: 0
-          byte0007: 0
-          byte0008: 0
-          byte0009: 0
-          byte0010: 0
-          byte0011: 0
-          byte0012: 0
-          byte0013: 0
-          byte0014: 0
-          byte0015: 0
-        offset0016:
-          byte0000: 0
-          byte0001: 0
-          byte0002: 0
-          byte0003: 0
-          byte0004: 0
-          byte0005: 0
-          byte0006: 0
-          byte0007: 0
-          byte0008: 0
-          byte0009: 0
-          byte0010: 0
-          byte0011: 0
-          byte0012: 0
-          byte0013: 0
-          byte0014: 0
-          byte0015: 0
-        offset0032:
-          byte0000: 0
-          byte0001: 0
-          byte0002: 0
-          byte0003: 0
-          byte0004: 0
-          byte0005: 0
-          byte0006: 0
-          byte0007: 0
-          byte0008: 0
-          byte0009: 0
-          byte0010: 0
-          byte0011: 0
-          byte0012: 0
-          byte0013: 0
-          byte0014: 0
-          byte0015: 0
-        byte0048: 0
-        byte0049: 0
-        byte0050: 0
-        byte0051: 0
-        byte0052: 0
-        byte0053: 0
-        byte0054: 0
-        byte0055: 0
-        byte0056: 0
-        byte0057: 0
-        byte0058: 0
-        byte0059: 0
-        byte0060: 0
-        byte0061: 0
-  PlayerName:
-    m_InternalValue:
-      utf8LengthInBytes: 7
-      bytes:
-        offset0000:
-          byte0000: 85
-          byte0001: 110
-          byte0002: 107
-          byte0003: 110
-          byte0004: 111
-          byte0005: 119
-          byte0006: 110
-          byte0007: 0
-          byte0008: 0
-          byte0009: 0
-          byte0010: 0
-          byte0011: 0
-          byte0012: 0
-          byte0013: 0
-          byte0014: 0
-          byte0015: 0
-        offset0016:
-          byte0000: 0
-          byte0001: 0
-          byte0002: 0
-          byte0003: 0
-          byte0004: 0
-          byte0005: 0
-          byte0006: 0
-          byte0007: 0
-          byte0008: 0
-          byte0009: 0
-          byte0010: 0
-          byte0011: 0
-          byte0012: 0
-          byte0013: 0
-          byte0014: 0
-          byte0015: 0
-        offset0032:
-          byte0000: 0
-          byte0001: 0
-          byte0002: 0
-          byte0003: 0
-          byte0004: 0
-          byte0005: 0
-          byte0006: 0
-          byte0007: 0
-          byte0008: 0
-          byte0009: 0
-          byte0010: 0
-          byte0011: 0
-          byte0012: 0
-          byte0013: 0
-          byte0014: 0
-          byte0015: 0
-        byte0048: 0
-        byte0049: 0
-        byte0050: 0
-        byte0051: 0
-        byte0052: 0
-        byte0053: 0
-        byte0054: 0
-        byte0055: 0
-        byte0056: 0
-        byte0057: 0
-        byte0058: 0
-        byte0059: 0
-        byte0060: 0
-        byte0061: 0
-  Attacking:
-    m_InternalValue: 0
-  Stunning:
-    m_InternalValue: 0
 --- !u!114 &3937043524520739152
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1968,11 +1904,6 @@ CharacterJoint:
 --- !u!4 &6595192579084696524 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2383991533042498037, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
-  m_PrefabInstance: {fileID: 8832534265727795769}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &8484785720225684249 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1104354661595355424, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
   m_PrefabInstance: {fileID: 8832534265727795769}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &8592875754081284825 stripped
