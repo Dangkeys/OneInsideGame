@@ -135,22 +135,25 @@ public class Player : NetworkBehaviour
           {
                // Other Player
                VirtualCamera.Priority = int.MinValue;
-               return;
           }
           else
           {
+               //----------------------
+
+               InputReader.AttackEvent += On_Attack_Local;
+
+               //----------------------
+
+               Attacking.OnValueChanged += On_Update_Attacking;
+               Stunning.OnValueChanged += On_Update_Stunning;
+               PlayerHealth.Dead.OnValueChanged += On_Update_Dead;
+
+               //----------------------
+
                OneInsideLevelManager.Instance.PlayerManager.OnSetAllPlayersToSpawnPos += ResetToSpawnPoint;
                OneInsideLevelManager.Instance.PlayerManager.OnEnableAllPlayersMovement += EnablePlayerMovement;
           }
-          //----------------------
 
-          InputReader.AttackEvent += On_Attack_Local;
-
-          //----------------------
-
-          Attacking.OnValueChanged += On_Update_Attacking;
-          Stunning.OnValueChanged += On_Update_Stunning;
-          PlayerHealth.Dead.OnValueChanged += On_Update_Dead;
      }
 
      public override void OnNetworkDespawn()
