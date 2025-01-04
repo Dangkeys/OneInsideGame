@@ -38,15 +38,15 @@ public class ClientGameManager : IDisposable
     {
         SceneManager.LoadScene(MainMenuSceneName);
     }
-    public async Task StartClientAsync(string joinCode)
+    public async Task StartClientAsync(string relayJoinCode)
     {
         try
         {
-            allocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
+            allocation = await RelayService.Instance.JoinAllocationAsync(relayJoinCode);
         }
         catch (Exception e)
         {
-            Debug.Log(e);
+            Debug.LogError(e);
             return;
         }
 
@@ -57,8 +57,8 @@ public class ClientGameManager : IDisposable
 
         UserData userData = new UserData
         {
-            userName = "Tajdang",
-            userAuthId = AuthenticationService.Instance.PlayerId
+            UserName = "Tajdang",
+            UserAuthId = AuthenticationService.Instance.PlayerId
         };
         string payload = JsonUtility.ToJson(userData);
         byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);
@@ -73,5 +73,10 @@ public class ClientGameManager : IDisposable
     {
         networkClient?.Dispose();
     }
+    public void Disconnect()
+    {
+        networkClient.Disconnect();
+    }
+
 
 }
