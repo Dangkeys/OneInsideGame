@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PickupObj : NetworkBehaviour, IInteractable
 {
-    private bool haveObj;
+    private bool hasObj;
     public void Interact(InteractionData interactionData)
     {
         if (interactionData.Interactor.TryGetComponent<Player>(out Player player))
@@ -14,7 +14,6 @@ public class PickupObj : NetworkBehaviour, IInteractable
                 ulong InteractorID = networkObject.NetworkObjectId;
                 PickupObjServerRPC(InteractorID); //pass the id
             }
-
         }
     }
 
@@ -25,13 +24,13 @@ public class PickupObj : NetworkBehaviour, IInteractable
         if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(interactorID, out NetworkObject interactorObj)) //SpawnedObjects is dict with key as id and value as the obj
         {
             GameObject interactor = interactorObj.gameObject; //change id into its gameobject
-            if (!haveObj) //pickup
+            if (!hasObj) //pickup
             {
                 if (interactor.TryGetComponent<Player>(out Player player))
                 {
                     NetworkObject.ChangeOwnership(player.OwnerClientId);
                     NetworkObject.transform.parent = player.transform;
-                    haveObj = true;
+                    hasObj = true;
                 }
             }
             else //drop
@@ -40,7 +39,7 @@ public class PickupObj : NetworkBehaviour, IInteractable
                 {
                     NetworkObject.RemoveOwnership();
                     NetworkObject.transform.parent = null;
-                    haveObj = false;
+                    hasObj = false;
                 }
             }
         }

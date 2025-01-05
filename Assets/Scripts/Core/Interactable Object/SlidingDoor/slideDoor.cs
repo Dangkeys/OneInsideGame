@@ -15,12 +15,10 @@ public class SlideDoor : NetworkBehaviour, IInteractable
         if(!doorOpen){
             DoorAnim.SetTrigger("DoorOpen");
             doorOpen = true;
-            
         }
         else if(doorOpen){
             DoorAnim.SetTrigger("DoorClose");
             doorOpen = false;
-            
         }
     }
     
