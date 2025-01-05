@@ -7,17 +7,6 @@ public class VentTeleport : MonoBehaviour, IInteractable
 {
     public Transform WarpPosition;
 
-    /*private void OnTriggerEnter(Collider other)
-    {
-        if (other.TryGetComponent<Player>(out Player player))
-        {
-            other.TryGetComponent<CharacterController>(out CharacterController cc);
-            cc.enabled = false;
-            player.transform.position = warpPosition.position;
-            cc.enabled = true;
-        }
-    }*/
-
     public void Interact(InteractionData interactionData)
     {
         if (interactionData.Interactor.TryGetComponent<Player>(out Player player))
