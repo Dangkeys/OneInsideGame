@@ -29,8 +29,7 @@ public class ApplicationController : MonoBehaviour
 
             HostSingleton hostSingleton = Instantiate(hostPrefab);
             hostSingleton.CreateHost();
-            Debug.Log(AuthenticationService.Instance.PlayerId);
-            // Go to main menu
+            
             if (authenticated)
             {
                 clientSingleton.GameManager.GoToMenu();
