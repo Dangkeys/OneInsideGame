@@ -128,7 +128,9 @@ public class Player : NetworkBehaviour
                playerState.SetWalking(false);
                playerState.SetRunning(false);
                playerState.SetDead(false);
-
+               ResetToSpawnPoint();
+               if (!OneInsideLevelManager.Instance)
+                    return;
                OneInsideLevelManager.Instance.PlayerManager.OnSetAllPlayersToSpawnPos += ResetToSpawnPoint;
                OneInsideLevelManager.Instance.PlayerManager.OnEnableAllPlayersMovement += EnablePlayerMovement;
           }

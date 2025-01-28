@@ -25,18 +25,14 @@ public class PlayerManager : NetworkBehaviour
 
     private void OnSceneLoadComplete(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
     {
-        if (IsServer && sceneName == "TajdangScene")
+        if (sceneName != "TajdangScene" || !IsServer)
+            return;
+        if (!shouldSpawnPlayers)
+            return;
+        foreach (ulong id in clientsCompleted)
         {
-
-            foreach (ulong id in clientsCompleted)
-            {
-                if (shouldSpawnPlayers)
-                {
-                    GameObject player = Instantiate(PlayerPrefab.gameObject, SpawnPoint.GetClientSpawnPos(id), Quaternion.identity);
-                    player.GetComponent<NetworkObject>().SpawnAsPlayerObject(id, true);
-                }
-
-            }
+            GameObject player = Instantiate(PlayerPrefab.gameObject, Vector3.zero, Quaternion.identity);
+            player.GetComponent<NetworkObject>().SpawnAsPlayerObject(id, true);
         }
     }
 

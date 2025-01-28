@@ -19,8 +19,6 @@ public class HostGameManager : IDisposable
     private Allocation allocation;
     private string relayJoinCode;
     private string lobbyId;
-    private const int MaxConnections = 12;
-    private const string GameSceneName = "TajdangScene";
     public NetworkServer NetworkServer { get; private set; }
     public async Task<Lobby> StartHostAsync(LobbyConfig config)
     {
