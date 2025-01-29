@@ -251,7 +251,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 66856326431436162, guid: e3cffca8405639e46addd3151d790838, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1107707292627979345, guid: e3cffca8405639e46addd3151d790838, type: 3}
       propertyPath: GlobalObjectIdHash
@@ -614,6 +614,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 706900822392503548, guid: 90a2d1ccdc188294aa6f4c0dcb76a53c, type: 3}
+      propertyPath: VentCamera
+      value: 
+      objectReference: {fileID: 1463184476}
+    - target: {fileID: 706900822392503548, guid: 90a2d1ccdc188294aa6f4c0dcb76a53c, type: 3}
+      propertyPath: PlayerCamera
+      value: 
+      objectReference: {fileID: 330585545}
     - target: {fileID: 706900822392503548, guid: 90a2d1ccdc188294aa6f4c0dcb76a53c, type: 3}
       propertyPath: WarpPosition
       value: 
@@ -2115,6 +2123,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 706900822392503548, guid: 90a2d1ccdc188294aa6f4c0dcb76a53c, type: 3}
+      propertyPath: VentCamera
+      value: 
+      objectReference: {fileID: 1205434580}
+    - target: {fileID: 706900822392503548, guid: 90a2d1ccdc188294aa6f4c0dcb76a53c, type: 3}
+      propertyPath: PlayerCamera
+      value: 
+      objectReference: {fileID: 330585545}
     - target: {fileID: 706900822392503548, guid: 90a2d1ccdc188294aa6f4c0dcb76a53c, type: 3}
       propertyPath: WarpPosition
       value: 

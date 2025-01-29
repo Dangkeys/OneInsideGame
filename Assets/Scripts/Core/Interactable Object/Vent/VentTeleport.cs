@@ -7,34 +7,36 @@ public class VentTeleport : MonoBehaviour, IInteractable
 {
     //public Transform WarpPosition;
     bool inVent;
+    private Camera playerCamera;
+
+    void Start(){
+        playerCamera = Camera.main;
+    }
+
 
     public void Interact(InteractionData interactionData)
     {
+        Debug.Log("Interact Vent");
+        //VentCamera = gameObject.GetComponentInChildren<Camera>();
         if (interactionData.Interactor.TryGetComponent<Player>(out Player player))
-        {
-            if (player.TryGetComponent<Camera>(out Camera playerCamera))
+        {   
+            if (!inVent)
             {
-                if (!inVent)
-                {
-                    playerCamera.enabled = false;
-                    if (gameObject.TryGetComponent<Camera>(out Camera ventCamera))
-                    {
-                        ventCamera.enabled = true;
-                        inVent = true;
-                    }
-                }
-
-                if (inVent)
-                {
-                    playerCamera.enabled = true;
-                    if (gameObject.TryGetComponent<Camera>(out Camera ventCamera))
-                    {
-                        ventCamera.enabled = false;
-                        inVent = false;
-                    }
-                }
+                //player.enabled = false;
+                Debug.Log("Get in Vent");
+                playerCamera.enabled = false;
+                gameObject.GetComponentInChildren<Camera>().enabled = true;
+                inVent = true;
             }
 
+            else if (inVent)
+            {
+                //player.enabled = true;
+                Debug.Log("Get out Vent");
+                playerCamera.enabled = true;
+                gameObject.GetComponentInChildren<Camera>().enabled = false;
+                inVent = false;
+            }
 
             // interactionData.Interactor.TryGetComponent<CharacterController>(out CharacterController cc);
             // cc.enabled = false;
