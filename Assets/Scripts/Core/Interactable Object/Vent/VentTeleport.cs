@@ -1,41 +1,43 @@
-using JetBrains.Annotations;
-using Unity.VisualScripting;
+using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using UnityEngine.Events;
 
 public class VentTeleport : MonoBehaviour, IInteractable
 {
-    //public Transform WarpPosition;
-    bool inVent;
+    private int ventID;
+    public bool InVent = false;
     private Camera playerCamera;
+    public UnityEvent OnInteractVent;
 
-    void Start(){
+    void Start()
+    {
         playerCamera = Camera.main;
+
+        OnInteractVent.AddListener(GetComponentInParent<VentSystem>().InteractVent); //Subscriber
     }
 
 
     public void Interact(InteractionData interactionData)
     {
-        Debug.Log("Interact Vent");
-        //VentCamera = gameObject.GetComponentInChildren<Camera>();
+        ventID = Array.IndexOf(gameObject.GetComponentInParent<VentSystem>().VentsList, gameObject.transform);
+        gameObject.GetComponentInParent<VentSystem>().CurrentVentIndex = ventID;
+
         if (interactionData.Interactor.TryGetComponent<Player>(out Player player))
-        {   
-            if (!inVent)
+        {
+            if (!InVent)
             {
-                //player.enabled = false;
-                Debug.Log("Get in Vent");
+                InVent = true;
                 playerCamera.enabled = false;
                 gameObject.GetComponentInChildren<Camera>().enabled = true;
-                inVent = true;
+                OnInteractVent.Invoke();
             }
 
-            else if (inVent)
+            else if (InVent)
             {
-                //player.enabled = true;
-                Debug.Log("Get out Vent");
+                InVent = false;
                 playerCamera.enabled = true;
                 gameObject.GetComponentInChildren<Camera>().enabled = false;
-                inVent = false;
+                OnInteractVent.Invoke();
             }
 
             // interactionData.Interactor.TryGetComponent<CharacterController>(out CharacterController cc);
@@ -44,4 +46,6 @@ public class VentTeleport : MonoBehaviour, IInteractable
             // cc.enabled = true;
         }
     }
+
+
 }
