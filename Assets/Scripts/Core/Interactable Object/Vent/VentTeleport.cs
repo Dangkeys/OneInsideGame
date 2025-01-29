@@ -4,6 +4,7 @@ using UnityEngine.Events;
 
 public class VentTeleport : MonoBehaviour, IInteractable
 {
+    private bool firstVentEntry = true;
     private int ventID;
     public bool InVent = false;
     private Camera playerCamera;
@@ -19,25 +20,29 @@ public class VentTeleport : MonoBehaviour, IInteractable
 
     public void Interact(InteractionData interactionData)
     {
-        ventID = Array.IndexOf(gameObject.GetComponentInParent<VentSystem>().VentsList, gameObject.transform);
-        gameObject.GetComponentInParent<VentSystem>().CurrentVentIndex = ventID;
-
+        if(firstVentEntry){
+            firstVentEntry = false;
+            ventID = Array.IndexOf(gameObject.GetComponentInParent<VentSystem>().VentsList, gameObject.transform);
+            gameObject.GetComponentInParent<VentSystem>().CurrentVentIndex = ventID;
+        }
+        
         if (interactionData.Interactor.TryGetComponent<Player>(out Player player))
         {
             if (!InVent)
             {
                 InVent = true;
                 playerCamera.enabled = false;
-                gameObject.GetComponentInChildren<Camera>().enabled = true;
+                gameObject.GetComponentInParent<VentSystem>().VentsList[gameObject.GetComponentInParent<VentSystem>().CurrentVentIndex].GetComponentInChildren<Camera>().enabled = true;
                 OnInteractVent.Invoke();
             }
 
             else if (InVent)
             {
                 InVent = false;
+                gameObject.GetComponentInParent<VentSystem>().VentsList[gameObject.GetComponentInParent<VentSystem>().CurrentVentIndex].GetComponentInChildren<Camera>().enabled = false;
                 playerCamera.enabled = true;
-                gameObject.GetComponentInChildren<Camera>().enabled = false;
                 OnInteractVent.Invoke();
+                firstVentEntry = true;
             }
 
             // interactionData.Interactor.TryGetComponent<CharacterController>(out CharacterController cc);
