@@ -18,7 +18,7 @@ public class SpawnPoint : MonoBehaviour
 
     public static Vector3 GetRandomSpawnPos()
     {
-        if(spawnPoints.Count == 0)
+        if (spawnPoints.Count == 0)
         {
             return Vector3.zero;
         }
@@ -27,6 +27,10 @@ public class SpawnPoint : MonoBehaviour
     }
     public static Vector3 GetClientSpawnPos(ulong clientId)
     {
+        if (spawnPoints.Count <= (int)clientId)
+        {
+            return Vector3.zero;
+        }
         return spawnPoints[(int)clientId].transform.position;
     }
     private void OnDrawGizmosSelected()
