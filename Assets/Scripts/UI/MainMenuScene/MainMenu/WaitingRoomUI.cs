@@ -38,12 +38,12 @@ public class WaitingRoomUI : MonoBehaviour
         {
             return;
         }
-        if (MainMenuUI.Instance.Lobby.Players.Count < LobbyCustomization.MIN_PLAYERS ||
-             MainMenuUI.Instance.Lobby.Players.Count > LobbyCustomization.MAX_PLAYERS)
+        if (NetworkManager.Singleton.ConnectedClients.Count < LobbyCustomization.MIN_PLAYERS ||
+             NetworkManager.Singleton.ConnectedClients.Count > LobbyCustomization.MAX_PLAYERS)
         {
             return;
         }
-        if (MainMenuUI.Instance.Lobby.Players.Count == MainMenuUI.Instance.Lobby.MaxPlayers)
+        if (NetworkManager.Singleton.ConnectedClients.Count == MainMenuUI.Instance.Lobby.MaxPlayers)
         {
             if (NetworkManager.Singleton.IsServer)
             {
@@ -62,8 +62,8 @@ public class WaitingRoomUI : MonoBehaviour
         {
             gameObject.SetActive(true);
 
-            if (MainMenuUI.Instance.Lobby.Players.Count < LobbyCustomization.MIN_PLAYERS ||
-                MainMenuUI.Instance.Lobby.Players.Count > LobbyCustomization.MAX_PLAYERS)
+            if (NetworkManager.Singleton.ConnectedClients.Count < LobbyCustomization.MIN_PLAYERS ||
+                NetworkManager.Singleton.ConnectedClients.Count > LobbyCustomization.MAX_PLAYERS)
             {
                 StartGameButton.interactable = false;
             }
@@ -74,24 +74,16 @@ public class WaitingRoomUI : MonoBehaviour
         }
     }
 
-    private async void OnEnable()
+    private void OnEnable()
     {
         if (MainMenuUI.Instance.Lobby == null)
             return;
 
-        LobbyPollingWrapper.OnLobbyUpdated += OnLobbyUpdated;
         UpdateUI();
         if (!NetworkManager.Singleton.IsHost)
         {
             StartGameButton.gameObject.SetActive(false);
         }
-        await LobbyPollingWrapper.StartPollingLobby(MainMenuUI.Instance.Lobby.Id);
-    }
-
-    private void OnDisable()
-    {
-        LobbyPollingWrapper.OnLobbyUpdated -= OnLobbyUpdated;
-        LobbyPollingWrapper.StopPolling();
     }
 
     private void OnDestroy()
@@ -99,18 +91,12 @@ public class WaitingRoomUI : MonoBehaviour
         MainMenuUI.Instance.OnLobbyValueChanged -= OnLobbyValueChanged;
     }
 
-    private void OnLobbyUpdated(Lobby lobby)
-    {
-        MainMenuUI.Instance.SetLobby(lobby);
-        UpdateUI();
-    }
-
     private void UpdateUI()
     {
         if (MainMenuUI.Instance.Lobby == null)
             return;
         RoomNameText.text = MainMenuUI.Instance.Lobby.Name;
-        PlayerAmountText.text = $"{MainMenuUI.Instance.Lobby.Players.Count}/{MainMenuUI.Instance.Lobby.MaxPlayers} Players";
+        PlayerAmountText.text = $"{NetworkManager.Singleton.ConnectedClients.Count}/{MainMenuUI.Instance.Lobby.MaxPlayers} Players";
         JoinCodeText.text = $"JoinCode: {MainMenuUI.Instance.Lobby.LobbyCode}";
 
         foreach (Transform child in PlayerItemParent)
@@ -130,7 +116,6 @@ public class WaitingRoomUI : MonoBehaviour
 
         if (NetworkManager.Singleton.IsHost)
         {
-            ReadyManager.Instance.StartGameClientRpc();
             HostSingleton.Instance.GameManager.DeleteLobbyAsync();
             NetworkManager.Singleton.SceneManager.LoadScene(GAME_SCENE, LoadSceneMode.Single);
         }

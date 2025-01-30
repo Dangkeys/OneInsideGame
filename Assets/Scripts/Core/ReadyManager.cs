@@ -96,11 +96,6 @@ public class ReadyManager : NetworkBehaviour
         };
         readyRegistry.Value = newDictionary;
     }
-    [ClientRpc]
-    public void StartGameClientRpc()
-    {
-        LobbyPollingWrapper.StopPolling();
-    }
     public bool IsPlayerReady(ulong clientId)
     {
         return readyRegistry.Value.TryGetValue(clientId, out bool isReady) && isReady;
