@@ -23,7 +23,7 @@ public class Oxygen : MonoBehaviour
             return;
         if (oxygen < maxOxygen)
         {
-            oxygen += (maxOxygen / duration) * Time.deltaTime;
+            oxygen += OxygenSpeed();
             oxygen = Mathf.Min(oxygen, 100f);
             SetOxygenBar();
         }
@@ -31,7 +31,22 @@ public class Oxygen : MonoBehaviour
 
     private void SetOxygenBar()
     {
-        oxygenRect.sizeDelta = new Vector2(oxygenRect.sizeDelta.x, (oxygen > 0) ? 20 : 0);
+        oxygenRect.sizeDelta = new Vector2(oxygenRect.sizeDelta.x, (oxygen > 0) ? 0.1f : 0);
         oxygenBar.size = oxygen / maxOxygen;
+    }
+
+    public void IncreaseOxygen(float amount)
+    {
+        oxygen -= amount;
+        if(oxygen < 0)
+        {
+            oxygen = 0;
+        }
+        SetOxygenBar();
+    }
+
+    public float OxygenSpeed()
+    {
+        return (maxOxygen / duration) * Time.deltaTime;
     }
 }
