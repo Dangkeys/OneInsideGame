@@ -6,34 +6,46 @@ using UnityEngine.SceneManagement;
 
 public class PlayerManager : NetworkBehaviour
 {
+
+    [SerializeField] private Transform playerPrefab;
+    [SerializeField] private bool shouldSpawnPlayers = false;
+
+
     public event Action OnSetAllPlayersToSpawnPos;
+
     public event Action<bool> OnEnableAllPlayersMovement;
-    [field: SerializeField] public Transform PlayerPrefab { get; private set; }
-    [field: SerializeField] private bool shouldSpawnPlayers = false;
+
 
 
     public override void OnNetworkSpawn()
     {
-
-
-        NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnSceneLoadComplete;
-
         if (!OneInsideLevelManager.Instance)
             return;
+        if (IsServer)
+        {
+            OneInsideLevelManager.Instance.OnGameStart += HandleGameStart;
+        }
         OneInsideLevelManager.Instance.VoteManager.OnStateChanged += OnVoteStateChangedServerRpc;
     }
 
-    private void OnSceneLoadComplete(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
+    private void HandleGameStart()
     {
-        if (sceneName != "TajdangScene" || !IsServer)
-            return;
-        if (!shouldSpawnPlayers)
-            return;
-        foreach (ulong id in clientsCompleted)
+
+        if (shouldSpawnPlayers)
         {
-            GameObject player = Instantiate(PlayerPrefab.gameObject, Vector3.zero, Quaternion.identity);
-            player.GetComponent<NetworkObject>().SpawnAsPlayerObject(id, true);
+            SpawnAllPlayers();
         }
+        SetAllPlayerToSpawnPosClientRpc();
+    }
+
+    private void SpawnAllPlayers()
+    {
+        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            GameObject player = Instantiate(playerPrefab.gameObject, Vector3.zero, Quaternion.identity);
+            player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
+        }
+
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -41,6 +53,13 @@ public class PlayerManager : NetworkBehaviour
     {
         OnVoteStateChangedClientRpc(state);
     }
+
+    [ClientRpc]
+    private void SetAllPlayerToSpawnPosClientRpc()
+    {
+        OnSetAllPlayersToSpawnPos?.Invoke();
+    }
+
 
     [ClientRpc]
     private void OnVoteStateChangedClientRpc(VoteManager.State state)
