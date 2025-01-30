@@ -22,7 +22,7 @@ public class OxygenGame : MonoBehaviour
         oxygen = GetComponentInParent<Oxygen>();
         level = GameObject.Find("OxygenLever").GetComponent<RectTransform>();
         oxygenText = GameObject.Find("OxygenSpeed").GetComponent<TMP_Text>();
-        minSpeed = oxygen.OxygenSpeed();
+        minSpeed = oxygen.GetOxygenSpeed();
         foreach (var binding in inputActionReference.action.bindings)
         {
             string[] pathSegments = binding.path.Split('/');

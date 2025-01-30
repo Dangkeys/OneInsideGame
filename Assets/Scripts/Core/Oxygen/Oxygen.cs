@@ -4,7 +4,7 @@ using UnityEngine.UI;
 public class Oxygen : MonoBehaviour
 {
     [SerializeField] private float maxOxygen = 100f;
-    [SerializeField] private float oxygen = 0f;
+    [SerializeField] private float notOxygen = 0f;
     [SerializeField] private float duration = 20f;
     [SerializeField] private GameObject oxygenBarGameObject;
     [SerializeField] private RectTransform oxygenRect;
@@ -21,31 +21,31 @@ public class Oxygen : MonoBehaviour
     {
         if (oxygenBar == null)
             return;
-        if (oxygen < maxOxygen)
+        if (notOxygen < maxOxygen)
         {
-            oxygen += OxygenSpeed();
-            oxygen = Mathf.Min(oxygen, 100f);
+            notOxygen += GetOxygenSpeed();
+            notOxygen = Mathf.Min(notOxygen, 100f);
             SetOxygenBar();
         }
     }
 
     private void SetOxygenBar()
     {
-        oxygenRect.sizeDelta = new Vector2(oxygenRect.sizeDelta.x, (oxygen > 0) ? 0.1f : 0);
-        oxygenBar.size = oxygen / maxOxygen;
+        oxygenRect.sizeDelta = new Vector2(oxygenRect.sizeDelta.x, (notOxygen > 0) ? 0.1f : 0);
+        oxygenBar.size = notOxygen / maxOxygen;
     }
 
     public void IncreaseOxygen(float amount)
     {
-        oxygen -= amount;
-        if(oxygen < 0)
+        notOxygen -= amount;
+        if(notOxygen < 0)
         {
-            oxygen = 0;
+            notOxygen = 0;
         }
         SetOxygenBar();
     }
 
-    public float OxygenSpeed()
+    public float GetOxygenSpeed()
     {
         return (maxOxygen / duration) * Time.deltaTime;
     }
