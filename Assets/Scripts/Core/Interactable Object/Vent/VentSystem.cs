@@ -1,8 +1,8 @@
 using System.Linq;
+using Unity.Netcode;
 using UnityEngine;
 
-
-public class VentSystem : MonoBehaviour
+public class VentSystem : NetworkBehaviour
 {
     public int CurrentVentIndex;
     public Transform[] VentsList;
@@ -27,7 +27,6 @@ public class VentSystem : MonoBehaviour
                     CurrentVentIndex = VentsList.Length - 1;
                 }
                 VentsList[CurrentVentIndex].GetComponentInChildren<Camera>().enabled = true;
-                Debug.Log(CurrentVentIndex);
             }
             if (Input.GetKeyDown(KeyCode.D))
             {
@@ -38,17 +37,16 @@ public class VentSystem : MonoBehaviour
                     CurrentVentIndex = 0;
                 }
                 VentsList[CurrentVentIndex].GetComponentInChildren<Camera>().enabled = true;
-                Debug.Log(CurrentVentIndex);
             }
         }
     }
 
     public void InteractVent()
     {
-        Debug.Log(CurrentVentIndex);
+        //Debug.Log(CurrentVentIndex);
         if (CurrentVentIndex >= 0 && CurrentVentIndex < VentsList.Length)    
         {
-            playerVentStatus = VentsList[CurrentVentIndex].GetComponent<VentTeleport>().InVent;   //Make sure to subscribe the vent that player interacted
+            playerVentStatus = VentsList[CurrentVentIndex].GetComponent<VentInteract>().InVent;   //Make sure to subscribe the vent that player interacted
         }
     }
 

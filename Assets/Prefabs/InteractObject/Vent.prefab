@@ -141,7 +141,7 @@ GameObject:
   - component: {fileID: 516299412317717307}
   - component: {fileID: 1585233846685336820}
   - component: {fileID: 6435325253212162292}
-  - component: {fileID: 706900822392503548}
+  - component: {fileID: 1273632901213732275}
   m_Layer: 0
   m_Name: Vent
   m_TagString: Untagged
@@ -252,7 +252,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1230035697
+  GlobalObjectIdHash: 88807384
   InScenePlacedSourceGlobalObjectIdHash: 1676620892
   DeferredDespawnTick: 0
   Ownership: 1
@@ -265,7 +265,7 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
---- !u!114 &706900822392503548
+--- !u!114 &1273632901213732275
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -277,7 +277,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da398a60e86facd48aa935ac3fc0ee38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  VentID: 0
   InVent: 0
   OnInteractVent:
     m_PersistentCalls:
