@@ -1,63 +1,104 @@
-using System;
-using System.Collections;
+using UnityEngine;
+using Unity.Netcode;
+using UnityEngine.UI;
 using System.Collections.Generic;
 using QFSW.QC;
-using Unity.Netcode;
-using UnityEngine;
-using UnityEngine.UI;
 
-public class TestNetworkMangerUI : MonoBehaviour
+public class NetworkManagerUI : MonoBehaviour
 {
-    [SerializeField] private Button startHostButton;
-    [SerializeField] private Button startClientButton;
-    [SerializeField] private Button startServerButton;
+    [SerializeField] private Button hostButton;
+    [SerializeField] private Button clientButton;
+    [SerializeField] private Button serverButton;
     [SerializeField] private Button disconnectButton;
-    private List<Button> startButtons = new List<Button>();
+    [SerializeField] private Button startGameButton;
 
-    private ulong localClientId;
+    private List<Button> startButtons;
     private bool isServer;
     private bool isClient;
+    private ulong localClientId;
 
-    void Start()
+    private void Start()
     {
-        ResetNetworkState();
+        InitializeButtons();
+        SetupNetworkCallbacks();
 
-        NetworkManager.Singleton.OnClientConnectedCallback += Network_ClientConnected;
-        NetworkManager.Singleton.OnClientDisconnectCallback += Network_ClientDisconnect;
-        NetworkManager.Singleton.OnServerStarted += Network_OnServerStarted;
-        NetworkManager.Singleton.OnServerStopped += Network_OnServerStopped;
-
-        startButtons.Add(startServerButton);
-        startButtons.Add(startClientButton);
-        startButtons.Add(startHostButton);
-
-        startHostButton.onClick.AddListener(StartHost);
-        startClientButton.onClick.AddListener(StartClient);
-        startServerButton.onClick.AddListener(StartServer);
-        disconnectButton.onClick.AddListener(Disconnect);
-
+        // Initial UI state
         ShowStartButtons(true);
         disconnectButton.gameObject.SetActive(false);
+        startGameButton.gameObject.SetActive(false);
     }
 
-    private void Network_OnServerStarted()
+    private void InitializeButtons()
+    {
+        startButtons = new List<Button> { hostButton, clientButton, serverButton };
+
+        hostButton.onClick.AddListener(StartHost);
+        clientButton.onClick.AddListener(StartClient);
+        serverButton.onClick.AddListener(StartServer);
+        disconnectButton.onClick.AddListener(Disconnect);
+        startGameButton.onClick.AddListener(() =>
+        {
+            if (OneInsideLevelManager.Instance != null)
+            {
+
+                OneInsideLevelManager.Instance.StartGame();
+            } else{
+                Debug.Log("Can not start game, Please make sure OneInsideLevelManager is present in the scene");
+            }
+            startGameButton.gameObject.SetActive(false);
+        });
+    }
+
+    private void SetupNetworkCallbacks()
+    {
+        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
+        NetworkManager.Singleton.OnServerStarted += OnServerStarted;
+        NetworkManager.Singleton.OnServerStopped += OnServerStopped;
+    }
+
+    private void OnDestroy()
+    {
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
+            NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnect;
+            NetworkManager.Singleton.OnServerStarted -= OnServerStarted;
+            NetworkManager.Singleton.OnServerStopped -= OnServerStopped;
+        }
+    }
+
+    private void OnServerStarted()
     {
         isServer = true;
         ShowStartButtons(false);
         disconnectButton.gameObject.SetActive(true);
+        startGameButton.gameObject.SetActive(true);  // Show start game when server/host starts
     }
 
-    private void Network_OnServerStopped(bool obj)
+    private void OnServerStopped(bool _)
     {
         isServer = false;
         if (!isClient)
         {
             ShowStartButtons(true);
             disconnectButton.gameObject.SetActive(false);
+            startGameButton.gameObject.SetActive(false);
         }
     }
 
-    private void Network_ClientDisconnect(ulong clientId)
+    private void OnClientConnected(ulong clientId)
+    {
+        if (clientId == NetworkManager.Singleton.LocalClientId)
+        {
+            localClientId = clientId;
+            isClient = true;
+            ShowStartButtons(false);
+            disconnectButton.gameObject.SetActive(true);
+        }
+    }
+
+    private void OnClientDisconnect(ulong clientId)
     {
         if (clientId == localClientId)
         {
@@ -66,62 +107,19 @@ public class TestNetworkMangerUI : MonoBehaviour
             {
                 ShowStartButtons(true);
                 disconnectButton.gameObject.SetActive(false);
+                startGameButton.gameObject.SetActive(false);
             }
         }
     }
 
-    private void Network_ClientConnected(ulong clientId)
-    {
-        localClientId = NetworkManager.Singleton.LocalClientId;
-        if (clientId == localClientId)
-        {
-            isClient = true;
-            ShowStartButtons(false);
-            disconnectButton.gameObject.SetActive(true);
-        }
-    }
-
-    void Update()
-    {
-        // Failsafe check for disconnection
-        if (NetworkManager.Singleton != null &&
-            !NetworkManager.Singleton.IsConnectedClient &&
-            !NetworkManager.Singleton.IsServer &&
-            !isServer && !isClient)
-        {
-            ShowStartButtons(true);
-            disconnectButton.gameObject.SetActive(false);
-        }
-    }
-
-    private void OnDestroy()
-    {
-        if (NetworkManager.Singleton != null)
-        {
-            NetworkManager.Singleton.OnClientConnectedCallback -= Network_ClientConnected;
-            NetworkManager.Singleton.OnClientDisconnectCallback -= Network_ClientDisconnect;
-            NetworkManager.Singleton.OnServerStarted -= Network_OnServerStarted;
-            NetworkManager.Singleton.OnServerStopped -= Network_OnServerStopped;
-        }
-    }
+    [Command]
+    private void StartHost() => NetworkManager.Singleton.StartHost();
 
     [Command]
-    private void StartHost()
-    {
-        NetworkManager.Singleton.StartHost();
-    }
+    private void StartClient() => NetworkManager.Singleton.StartClient();
 
     [Command]
-    private void StartClient()
-    {
-        NetworkManager.Singleton.StartClient();
-    }
-
-    [Command]
-    private void StartServer()
-    {
-        NetworkManager.Singleton.StartServer();
-    }
+    private void StartServer() => NetworkManager.Singleton.StartServer();
 
     [Command]
     private void Disconnect()
@@ -132,32 +130,14 @@ public class TestNetworkMangerUI : MonoBehaviour
         localClientId = 0;
         ShowStartButtons(true);
         disconnectButton.gameObject.SetActive(false);
+        startGameButton.gameObject.SetActive(false);
     }
 
-    private void ResetNetworkState()
-    {
-        if (NetworkManager.Singleton != null)
-        {
-            NetworkManager.Singleton.Shutdown();
-            isServer = false;
-            isClient = false;
-            localClientId = 0;
-            StartCoroutine(EnableStartButtonsNextFrame());
-        }
-    }
-
-    private IEnumerator EnableStartButtonsNextFrame()
-    {
-        yield return new WaitForEndOfFrame();
-        ShowStartButtons(true);
-        disconnectButton.gameObject.SetActive(false);
-    }
-
-    private void ShowStartButtons(bool shouldShow)
+    private void ShowStartButtons(bool show)
     {
         foreach (Button button in startButtons)
         {
-            button.gameObject.SetActive(shouldShow);
+            button.gameObject.SetActive(show);
         }
     }
 }

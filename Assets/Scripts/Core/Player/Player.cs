@@ -1,3 +1,4 @@
+using System;
 using Unity.Cinemachine;
 using Unity.Collections;
 using Unity.Netcode;
@@ -5,6 +6,13 @@ using UnityEngine;
 
 public class Player : NetworkBehaviour
 {
+     public enum Role
+     {
+          None,
+          Crewmate,
+          Imposter
+     }
+
      [Header("References")]
      [field: SerializeField] public CinemachineCamera VirtualCamera { get; private set; }
      [field: SerializeField] public InputReader InputReader { get; private set; }
@@ -13,6 +21,10 @@ public class Player : NetworkBehaviour
      [field: SerializeField] public PlayerMovement PlayerMovement { get; private set; }
      [field: SerializeField] public CinemachineInputAxisController AxisController { get; private set; }
 
+     public NetworkVariable<bool> IsAlive = new NetworkVariable<bool>(true);
+
+     public NetworkVariable<Role> PlayerRole = new NetworkVariable<Role>(Role.None);
+
      //--------------------------------------
      // Private Variables
      //--------------------------------------
@@ -20,6 +32,62 @@ public class Player : NetworkBehaviour
      private BoxCollider[] hitBoxes;
      private PlayerState playerState;
 
+     public override void OnNetworkSpawn()
+     {
+
+          hitBoxes = Hitbox.GetComponents<BoxCollider>();
+
+          playerState = GetComponent<PlayerState>();
+
+          if (!IsOwner)
+          {
+               // Other Player
+               VirtualCamera.Priority = int.MinValue;
+          }
+          else
+          {
+               InputReader.AttackEvent += On_Attack_Local;
+
+               playerState.SetAttacking(false);
+               playerState.SetStunning(false);
+               playerState.SetWalking(false);
+               playerState.SetRunning(false);
+               playerState.SetDead(false);
+               if (!OneInsideLevelManager.Instance)
+                    return;
+               OneInsideLevelManager.Instance.PlayerManager.OnSetAllPlayersToSpawnPos += ResetToSpawnPoint;
+               OneInsideLevelManager.Instance.PlayerManager.OnEnableAllPlayersMovement += EnablePlayerMovement;
+          }
+          PlayerRole.OnValueChanged += OnRoleChanged;
+     }
+
+     public override void OnNetworkDespawn()
+     {
+          if (!IsOwner)
+               return;
+
+          if (!OneInsideLevelManager.Instance)
+               return;
+          OneInsideLevelManager.Instance.PlayerManager.OnSetAllPlayersToSpawnPos -= ResetToSpawnPoint;
+          OneInsideLevelManager.Instance.PlayerManager.OnEnableAllPlayersMovement -= EnablePlayerMovement;
+
+     }
+
+     //--------------------------------------
+     // Debug Methods
+     //--------------------------------------
+
+     private void Update()
+     {
+          if (!IsOwner)
+               return;
+
+          if (Input.GetKeyDown(KeyCode.R))
+          {
+               playerState.SetDeadServerRpc(false);
+               playerState.SetHealthServerRpc(playerState.MaxHealth.Value);
+          }
+     }
      //--------------------------------------
      // Attack Methods
      //--------------------------------------
@@ -107,60 +175,20 @@ public class Player : NetworkBehaviour
      // Network & Lifecycle Methods
      //--------------------------------------
 
-     public override void OnNetworkSpawn()
+
+     private void OnRoleChanged(Role previousValue, Role newValue)
      {
-
-          hitBoxes = Hitbox.GetComponents<BoxCollider>();
-
-          playerState = GetComponent<PlayerState>();
-
-          if (!IsOwner)
+          if (IsOwner)
           {
-               // Other Player
-               VirtualCamera.Priority = int.MinValue;
-          }
-          else
-          {
-               InputReader.AttackEvent += On_Attack_Local;
-
-               playerState.SetAttacking(false);
-               playerState.SetStunning(false);
-               playerState.SetWalking(false);
-               playerState.SetRunning(false);
-               playerState.SetDead(false);
-               ResetToSpawnPoint();
-               if (!OneInsideLevelManager.Instance)
-                    return;
-               OneInsideLevelManager.Instance.PlayerManager.OnSetAllPlayersToSpawnPos += ResetToSpawnPoint;
-               OneInsideLevelManager.Instance.PlayerManager.OnEnableAllPlayersMovement += EnablePlayerMovement;
+               Debug.Log($"Your role changed to: {newValue}");
+               
           }
      }
 
-     public override void OnNetworkDespawn()
+     [ServerRpc(RequireOwnership = false)]
+     public void SetRoleServerRpc(Role role)
      {
-          if (!IsOwner)
-               return;
-
-          if (!OneInsideLevelManager.Instance)
-               return;
-          OneInsideLevelManager.Instance.PlayerManager.OnSetAllPlayersToSpawnPos -= ResetToSpawnPoint;
-     }
-
-     //--------------------------------------
-     // Debug Methods
-     //--------------------------------------
-
-     private void Update()
-     {
-          if (!IsOwner)
-               return;
-
-          //Debug
-          if (Input.GetKeyDown(KeyCode.R))
-          {
-               playerState.SetDeadServerRpc(false);
-               playerState.SetHealthServerRpc(playerState.MaxHealth.Value);
-          }
+          PlayerRole.Value = role;
      }
 
      //--------------------------------------
