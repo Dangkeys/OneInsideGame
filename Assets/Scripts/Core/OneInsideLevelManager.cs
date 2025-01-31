@@ -38,6 +38,15 @@ public class OneInsideLevelManager : NetworkBehaviour
 
     public void StartGame()
     {
-        OnGameStart?.Invoke();
+        if(!IsClient && !IsHost)
+        {
+            OnGameStart?.Invoke();
+        }
+        StartGameClientRpc();
+    }
+    [ClientRpc]
+    private void StartGameClientRpc()
+    {
+       OnGameStart?.Invoke();
     }
 }

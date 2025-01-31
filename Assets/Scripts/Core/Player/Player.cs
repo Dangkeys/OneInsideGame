@@ -181,6 +181,7 @@ public class Player : NetworkBehaviour
           if (IsOwner)
           {
                Debug.Log($"Your role changed to: {newValue}");
+               
           }
      }
 
