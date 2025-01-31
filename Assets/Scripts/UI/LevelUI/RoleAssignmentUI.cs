@@ -26,7 +26,6 @@ public class RoleAssignemntUI : MonoBehaviour
 
     private void HandleGameStart()
     {
-        Debug.Log("Game Started");
         SubscribeToRoleChangedEvent();
     }
 
@@ -45,6 +44,8 @@ public class RoleAssignemntUI : MonoBehaviour
     }
     private void UnSubscribeToRoleChangedEvent()
     {
+        if (NetworkManager.Singleton == null)
+            return;
         foreach (var client in NetworkManager.Singleton.ConnectedClients.Values)
         {
             if (client.PlayerObject.TryGetComponent<Player>(out var player))

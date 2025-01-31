@@ -38,5 +38,12 @@ public class RoleManager : NetworkBehaviour
 
         }
     }
+    public override void OnDestroy()
+    {
+        if (IsServer)
+        {
+            OneInsideLevelManager.Instance.OnGameStart -= HandleGameStart;
+        }
+    }
 
 }
