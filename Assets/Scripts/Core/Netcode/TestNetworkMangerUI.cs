@@ -36,7 +36,17 @@ public class NetworkManagerUI : MonoBehaviour
         clientButton.onClick.AddListener(StartClient);
         serverButton.onClick.AddListener(StartServer);
         disconnectButton.onClick.AddListener(Disconnect);
-        startGameButton.onClick.AddListener(() => { OneInsideLevelManager.Instance.StartGame(); startGameButton.gameObject.SetActive(false); });
+        startGameButton.onClick.AddListener(() =>
+        {
+            if (OneInsideLevelManager.Instance != null)
+            {
+
+                OneInsideLevelManager.Instance.StartGame();
+            } else{
+                Debug.Log("Can not start game, Please make sure OneInsideLevelManager is present in the scene");
+            }
+            startGameButton.gameObject.SetActive(false);
+        });
     }
 
     private void SetupNetworkCallbacks()
