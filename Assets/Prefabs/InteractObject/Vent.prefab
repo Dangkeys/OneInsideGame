@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2254408997427531047}
   - component: {fileID: 4049263603599838144}
   - component: {fileID: 8307139151136124336}
+  - component: {fileID: 910807985305461004}
   m_Layer: 0
   m_Name: ventCamera
   m_TagString: Untagged
@@ -26,13 +27,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4583869317075134477}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.024408989, y: 0.66228944, z: -0.7485389, w: -0.021596491}
-  m_LocalPosition: {x: -0, y: 54.25, z: -0.28}
+  m_LocalRotation: {x: 0, y: -1, z: 0, w: 0}
+  m_LocalPosition: {x: 0, y: 7.8, z: 0.15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5298155890475170155}
-  m_LocalEulerAnglesHint: {x: 96.99701, y: 183.735, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -180, z: 0}
 --- !u!20 &4049263603599838144
 Camera:
   m_ObjectHideFlags: 0
@@ -65,7 +66,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 100
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -128,6 +129,19 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &910807985305461004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4583869317075134477}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fa75a459cd0f484f8026e6dd897ac42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Sensitivity: 2
 --- !u!1 &7066015911096681948
 GameObject:
   m_ObjectHideFlags: 0
@@ -277,6 +291,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da398a60e86facd48aa935ac3fc0ee38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   InVent: 0
   OnInteractVent:
     m_PersistentCalls:

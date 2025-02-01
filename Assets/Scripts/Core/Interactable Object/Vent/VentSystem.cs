@@ -16,37 +16,40 @@ public class VentSystem : NetworkBehaviour
 
     void Update()
     {
-        if (playerVentStatus)
+        if (playerVentStatus) //if player is inside vent
         {
             if (Input.GetKeyDown(KeyCode.A))
             {
                 VentsList[CurrentVentIndex].GetComponentInChildren<Camera>().enabled = false;
+                VentsList[CurrentVentIndex].GetComponentInChildren<VentCamera>().enabled = false;
                 CurrentVentIndex--;
                 if (CurrentVentIndex < 0)
                 {
                     CurrentVentIndex = VentsList.Length - 1;
                 }
                 VentsList[CurrentVentIndex].GetComponentInChildren<Camera>().enabled = true;
+                VentsList[CurrentVentIndex].GetComponentInChildren<VentCamera>().enabled = true;
             }
             if (Input.GetKeyDown(KeyCode.D))
             {
                 VentsList[CurrentVentIndex].GetComponentInChildren<Camera>().enabled = false;
+                VentsList[CurrentVentIndex].GetComponentInChildren<VentCamera>().enabled = false;
                 CurrentVentIndex++;
                 if (CurrentVentIndex > VentsList.Length - 1)
                 {
                     CurrentVentIndex = 0;
                 }
                 VentsList[CurrentVentIndex].GetComponentInChildren<Camera>().enabled = true;
+                VentsList[CurrentVentIndex].GetComponentInChildren<VentCamera>().enabled = true;
             }
         }
     }
 
     public void InteractVent()
     {
-        //Debug.Log(CurrentVentIndex);
         if (CurrentVentIndex >= 0 && CurrentVentIndex < VentsList.Length)    
         {
-            playerVentStatus = VentsList[CurrentVentIndex].GetComponent<VentInteract>().InVent;   //Make sure to subscribe the vent that player interacted
+            playerVentStatus = VentsList[CurrentVentIndex].GetComponent<VentInteract>().InVent;   //Update if player is inside vent or outside
         }
     }
 

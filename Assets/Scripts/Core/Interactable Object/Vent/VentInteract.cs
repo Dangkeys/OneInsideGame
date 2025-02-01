@@ -37,7 +37,6 @@ public class VentInteract : NetworkBehaviour, IInteractable
                 if (interactor.TryGetComponent<NetworkObject>(out NetworkObject networkObject))
                 {
                     interactorID = networkObject.NetworkObjectId;
-                    Debug.Log($"First Entry by {interactorID}");
                 }
             }
         }
@@ -52,6 +51,7 @@ public class VentInteract : NetworkBehaviour, IInteractable
                 InVent = true;
                 playerCamera.enabled = false;
                 gameObject.GetComponentInParent<VentSystem>().VentsList[gameObject.GetComponentInParent<VentSystem>().CurrentVentIndex].GetComponentInChildren<Camera>().enabled = true;
+                gameObject.GetComponentInParent<VentSystem>().VentsList[gameObject.GetComponentInParent<VentSystem>().CurrentVentIndex].GetComponentInChildren<VentCamera>().enabled = true;
                 OnInteractVent.Invoke();
             }
 
@@ -60,11 +60,12 @@ public class VentInteract : NetworkBehaviour, IInteractable
                 cc.enabled = false;
                 player.transform.position = gameObject.GetComponentInParent<VentSystem>().VentsList[gameObject.GetComponentInParent<VentSystem>().CurrentVentIndex].position;
                 cc.enabled = true;
-                EnablePlayerServerRpc(interactorID); //notify server to enable player
+                EnablePlayerServerRpc(interactorID); //notify server to enable player visibility
                 
 
                 InVent = false;
                 gameObject.GetComponentInParent<VentSystem>().VentsList[gameObject.GetComponentInParent<VentSystem>().CurrentVentIndex].GetComponentInChildren<Camera>().enabled = false;
+                gameObject.GetComponentInParent<VentSystem>().VentsList[gameObject.GetComponentInParent<VentSystem>().CurrentVentIndex].GetComponentInChildren<VentCamera>().enabled = false;
                 playerCamera.enabled = true;
                 OnInteractVent.Invoke();
                 firstVentEntry = true;
@@ -77,8 +78,6 @@ public class VentInteract : NetworkBehaviour, IInteractable
     {
         if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(playerID, out NetworkObject playerObj))
         {
-            //Debug.Log($"Disable ID {playerID}");
-            //Debug.Log(playerObj.gameObject.name);
             playerObj.gameObject.SetActive(false);
             EnablePlayerVisibilityClientRpc(playerID, false); //apply visibility
         }
@@ -90,8 +89,6 @@ public class VentInteract : NetworkBehaviour, IInteractable
     {
         if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(playerID, out NetworkObject playerObj))
         {
-            //Debug.Log($"Enable ID {playerID}");
-            //Debug.Log(playerObj.gameObject.name);
             playerObj.gameObject.SetActive(true);
             EnablePlayerVisibilityClientRpc(playerID, true); //apply visibility
         }
