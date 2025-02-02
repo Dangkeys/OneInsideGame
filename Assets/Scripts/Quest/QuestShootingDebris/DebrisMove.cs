@@ -7,6 +7,7 @@ public class DebrisMove : MonoBehaviour
     [SerializeField] private float speed = 5f;
     private Vector3 finishPosition;
     [SerializeField] private float lifetime = 10f;
+    [SerializeField] private QuestShootingManager questShootingManager;
 
     private void Start()
     {
@@ -17,6 +18,7 @@ public class DebrisMove : MonoBehaviour
         rb.linearVelocity = movement * speed * Time.deltaTime;
         if (Vector3.Distance(finishPosition, transform.position) < 0.1f)
         {
+            questShootingManager.TakeDamage();
             gameObject.SetActive(false);
         }
     }
