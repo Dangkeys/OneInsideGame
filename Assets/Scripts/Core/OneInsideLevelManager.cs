@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.Services.Authentication;
+using Unity.Services.Core;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -35,7 +36,7 @@ public class OneInsideLevelManager : NetworkBehaviour
             State.OnValueChanged += OnGameStateChanged;
         }
 
-        if(!AuthenticationService.Instance.IsSignedIn)
+        if(UnityServices.State == ServicesInitializationState.Uninitialized)
         {
             await ClientSingleton.Instance.CreateClient();
         }
