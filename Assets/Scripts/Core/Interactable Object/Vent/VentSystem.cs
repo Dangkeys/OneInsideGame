@@ -1,13 +1,16 @@
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class VentSystem : NetworkBehaviour
 {
     public int CurrentVentIndex;
     public Transform[] VentsList;
     private bool playerVentStatus;
+    public InputActionReference PreviousAction;
 
+    public InputActionReference ForwardAction;
     void Start()
     {
         VentsList = transform.GetComponentsInChildren<Transform>();
@@ -18,7 +21,7 @@ public class VentSystem : NetworkBehaviour
     {
         if (playerVentStatus) //if player is inside vent
         {
-            if (Input.GetKeyDown(KeyCode.A))
+            if (PreviousAction.action.WasPressedThisFrame())
             {
                 VentsList[CurrentVentIndex].GetComponentInChildren<Camera>().enabled = false;
                 VentsList[CurrentVentIndex].GetComponentInChildren<VentCamera>().enabled = false;
@@ -30,7 +33,7 @@ public class VentSystem : NetworkBehaviour
                 VentsList[CurrentVentIndex].GetComponentInChildren<Camera>().enabled = true;
                 VentsList[CurrentVentIndex].GetComponentInChildren<VentCamera>().enabled = true;
             }
-            if (Input.GetKeyDown(KeyCode.D))
+            if (ForwardAction.action.WasPressedThisFrame())
             {
                 VentsList[CurrentVentIndex].GetComponentInChildren<Camera>().enabled = false;
                 VentsList[CurrentVentIndex].GetComponentInChildren<VentCamera>().enabled = false;
@@ -47,7 +50,7 @@ public class VentSystem : NetworkBehaviour
 
     public void InteractVent()
     {
-        if (CurrentVentIndex >= 0 && CurrentVentIndex < VentsList.Length)    
+        if (CurrentVentIndex >= 0 && CurrentVentIndex < VentsList.Length)
         {
             playerVentStatus = VentsList[CurrentVentIndex].GetComponent<VentInteract>().InVent;   //Update if player is inside vent or outside
         }
