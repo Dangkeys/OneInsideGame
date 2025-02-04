@@ -8,13 +8,13 @@ public class PlayerManager : NetworkBehaviour
 {
 
     [SerializeField] private Transform playerPrefab;
-    [SerializeField] private bool shouldSpawnPlayers = false;
 
 
-    public event Action OnSetAllPlayersToSpawnPos;
+    public event Action OnAllPlayersInTheGame;
+
+    public event Action OnResetALlPlayerPosition;
 
     public event Action<bool> OnEnableAllPlayersMovement;
-
 
 
     public override void OnNetworkSpawn()
@@ -23,19 +23,37 @@ public class PlayerManager : NetworkBehaviour
             return;
         if (IsServer)
         {
-            OneInsideLevelManager.Instance.OnGameStart += HandleGameStart;
+            OneInsideLevelManager.Instance.State.OnValueChanged += HandleGameStateChanged;
         }
         OneInsideLevelManager.Instance.VoteManager.OnStateChanged += OnVoteStateChangedServerRpc;
     }
 
-    private void HandleGameStart()
+    private void HandleGameStateChanged(GameState previousValue, GameState newValue)
     {
-
-        if (shouldSpawnPlayers)
+        switch (newValue)
         {
-            SpawnAllPlayers();
+            case GameState.WaitingToStart:
+                break;
+            case GameState.GamePlaying:
+                if (!OneInsideLevelManager.Instance.IsPlayerInitializationRequired.Value)
+                {
+                    SpawnAllPlayers();
+                }
+                ResetAllPlayerPositionClientRpc();
+                if (!IsHost)
+                {
+                    OnAllPlayersInTheGame?.Invoke();
+                }
+                else
+                {
+                    OnAllPlayersInTheGameClientRpc();
+                }
+
+                break;
+            case GameState.GameOver:
+                ResetAllPlayerPositionClientRpc();
+                break;
         }
-        SetAllPlayerToSpawnPosClientRpc();
     }
 
     private void SpawnAllPlayers()
@@ -55,9 +73,15 @@ public class PlayerManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void SetAllPlayerToSpawnPosClientRpc()
+    private void ResetAllPlayerPositionClientRpc()
     {
-        OnSetAllPlayersToSpawnPos?.Invoke();
+        OnResetALlPlayerPosition?.Invoke();
+    }
+
+    [ClientRpc]
+    private void OnAllPlayersInTheGameClientRpc()
+    {
+        OnAllPlayersInTheGame?.Invoke();
     }
 
 
@@ -70,7 +94,7 @@ public class PlayerManager : NetworkBehaviour
                 break;
             case VoteManager.State.Voting:
                 OnEnableAllPlayersMovement?.Invoke(false);
-                OnSetAllPlayersToSpawnPos?.Invoke();
+                OnResetALlPlayerPosition?.Invoke();
                 break;
             case VoteManager.State.VoteOver:
                 OnEnableAllPlayersMovement?.Invoke(true);
@@ -80,13 +104,12 @@ public class PlayerManager : NetworkBehaviour
 
     public override void OnNetworkDespawn()
     {
-        if (NetworkManager.Singleton != null)
+        if (!OneInsideLevelManager.Instance)
+            return;
+        if (IsServer)
         {
+            OneInsideLevelManager.Instance.State.OnValueChanged -= HandleGameStateChanged;
         }
-
-        if (OneInsideLevelManager.Instance)
-        {
-            OneInsideLevelManager.Instance.VoteManager.OnStateChanged -= OnVoteStateChangedServerRpc;
-        }
+        OneInsideLevelManager.Instance.VoteManager.OnStateChanged -= OnVoteStateChangedServerRpc;
     }
 }

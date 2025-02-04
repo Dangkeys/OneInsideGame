@@ -1,4 +1,5 @@
 
+using System;
 using TMPro;
 using Unity.Netcode;
 
@@ -7,25 +8,24 @@ using UnityEngine;
 public class RoleAssignemntUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI roleText;
-    private void Show(Player.Role role)
+    private void Show(PlayerRole role)
     {
         roleText.text = $"YOUR ROLE IS {role.ToString().ToUpper()}";
         gameObject.SetActive(true);
     }
 
-    private void Start()
+    private void Awake()
     {
         if (OneInsideLevelManager.Instance == null)
         {
             Debug.LogError("OneInsideLevelManager.Instance is null");
             return;
         }
-        OneInsideLevelManager.Instance.OnGameStart += HandleGameStart;
+        OneInsideLevelManager.Instance.PlayerManager.OnAllPlayersInTheGame += HandleAllPlayersInTheGame;
         Hide();
     }
 
-    private void HandleGameStart()
-    {
+    private void HandleAllPlayersInTheGame(){
         SubscribeToRoleChangedEvent();
     }
 
@@ -37,7 +37,7 @@ public class RoleAssignemntUI : MonoBehaviour
             {
                 if (client.ClientId == NetworkManager.Singleton.LocalClientId)
                 {
-                    player.PlayerRole.OnValueChanged += RoleChanged;
+                    player.Role.OnValueChanged += RoleChanged;
                 }
             }
         }
@@ -52,13 +52,13 @@ public class RoleAssignemntUI : MonoBehaviour
             {
                 if (client.ClientId == NetworkManager.Singleton.LocalClientId)
                 {
-                    player.PlayerRole.OnValueChanged -= RoleChanged;
+                    player.Role.OnValueChanged -= RoleChanged;
                 }
             }
         }
     }
 
-    private void RoleChanged(Player.Role previousValue, Player.Role newValue)
+    private void RoleChanged(PlayerRole previousValue, PlayerRole newValue)
     {
         Show(newValue);
     }
@@ -68,7 +68,7 @@ public class RoleAssignemntUI : MonoBehaviour
     }
     private void OnDestroy()
     {
-        OneInsideLevelManager.Instance.OnGameStart -= HandleGameStart;
+        OneInsideLevelManager.Instance.PlayerManager.OnAllPlayersInTheGame -= HandleAllPlayersInTheGame;
         UnSubscribeToRoleChangedEvent();
 
     }

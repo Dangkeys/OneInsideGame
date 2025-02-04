@@ -1,21 +1,28 @@
+using System;
 using System.Collections.Generic;
+using Mono.CSharp;
 using Unity.Netcode;
 using UnityEngine;
 
 public class RoleManager : NetworkBehaviour
 {
+
     public override void OnNetworkSpawn()
     {
-        if (IsServer)
-        {
-            OneInsideLevelManager.Instance.OnGameStart += HandleGameStart;
+        OneInsideLevelManager.Instance.PlayerManager.OnAllPlayersInTheGame += HandleAllPlayersInTheGame;
+    }
+
+    private void HandleAllPlayersInTheGame(){
+        if(IsServer){
+            AssignRandomRoles(1);
         }
     }
 
-    private void HandleGameStart()
+    public override void OnNetworkDespawn()
     {
-        AssignRandomRoles(1);
+        OneInsideLevelManager.Instance.PlayerManager.OnAllPlayersInTheGame -= HandleAllPlayersInTheGame;
     }
+
 
     private void AssignRandomRoles(int imposterCount)
     {
@@ -25,24 +32,17 @@ public class RoleManager : NetworkBehaviour
 
         for (int i = 0; i < shuffledPlayers.Count; i++)
         {
-            var role = i < imposterCount ? Player.Role.Imposter : Player.Role.Crewmate;
+            var role = i < imposterCount ? PlayerRole.Imposter : PlayerRole.Crewmate;
             var clientId = shuffledPlayers[i];
 
             if (NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out var client))
             {
                 if (client.PlayerObject.TryGetComponent<Player>(out var player))
                 {
-                    player.SetRoleServerRpc(role);
+                    player.Role.Value = role;
                 }
             }
 
-        }
-    }
-    public override void OnDestroy()
-    {
-        if (IsServer)
-        {
-            OneInsideLevelManager.Instance.OnGameStart -= HandleGameStart;
         }
     }
 

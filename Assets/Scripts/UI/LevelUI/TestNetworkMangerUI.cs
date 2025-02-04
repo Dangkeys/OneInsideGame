@@ -3,6 +3,8 @@ using Unity.Netcode;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using QFSW.QC;
+using UnityEngine.SceneManagement;
+using System;
 
 public class NetworkManagerUI : MonoBehaviour
 {
@@ -17,6 +19,16 @@ public class NetworkManagerUI : MonoBehaviour
     private bool isClient;
     private ulong localClientId;
 
+    private void Awake()
+    {
+      SceneManager.sceneLoaded += OnSceneLoadComplete;
+    }
+
+    private void OnSceneLoadComplete(Scene arg0, LoadSceneMode arg1){
+        SceneManager.sceneLoaded -= OnSceneLoadComplete;
+        gameObject.SetActive(false);
+    }
+
     private void Start()
     {
         InitializeButtons();
@@ -26,6 +38,7 @@ public class NetworkManagerUI : MonoBehaviour
         ShowStartButtons(true);
         disconnectButton.gameObject.SetActive(false);
         startGameButton.gameObject.SetActive(false);
+
     }
 
     private void InitializeButtons()
@@ -41,8 +54,10 @@ public class NetworkManagerUI : MonoBehaviour
             if (OneInsideLevelManager.Instance != null)
             {
 
-                OneInsideLevelManager.Instance.StartGame();
-            } else{
+                OneInsideLevelManager.Instance.SetGameState(GameState.GamePlaying);
+            }
+            else
+            {
                 Debug.Log("Can not start game, Please make sure OneInsideLevelManager is present in the scene");
             }
             startGameButton.gameObject.SetActive(false);
