@@ -1,18 +1,29 @@
 using UnityEngine;
-
+using UnityEngine.InputSystem;
 public class VentCamera : MonoBehaviour
 {
-    public float Sensitivity = 2f;
-    float rotationX = 0f;
+    public float LookSpeed = 1f;
 
-    void Update()
+    private Vector2 lookInput;
+    private float yaw, pitch;
+
+    void Start()
     {
-        float mouseX = Input.GetAxis("Mouse X") * Sensitivity;
-        float mouseY = Input.GetAxis("Mouse Y") * Sensitivity;
+        yaw = transform.localEulerAngles.y;
+        pitch = transform.localEulerAngles.x;
+    }
 
-        rotationX -= mouseY;
-        rotationX = Mathf.Clamp(rotationX, 0f, 45f);
+    public void OnLook(InputAction.CallbackContext context)
+    {
+        lookInput = context.ReadValue<Vector2>() * LookSpeed;
+    }
 
-        transform.localRotation = Quaternion.Euler(rotationX, transform.localRotation.eulerAngles.y + mouseX, 0);
+    private void Update()
+    {
+        yaw += lookInput.x * LookSpeed;
+        pitch -= lookInput.y * LookSpeed;
+        pitch = Mathf.Clamp(pitch, 0f, 45f);
+
+        transform.localRotation = Quaternion.Euler(pitch, yaw, 0f);
     }
 }
