@@ -12,6 +12,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Text;
 using Unity.Services.Authentication;
+using Unity.Services.Vivox;
 
 public class ClientGameManager : IDisposable
 {
@@ -24,7 +25,11 @@ public class ClientGameManager : IDisposable
         networkClient = new NetworkClient(NetworkManager.Singleton);
 
         AuthState authState = await AuthenticationWrapper.DoAuth();
-
+        
+        await VivoxService.Instance.InitializeAsync();
+        Debug.Log("Vivox logging in...");
+        await VivoxService.Instance.LoginAsync();
+        Debug.Log("Vivox logged in!");
         if (authState == AuthState.Authenticated)
         {
             return true;

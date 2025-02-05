@@ -19,6 +19,8 @@ public class OneInsideLevelManager : NetworkBehaviour
 
     [field: SerializeField] public RoleManager RoleManager;
 
+    [field: SerializeField] public VivoxManager VivoxManager;
+
     public NetworkVariable<bool> IsPlayerInitializationRequired = new NetworkVariable<bool>(true);
 
     public static OneInsideLevelManager Instance { get; private set; }
@@ -28,17 +30,12 @@ public class OneInsideLevelManager : NetworkBehaviour
         Instance = this;
     }
 
-    public async override void OnNetworkSpawn()
+    public override void OnNetworkSpawn()
     {
         if (IsServer)
         {
             NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnSceneLoadComplete;
             State.OnValueChanged += OnGameStateChanged;
-        }
-
-        if(UnityServices.State == ServicesInitializationState.Uninitialized)
-        {
-            await ClientSingleton.Instance.CreateClient();
         }
 
     }

@@ -164,6 +164,11 @@ public class VoteManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void RaiseVoteStartServerRpc()
     {
+        if(OneInsideLevelManager.Instance.State.Value != GameState.GamePlaying)
+        {
+            Debug.LogWarning("Attempted to start a vote while not in game");
+            return;
+        }
         if (state.Value != VoteState.Voting)
         {
             VotingTimer.Value = VotingTimerMax;
