@@ -9,7 +9,6 @@ public class NetworkClient : IDisposable
 {
     private NetworkManager networkManager;
 
-    private const string MenuSceneName = "MainMenuScene";
 
     public NetworkClient(NetworkManager networkManager)
     {
@@ -28,9 +27,9 @@ public class NetworkClient : IDisposable
 
     public void Disconnect()
     {
-        if (SceneManager.GetActiveScene().name != MenuSceneName)
+        if (SceneManager.GetActiveScene().name != GameScene.MainMenuScene.ToString())
         {
-            SceneManager.LoadScene(MenuSceneName);
+            SceneManager.LoadScene(GameScene.MainMenuScene.ToString());
         }
 
         if (networkManager.IsConnectedClient)

@@ -6,12 +6,6 @@ using UnityEngine;
 
 public class Player : NetworkBehaviour
 {
-     public enum Role
-     {
-          None,
-          Crewmate,
-          Imposter
-     }
 
      [Header("References")]
      [field: SerializeField] public CinemachineCamera VirtualCamera { get; private set; }
@@ -23,7 +17,7 @@ public class Player : NetworkBehaviour
 
      public NetworkVariable<bool> IsAlive = new NetworkVariable<bool>(true);
 
-     public NetworkVariable<Role> PlayerRole = new NetworkVariable<Role>(Role.None);
+     public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>(PlayerRole.None);
 
      //--------------------------------------
      // Private Variables
@@ -55,10 +49,10 @@ public class Player : NetworkBehaviour
                playerState.SetDead(false);
                if (!OneInsideLevelManager.Instance)
                     return;
-               OneInsideLevelManager.Instance.PlayerManager.OnSetAllPlayersToSpawnPos += ResetToSpawnPoint;
+               OneInsideLevelManager.Instance.PlayerManager.OnResetALlPlayerPosition += ResetToSpawnPoint;
                OneInsideLevelManager.Instance.PlayerManager.OnEnableAllPlayersMovement += EnablePlayerMovement;
           }
-          PlayerRole.OnValueChanged += OnRoleChanged;
+          Role.OnValueChanged += OnRoleChanged;
      }
 
      public override void OnNetworkDespawn()
@@ -68,7 +62,7 @@ public class Player : NetworkBehaviour
 
           if (!OneInsideLevelManager.Instance)
                return;
-          OneInsideLevelManager.Instance.PlayerManager.OnSetAllPlayersToSpawnPos -= ResetToSpawnPoint;
+          OneInsideLevelManager.Instance.PlayerManager.OnResetALlPlayerPosition -= ResetToSpawnPoint;
           OneInsideLevelManager.Instance.PlayerManager.OnEnableAllPlayersMovement -= EnablePlayerMovement;
 
      }
@@ -176,7 +170,7 @@ public class Player : NetworkBehaviour
      //--------------------------------------
 
 
-     private void OnRoleChanged(Role previousValue, Role newValue)
+     private void OnRoleChanged(PlayerRole previousValue, PlayerRole newValue)
      {
           if (IsOwner)
           {
@@ -185,11 +179,6 @@ public class Player : NetworkBehaviour
           }
      }
 
-     [ServerRpc(RequireOwnership = false)]
-     public void SetRoleServerRpc(Role role)
-     {
-          PlayerRole.Value = role;
-     }
 
      //--------------------------------------
      // Spawn & Reset Methods

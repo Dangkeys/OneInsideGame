@@ -17,7 +17,6 @@ public class ClientGameManager : IDisposable
 {
     private JoinAllocation allocation;
     private NetworkClient networkClient;
-    private const string MainMenuSceneName = "MainMenuScene";
 
     public async Task<bool> InitAsync()
     {
@@ -36,7 +35,7 @@ public class ClientGameManager : IDisposable
 
     public void GoToMenu()
     {
-        SceneManager.LoadScene(MainMenuSceneName);
+        SceneManager.LoadScene(GameScene.MainMenuScene.ToString());
     }
     public async Task StartClientAsync(string relayJoinCode)
     {

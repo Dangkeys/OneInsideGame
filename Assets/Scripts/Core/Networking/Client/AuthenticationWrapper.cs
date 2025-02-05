@@ -132,11 +132,3 @@ public static class AuthenticationWrapper
     }
 }
 
-public enum AuthState
-{
-    NotAuthenticated,
-    Authenticating,
-    Authenticated,
-    Error,
-    TimeOut
-}
