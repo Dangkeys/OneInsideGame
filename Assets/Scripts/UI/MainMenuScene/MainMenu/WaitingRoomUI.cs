@@ -15,7 +15,6 @@ public class WaitingRoomUI : MonoBehaviour
     [field: SerializeField] public Button ReadyButton { get; private set; }
     [field: SerializeField] public Transform PlayerItemParent { get; private set; }
     [field: SerializeField] public PlayerItem PlayerItemPrefab { get; private set; }
-    private const string GAME_SCENE = "TajdangScene";
     private bool isReady = false;
 
     private void Start()
@@ -132,7 +131,7 @@ public class WaitingRoomUI : MonoBehaviour
         {
             ReadyManager.Instance.StartGameClientRpc();
             HostSingleton.Instance.GameManager.DeleteLobbyAsync();
-            NetworkManager.Singleton.SceneManager.LoadScene(GAME_SCENE, LoadSceneMode.Single);
+            NetworkManager.Singleton.SceneManager.LoadScene(GameScene.TajdangScene.ToString(), LoadSceneMode.Single);
         }
 
     }

@@ -1,6 +1,6 @@
 public enum GameScene
 {
-    MainMenu,
+    MainMenuScene,
     Lobby,
     TajdangScene,
     GameOver,

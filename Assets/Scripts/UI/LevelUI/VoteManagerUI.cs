@@ -35,17 +35,17 @@ public class VoteManagerUI : MonoBehaviour
         votingTimerSlider.value = newValue / voteManager.VotingTimerMax;
     }
 
-    private void StateChanged(VoteManager.State state)
+    private void StateChanged(VoteState state)
     {
         switch (state)
         {
-            case VoteManager.State.WaitingToVote:
+            case VoteState.WaitingToVote:
                 gameObject.SetActive(false);
                 break;
-            case VoteManager.State.Voting:
+            case VoteState.Voting:
                 gameObject.SetActive(true);
                 break;
-            case VoteManager.State.VoteOver:
+            case VoteState.VoteOver:
                 gameObject.SetActive(false);
                 break;
         }

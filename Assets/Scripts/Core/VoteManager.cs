@@ -6,18 +6,12 @@ using UnityEngine;
 
 public class VoteManager : NetworkBehaviour
 {
-    public enum State
-    {
-        WaitingToVote,
-        Voting,
-        VoteOver,
-    }
 
-    public event Action<State> OnStateChanged;
+    public event Action<VoteState> OnStateChanged;
 
     [field: SerializeField] public float VotingTimerMax = 60f;
     public NetworkVariable<float> VotingTimer = new NetworkVariable<float>();
-    private NetworkVariable<State> state = new NetworkVariable<State>(State.WaitingToVote);
+    private NetworkVariable<VoteState> state = new NetworkVariable<VoteState>(VoteState.WaitingToVote);
     public NetworkVariable<Dictionary<ulong, ulong>> VoteRegistry { get; private set; } =
         new NetworkVariable<Dictionary<ulong, ulong>>(new Dictionary<ulong, ulong>());
 
@@ -35,7 +29,7 @@ public class VoteManager : NetworkBehaviour
     }
     private void Update()
     {
-        if (!IsServer || state.Value != State.Voting)
+        if (!IsServer || state.Value != VoteState.Voting)
             return;
 
         UpdateVotingTimer();
@@ -57,7 +51,7 @@ public class VoteManager : NetworkBehaviour
 
         if (VotingTimer.Value < 0)
         {
-            state.Value = State.VoteOver;
+            state.Value = VoteState.VoteOver;
         }
     }
     private void VoteDictionaryChanged(Dictionary<ulong, ulong> previousValue, Dictionary<ulong, ulong> newValue)
@@ -66,13 +60,13 @@ public class VoteManager : NetworkBehaviour
             return;
 
         bool allVoted = newValue.Values.All(vote => vote != NO_VOTE);
-        if (allVoted && state.Value == State.Voting)
+        if (allVoted && state.Value == VoteState.Voting)
         {
-            state.Value = State.VoteOver;
+            state.Value = VoteState.VoteOver;
         }
     }
 
-    private void StateChanged(State previousValue, State newState)
+    private void StateChanged(VoteState previousValue, VoteState newState)
     {
         OnStateChanged?.Invoke(newState);
         if (!IsServer)
@@ -80,12 +74,12 @@ public class VoteManager : NetworkBehaviour
 
         switch (newState)
         {
-            case State.Voting:
+            case VoteState.Voting:
                 InitializeVotingDictionary();
                 break;
-            case State.VoteOver:
+            case VoteState.VoteOver:
                 ProcessVoteResults();
-                state.Value = State.WaitingToVote;
+                state.Value = VoteState.WaitingToVote;
                 break;
         }
 
@@ -170,10 +164,10 @@ public class VoteManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void RaiseVoteStartServerRpc()
     {
-        if (state.Value != State.Voting)
+        if (state.Value != VoteState.Voting)
         {
             VotingTimer.Value = VotingTimerMax;
-            state.Value = State.Voting;
+            state.Value = VoteState.Voting;
         }
     }
 

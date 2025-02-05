@@ -67,7 +67,7 @@ public class PlayerManager : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void OnVoteStateChangedServerRpc(VoteManager.State state)
+    private void OnVoteStateChangedServerRpc(VoteState state)
     {
         OnVoteStateChangedClientRpc(state);
     }
@@ -86,17 +86,17 @@ public class PlayerManager : NetworkBehaviour
 
 
     [ClientRpc]
-    private void OnVoteStateChangedClientRpc(VoteManager.State state)
+    private void OnVoteStateChangedClientRpc(VoteState state)
     {
         switch (state)
         {
-            case VoteManager.State.WaitingToVote:
+            case VoteState.WaitingToVote:
                 break;
-            case VoteManager.State.Voting:
+            case VoteState.Voting:
                 OnEnableAllPlayersMovement?.Invoke(false);
                 OnResetALlPlayerPosition?.Invoke();
                 break;
-            case VoteManager.State.VoteOver:
+            case VoteState.VoteOver:
                 OnEnableAllPlayersMovement?.Invoke(true);
                 break;
         }
