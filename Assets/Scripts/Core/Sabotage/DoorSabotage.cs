@@ -2,8 +2,9 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
-public class DoorSabotage : MonoBehaviour
+public class DoorSabotage : NetworkBehaviour
 {
     InteractionData interactionData;
     private NetworkObject[] doorList;
@@ -17,6 +18,12 @@ public class DoorSabotage : MonoBehaviour
 
     public void DisableDoor()
     {
+        DisableDoorServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void DisableDoorServerRpc()
+    {
         for (int i = 0; i < doorList.Length; i++)
         {
             doorScript = doorList[i].GetComponentInChildren<SlideDoor>();
@@ -24,16 +31,35 @@ public class DoorSabotage : MonoBehaviour
             {
                 doorScript.Interact(interactionData);
             }
-            StartCoroutine(DisableScript(5, doorScript));
+            StartDelayServerRpc(doorList[i].GetComponent<NetworkObject>().NetworkObjectId);
         }
     }
 
-    IEnumerator DisableScript(float delay, SlideDoor script)
+
+    [ServerRpc(RequireOwnership = false)]
+    private void StartDelayServerRpc(ulong doorID)
     {
-        script.IsDisabled = true;
-        Debug.Log("Waiting");
-        yield return new WaitForSeconds(5f);
-        Debug.Log("Finished");
-        script.IsDisabled = false;
+        StartCoroutine(DisableScript(5, doorID));
     }
+
+    IEnumerator DisableScript(float delay, ulong doorID)
+    {
+            DisableScriptServerRpc(doorID, true);
+            Debug.Log("Door Disabling");
+            yield return new WaitForSeconds(delay);
+            Debug.Log("Door re-enabled");
+            DisableScriptServerRpc(doorID, false);
+
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void DisableScriptServerRpc(ulong doorID, bool status){
+        NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(doorID, out NetworkObject netObj);
+        SlideDoor script = netObj.GetComponentInChildren<SlideDoor>();
+        script.IsDisabled = status;
+    }
+
+
+
+
 }
