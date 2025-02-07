@@ -36,11 +36,16 @@ public class PlayerManager : NetworkBehaviour
             case GameState.WaitingToStart:
                 break;
             case GameState.GamePlaying:
-                if (!OneInsideLevelManager.Instance.IsPlayerInitializationRequired.Value)
+                if (OneInsideLevelManager.Instance.IsPlayerInitializationRequired.Value)
                 {
-                    // ClearAllPlayers();
+                    ClearAllPlayers();
                     SpawnAllPlayers();
                 }
+                else
+                {
+                    SetParentForPlayers();
+                }
+
                 ResetAllPlayerPositionClientRpc();
                 if (!IsHost)
                 {
@@ -71,7 +76,7 @@ public class PlayerManager : NetworkBehaviour
             GameObject player = Instantiate(playerPrefab.gameObject, Vector3.zero, Quaternion.identity);
             NetworkObject playerNetworkObject = player.GetComponent<NetworkObject>();
             playerNetworkObject.SpawnAsPlayerObject(clientId, true);
-            playerNetworkObject.TrySetParent(players.GetComponent<NetworkObject>(), true);
+            playerNetworkObject.TrySetParent(players, true);
             // player.name = clientId.ToString();
         }
     }
@@ -87,6 +92,23 @@ public class PlayerManager : NetworkBehaviour
                 if (client.PlayerObject && client.PlayerObject.TryGetComponent<Player>(out var player))
                 {
                     player.GetComponent<NetworkObject>().Despawn();
+                }
+            }
+        }
+    }
+
+
+    private void SetParentForPlayers()
+    {
+        if (!IsServer)
+            return;
+        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            if (NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out var client))
+            {
+                if (client.PlayerObject && client.PlayerObject.TryGetComponent<Player>(out var player))
+                {
+                    player.GetComponent<NetworkObject>().TrySetParent(players, true);
                 }
             }
         }
