@@ -130,7 +130,7 @@ public class WaitingRoomUI : MonoBehaviour
         if (NetworkManager.Singleton.IsHost)
         {
             ReadyManager.Instance.StartGameClientRpc();
-            HostSingleton.Instance.GameManager.DeleteLobbyAsync();
+            HostSingleton.Instance.GameManager.LockLobby();
             NetworkManager.Singleton.SceneManager.LoadScene(GameScene.TajdangScene.ToString(), LoadSceneMode.Single);
         }
 

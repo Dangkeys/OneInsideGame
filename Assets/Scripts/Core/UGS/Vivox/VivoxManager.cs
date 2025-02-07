@@ -11,8 +11,6 @@ using UnityEngine.UI;
 
 public class VivoxManager : MonoBehaviour
 {
-    [SerializeField] private Button loginButton;
-    [SerializeField] private Button logoutButton;
     [SerializeField] private Button joinChannelButton;
     [SerializeField] private Button joinTestChannelButton;
     [SerializeField] private Button leaveChannelButton;
@@ -24,7 +22,8 @@ public class VivoxManager : MonoBehaviour
 
     [SerializeField] private GameObject user;
 
-    private const string CHANNEL_NAME = "Room1";
+    private const string AUDIO_CHANNEL_NAME = "audioChannel";
+    private const string TEXT_CHANNEL_NAME = "textChannel";
 
     private async void Start()
     {
@@ -34,9 +33,7 @@ public class VivoxManager : MonoBehaviour
             await ClientSingleton.Instance.CreateClient();
         }
         Debug.Log("Vivox Initialized");
-        loginButton.onClick.AddListener(async () => await Login());
-        logoutButton.onClick.AddListener(async () => await Logout());
-        joinChannelButton.onClick.AddListener(async () => await JoinInChannel(CHANNEL_NAME));
+        joinChannelButton.onClick.AddListener(async () => await JoinAudioChannel(AUDIO_CHANNEL_NAME));
         joinTestChannelButton.onClick.AddListener(async () => await JoinInTestChannel());
         leaveChannelButton.onClick.AddListener(async () => await LeaveChannel());
         muteInputToggle.onValueChanged.AddListener((bool isToggle) =>
@@ -61,7 +58,6 @@ public class VivoxManager : MonoBehaviour
                 VivoxService.Instance.UnmuteOutputDevice();
             }
         });
-        VivoxService.Instance.ParticipantAddedToChannel += OnParticipantAddedToChannel;
         VivoxService.Instance.ChannelMessageReceived += OnChannelMessageReceived;
 
     }
@@ -69,7 +65,6 @@ public class VivoxManager : MonoBehaviour
     {
         await VivoxService.Instance.LeaveAllChannelsAsync();
         await VivoxService.Instance.LogoutAsync();
-        VivoxService.Instance.ParticipantAddedToChannel -= OnParticipantAddedToChannel;
         VivoxService.Instance.ChannelMessageReceived -= OnChannelMessageReceived;
     }
     private void OnChannelMessageReceived(VivoxMessage message)
@@ -79,47 +74,6 @@ public class VivoxManager : MonoBehaviour
         string senderDisplayName = message.SenderDisplayName;
         string messageChannel = message.ChannelName;
         Debug.Log($"Message Received: {messageText} from {senderID} in {messageChannel}");
-    }
-
-    private void OnParticipantAddedToChannel(VivoxParticipant participant)
-    {
-        var userInstance = Instantiate(user, currentUsers.transform);
-        userInstance.GetComponentInChildren<Text>().text = participant.PlayerId;
-        userInstance.SetActive(true);
-        bool isCurrentlySpeaking = false;
-
-        participant.ParticipantAudioEnergyChanged += () =>
-        {
-            if (participant.AudioEnergy > 0.01 && !isCurrentlySpeaking)
-            {
-                Debug.Log($"{participant.DisplayName} started talking");
-                isCurrentlySpeaking = true;
-            }
-            else if (participant.AudioEnergy < 0.01 && isCurrentlySpeaking)
-            {
-                Debug.Log($"{participant.DisplayName} stopped talking");
-                isCurrentlySpeaking = false;
-            }
-        };
-        if (userInstance.TryGetComponent<Toggle>(out var toggle))
-        {
-            toggle.isOn = false;
-            toggle.onValueChanged.AddListener((bool isToggle) =>
-            {
-                Debug.Log("Mute: " + isToggle);
-                Debug.Log("Mute: " + participant.PlayerId);
-                if (isToggle)
-                {
-                    participant.MutePlayerLocally();
-                }
-                else
-                {
-                    participant.UnmutePlayerLocally();
-                }
-
-            });
-        }
-
     }
 
     public async static Task Login()
@@ -138,12 +92,12 @@ public class VivoxManager : MonoBehaviour
         Debug.Log("Vivox Logged In");
     }
 
-    public async Task JoinInChannel(string channelName)
+    public async Task JoinAudioChannel(string channelName)
     {
         Debug.Log("Joining Channel...");
         var channel3DProperties = new Channel3DProperties(100,50,60,AudioFadeModel.ExponentialByDistance);
         await VivoxService.Instance.JoinPositionalChannelAsync(channelName, ChatCapability.AudioOnly, channel3DProperties);
-        VivoxService.Instance.Set3DPosition(currentUsers, CHANNEL_NAME);
+        VivoxService.Instance.Set3DPosition(currentUsers, AUDIO_CHANNEL_NAME);
         Debug.Log("Joined Channel");
     }
 
@@ -174,7 +128,7 @@ public class VivoxManager : MonoBehaviour
     public async static Task SendMessageToChannel()
     {
         Debug.Log("Sending Message...");
-        await VivoxService.Instance.SendChannelTextMessageAsync(CHANNEL_NAME, "Hello World");
+        await VivoxService.Instance.SendChannelTextMessageAsync(AUDIO_CHANNEL_NAME, "Hello World");
         Debug.Log("Message Sent");
     }
 
