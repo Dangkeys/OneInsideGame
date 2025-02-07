@@ -39,21 +39,22 @@ public class DoorSabotage : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void StartDelayServerRpc(ulong doorID)
     {
+        Debug.Log("Start Delay");
         StartCoroutine(DisableScript(5, doorID));
     }
 
     IEnumerator DisableScript(float delay, ulong doorID)
     {
-            DisableScriptServerRpc(doorID, true);
+            DisableScriptClientRpc(doorID, true);
             Debug.Log("Door Disabling");
             yield return new WaitForSeconds(delay);
             Debug.Log("Door re-enabled");
-            DisableScriptServerRpc(doorID, false);
+            DisableScriptClientRpc(doorID, false);
 
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void DisableScriptServerRpc(ulong doorID, bool status){
+    [ClientRpc]
+    private void DisableScriptClientRpc(ulong doorID, bool status){
         NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(doorID, out NetworkObject netObj);
         SlideDoor script = netObj.GetComponentInChildren<SlideDoor>();
         script.IsDisabled = status;
