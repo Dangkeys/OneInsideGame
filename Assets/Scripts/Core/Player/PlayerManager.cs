@@ -36,7 +36,7 @@ public class PlayerManager : NetworkBehaviour
             case GameState.WaitingToStart:
                 break;
             case GameState.GamePlaying:
-                if (OneInsideLevelManager.Instance.IsPlayerInitializationRequired.Value)
+                if (!OneInsideLevelManager.Instance.IsPlayerInitializationRequired.Value)
                 {
                     ClearAllPlayers();
                     SpawnAllPlayers();

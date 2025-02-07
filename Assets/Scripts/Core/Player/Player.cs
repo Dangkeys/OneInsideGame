@@ -57,6 +57,8 @@ public class Player : NetworkBehaviour
 
     public override void OnNetworkDespawn()
     {
+        Role.OnValueChanged -= OnRoleChanged;
+
         if (!IsOwner)
             return;
 
@@ -177,7 +179,6 @@ public class Player : NetworkBehaviour
         if (IsOwner)
         {
             Debug.Log($"Your role changed to: {newValue}");
-
         }
     }
 
