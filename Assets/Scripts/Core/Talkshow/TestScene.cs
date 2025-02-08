@@ -70,4 +70,9 @@ public class TestScene : NetworkBehaviour
     {
         Debug.Log("TestScene ownership changed to " + clientId);
     }
+
+    public void PrintOwnership()
+    {
+        Debug.Log("TestScene ownership is " + OwnerClientId);
+    }
 }

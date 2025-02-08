@@ -1,12 +1,11 @@
-using QFSW.QC;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 
-public class Test : NetworkBehaviour
+public class TalkshowPlayer : NetworkBehaviour
 {
     private NetworkVariable<int> networkVariableNumber = new NetworkVariable<int>();
     private int number = 0;
+    private int numberWithRPC = 0;
 
 
     public override void OnNetworkSpawn()
@@ -16,21 +15,6 @@ public class Test : NetworkBehaviour
     void AddNumber()
     {
         number++;
-    }
-
-    [ServerRpc]
-    void AddNumberServerRpc()
-    {
-        if(!IsHost)
-        {
-            AddNumber();
-        }
-        AddNumberClientRpc();   
-    }
-    [ClientRpc]
-    void AddNumberClientRpc()
-    {
-        AddNumber();
     }
 
     [ServerRpc]
@@ -53,7 +37,7 @@ public class Test : NetworkBehaviour
         {
             if (!IsOwner)
                 return;
-            AddNumberServerRpc();
+            AddNumber();
             PrintNumber();
         }
         if (Input.GetKeyDown(KeyCode.N))
@@ -78,20 +62,12 @@ public class Test : NetworkBehaviour
                 return;
             TestScene.Instance.SetOwnershipWithoutRequireOwnershipServerRpc(OwnerClientId);
         }
-        if(Input.GetKeyDown(KeyCode.U))
-        {
-            Debug.Log("U");
-            if (!IsOwner)
-                return;
-            TestScene.Instance.PrintOwnership();
-        }
 
         if (Input.GetKeyDown(KeyCode.P))
         {
+            Debug.Log("Normal Number");
             PrintNumber();
-        }
-        if (Input.GetKeyDown(KeyCode.O))
-        {
+            Debug.Log("Network Variable Number");
             PrintNetworkVariableNumber();
         }
     }
