@@ -24,7 +24,6 @@ public class PlayerVoiceChat : NetworkBehaviour
             //add lobbyId to the channel name
         }
         VivoxService.Instance.ParticipantAddedToChannel += OnParticipantAddedToChannel;
-
     }
 
     private void OnParticipantAddedToChannel(VivoxParticipant participant)
@@ -36,6 +35,9 @@ public class PlayerVoiceChat : NetworkBehaviour
 
     public override async void OnNetworkSpawn()
     {
+
+        if (OneInsideLevelManager.Instance == null)
+            return;
         if (!IsOwner)
             return;
 
@@ -56,7 +58,7 @@ public class PlayerVoiceChat : NetworkBehaviour
                 }
             }
 
-            
+
 
 
             try

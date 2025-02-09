@@ -7,187 +7,190 @@ using UnityEngine;
 public class Player : NetworkBehaviour
 {
 
-     [Header("References")]
-     [field: SerializeField] public CinemachineCamera VirtualCamera { get; private set; }
-     [field: SerializeField] public InputReader InputReader { get; private set; }
-     [field: SerializeField] public GameObject Hitbox { get; private set; }
-     [field: SerializeField] public CharacterController CharacterController { get; private set; }
-     [field: SerializeField] public PlayerMovement PlayerMovement { get; private set; }
-     [field: SerializeField] public CinemachineInputAxisController AxisController { get; private set; }
+    [Header("References")]
+    [field: SerializeField] public CinemachineCamera VirtualCamera { get; private set; }
+    [field: SerializeField] public InputReader InputReader { get; private set; }
+    [field: SerializeField] public GameObject Hitbox { get; private set; }
+    [field: SerializeField] public CharacterController CharacterController { get; private set; }
+    [field: SerializeField] public PlayerMovement PlayerMovement { get; private set; }
+    [field: SerializeField] public CinemachineInputAxisController AxisController { get; private set; }
 
-     public NetworkVariable<bool> IsAlive = new NetworkVariable<bool>(true);
+    public NetworkVariable<bool> IsAlive = new NetworkVariable<bool>(true);
 
-     public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>(PlayerRole.None);
+    public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>(PlayerRole.None);
 
-     //--------------------------------------
-     // Private Variables
-     //--------------------------------------
+    //--------------------------------------
+    // Private Variables
+    //--------------------------------------
 
-     private BoxCollider[] hitBoxes;
-     private PlayerState playerState;
+    private BoxCollider[] hitBoxes;
+    private PlayerState playerState;
 
-     public override void OnNetworkSpawn()
-     {
+    public override void OnNetworkSpawn()
+    {
 
-          hitBoxes = Hitbox.GetComponents<BoxCollider>();
+        hitBoxes = Hitbox.GetComponents<BoxCollider>();
 
-          playerState = GetComponent<PlayerState>();
+        playerState = GetComponent<PlayerState>();
 
-          if (!IsOwner)
-          {
-               // Other Player
-               VirtualCamera.Priority = int.MinValue;
-          }
-          else
-          {
-               InputReader.AttackEvent += On_Attack_Local;
+        if (!IsOwner)
+        {
+            // Other Player
+            VirtualCamera.Priority = int.MinValue;
+        }
+        else
+        {
+            InputReader.AttackEvent += On_Attack_Local;
 
-               playerState.SetAttacking(false);
-               playerState.SetStunning(false);
-               playerState.SetWalking(false);
-               playerState.SetRunning(false);
-               playerState.SetDead(false);
-               if (!OneInsideLevelManager.Instance)
-                    return;
-               OneInsideLevelManager.Instance.PlayerManager.OnResetALlPlayerPosition += ResetToSpawnPoint;
-               OneInsideLevelManager.Instance.PlayerManager.OnEnableAllPlayersMovement += EnablePlayerMovement;
-          }
-          Role.OnValueChanged += OnRoleChanged;
-     }
+            playerState.SetAttacking(false);
+            playerState.SetStunning(false);
+            playerState.SetWalking(false);
+            playerState.SetRunning(false);
+            playerState.SetDead(false);
+            if (!OneInsideLevelManager.Instance)
+                return;
+            OneInsideLevelManager.Instance.PlayerManager.OnResetALlPlayerPosition += ResetToSpawnPoint;
+            OneInsideLevelManager.Instance.PlayerManager.OnEnableAllPlayersMovement += EnablePlayerMovement;
+        }
+        Role.OnValueChanged += OnRoleChanged;
+    }
 
-     public override void OnNetworkDespawn()
-     {
-          if (!IsOwner)
-               return;
+    public override void OnNetworkDespawn()
+    {
+        Role.OnValueChanged -= OnRoleChanged;
 
-          if (!OneInsideLevelManager.Instance)
-               return;
-          OneInsideLevelManager.Instance.PlayerManager.OnResetALlPlayerPosition -= ResetToSpawnPoint;
-          OneInsideLevelManager.Instance.PlayerManager.OnEnableAllPlayersMovement -= EnablePlayerMovement;
+        if (!IsOwner)
+            return;
 
-     }
+        InputReader.AttackEvent -= On_Attack_Local;
 
-     //--------------------------------------
-     // Debug Methods
-     //--------------------------------------
+        if (!OneInsideLevelManager.Instance)
+            return;
+        OneInsideLevelManager.Instance.PlayerManager.OnResetALlPlayerPosition -= ResetToSpawnPoint;
+        OneInsideLevelManager.Instance.PlayerManager.OnEnableAllPlayersMovement -= EnablePlayerMovement;
 
-     private void Update()
-     {
-          if (!IsOwner)
-               return;
+    }
 
-          if (Input.GetKeyDown(KeyCode.R))
-          {
-               playerState.SetDeadServerRpc(false);
-               playerState.SetHealthServerRpc(playerState.MaxHealth.Value);
-          }
-     }
-     //--------------------------------------
-     // Attack Methods
-     //--------------------------------------
+    //--------------------------------------
+    // Debug Methods
+    //--------------------------------------
 
-     public async void On_Attack_Local()
-     {
-          if (!playerState.Is_Can_Move())
-               return;
+    private void Update()
+    {
+        if (!IsOwner)
+            return;
 
-          playerState.SetAttacking(true);
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            playerState.SetDeadServerRpc(false);
+            playerState.SetHealthServerRpc(playerState.MaxHealth.Value);
+        }
+    }
+    //--------------------------------------
+    // Attack Methods
+    //--------------------------------------
 
-          // get closest character
-          var All_Hit_Characters = Az_Hitbox.Get_Touching_Objects(new Az_Hitbox.HitboxParams
-          {
-               Hitboxs = hitBoxes,
-               Type = Az_Hitbox.Collider_Type.CharacterController,
-               Exclude = new Collider[] { CharacterController }
-          });
+    public async void On_Attack_Local()
+    {
+        if (!playerState.Is_Can_Move())
+            return;
 
-          GameObject Closest_Character = Az_Normal.Get_Closet_Target(transform.position, All_Hit_Characters);
+        playerState.SetAttacking(true);
 
-          if (Closest_Character != null)
-          {
-               Player targetPlayerScript = Closest_Character.GetComponent<Player>();
-               if (targetPlayerScript)
-               {
-                    targetPlayerScript.Take_Damage_ServerRpc();
-               }
-          }
+        // get closest character
+        var All_Hit_Characters = Az_Hitbox.Get_Touching_Objects(new Az_Hitbox.HitboxParams
+        {
+            Hitboxs = hitBoxes,
+            Type = Az_Hitbox.Collider_Type.CharacterController,
+            Exclude = new Collider[] { CharacterController }
+        });
 
-          await Awaitable.WaitForSecondsAsync(1);
+        GameObject Closest_Character = Az_Normal.Get_Closet_Target(transform.position, All_Hit_Characters);
 
-          playerState.SetAttacking(false);
-     }
+        if (Closest_Character != null)
+        {
+            Player targetPlayerScript = Closest_Character.GetComponent<Player>();
+            if (targetPlayerScript)
+            {
+                targetPlayerScript.Take_Damage_ServerRpc();
+            }
+        }
 
-     [ServerRpc(RequireOwnership = false)]
-     public void Attack_ServerRpc(bool value = true)
-     {
-          // Attacking.Value = value;
-     }
+        await Awaitable.WaitForSecondsAsync(1);
 
-     //--------------------------------------
-     // Damage & Health Methods
-     //--------------------------------------
+        playerState.SetAttacking(false);
+    }
 
-     [ServerRpc(RequireOwnership = false)]
-     private void Take_Damage_ServerRpc(int damage = 1)
-     {
-          Take_Damage(damage);
-     }
+    [ServerRpc(RequireOwnership = false)]
+    public void Attack_ServerRpc(bool value = true)
+    {
+        // Attacking.Value = value;
+    }
 
-     private async void Take_Damage(int damage = 1)
-     {
-          if (playerState.Stunning.Value)
-               return;
+    //--------------------------------------
+    // Damage & Health Methods
+    //--------------------------------------
 
-          playerState.SetStunning(true);
+    [ServerRpc(RequireOwnership = false)]
+    private void Take_Damage_ServerRpc(int damage = 1)
+    {
+        Take_Damage(damage);
+    }
 
-          playerState.TakeDamageServerRpc(damage);
+    private async void Take_Damage(int damage = 1)
+    {
+        if (playerState.Stunning.Value)
+            return;
 
-          await Awaitable.WaitForSecondsAsync(2.0f);
+        playerState.SetStunning(true);
 
-          playerState.SetStunning(false);
-     }
+        playerState.TakeDamageServerRpc(damage);
 
-     //--------------------------------------
-     // Movement & State Control Methods
-     //--------------------------------------
+        await Awaitable.WaitForSecondsAsync(2.0f);
 
-     private void EnablePlayerMovement(bool shouldMove)
-     {
-          if (!shouldMove)
-          {
-               InputReader.DisableGameplayInput();
-          }
-          else
-          {
-               InputReader.EnableGameplayInput();
-          }
-          if (AxisController)
-               AxisController.enabled = shouldMove;
-     }
+        playerState.SetStunning(false);
+    }
 
-     //--------------------------------------
-     // Network & Lifecycle Methods
-     //--------------------------------------
+    //--------------------------------------
+    // Movement & State Control Methods
+    //--------------------------------------
 
+    private void EnablePlayerMovement(bool shouldMove)
+    {
+        if (!shouldMove)
+        {
+            InputReader.DisableGameplayInput();
+        }
+        else
+        {
+            InputReader.EnableGameplayInput();
+        }
+        if (AxisController)
+            AxisController.enabled = shouldMove;
+    }
 
-     private void OnRoleChanged(PlayerRole previousValue, PlayerRole newValue)
-     {
-          if (IsOwner)
-          {
-               Debug.Log($"Your role changed to: {newValue}");
-               
-          }
-     }
+    //--------------------------------------
+    // Network & Lifecycle Methods
+    //--------------------------------------
 
 
-     //--------------------------------------
-     // Spawn & Reset Methods
-     //--------------------------------------
+    private void OnRoleChanged(PlayerRole previousValue, PlayerRole newValue)
+    {
+        if (IsOwner)
+        {
+            Debug.Log($"Your role changed to: {newValue}");
+        }
+    }
 
-     public void ResetToSpawnPoint()
-     {
-          CharacterController.enabled = false;
-          transform.position = SpawnPoint.GetClientSpawnPos(NetworkManager.Singleton.LocalClientId);
-          CharacterController.enabled = true;
-     }
+
+    //--------------------------------------
+    // Spawn & Reset Methods
+    //--------------------------------------
+
+    public void ResetToSpawnPoint()
+    {
+        CharacterController.enabled = false;
+        transform.position = SpawnPoint.GetClientSpawnPos(NetworkManager.Singleton.LocalClientId);
+        CharacterController.enabled = true;
+    }
 }
