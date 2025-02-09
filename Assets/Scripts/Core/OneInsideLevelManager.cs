@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -21,7 +22,7 @@ public class OneInsideLevelManager : NetworkBehaviour
 
     [field: SerializeField] public VivoxManager VivoxManager;
 
-    public NetworkVariable<bool> IsPlayerInitializationRequired = new NetworkVariable<bool>(true);
+    public NetworkVariable<bool> IsLoadedFromLobbyScene = new NetworkVariable<bool>();
 
     public static OneInsideLevelManager Instance { get; private set; }
 
@@ -34,6 +35,7 @@ public class OneInsideLevelManager : NetworkBehaviour
     {
         if (IsServer)
         {
+            IsLoadedFromLobbyScene.Value = false; 
             NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnSceneLoadComplete;
             State.OnValueChanged += OnGameStateChanged;
         }
@@ -97,7 +99,7 @@ public class OneInsideLevelManager : NetworkBehaviour
     {
         if (sceneName != GameScene.TajdangScene.ToString())
             return;
-        IsPlayerInitializationRequired.Value = false;
+        IsLoadedFromLobbyScene.Value = true;
         State.Value = GameState.GamePlaying;
     }
 }
