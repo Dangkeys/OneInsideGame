@@ -22,6 +22,11 @@ public class VivoxManager : Singleton<VivoxManager>
             await ClientSingleton.Instance.CreateClient();
         }
         Debug.Log("Vivox Initialized");
+        if(muteInputToggle == null || muteOutputToggle == null)
+        {
+            Debug.Log("Mute input or output toggle is not assigned");
+            return;
+        }
         muteInputToggle.onValueChanged.AddListener((bool isToggle) =>
         {
             if (isToggle)
@@ -44,20 +49,11 @@ public class VivoxManager : Singleton<VivoxManager>
                 VivoxService.Instance.UnmuteOutputDevice();
             }
         });
-        VivoxService.Instance.ChannelMessageReceived += OnChannelMessageReceived;
         
     }
     private async void OnDestroy()
     {
         await VivoxService.Instance.LeaveAllChannelsAsync();
         await VivoxService.Instance.LogoutAsync();
-        VivoxService.Instance.ChannelMessageReceived -= OnChannelMessageReceived;
-    }
-    private void OnChannelMessageReceived(VivoxMessage message)
-    {
-        string messageText = message.MessageText;
-        string senderID = message.SenderPlayerId;
-        string senderDisplayName = message.SenderDisplayName;
-        string messageChannel = message.ChannelName;
     }
 }
