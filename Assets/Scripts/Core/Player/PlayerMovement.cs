@@ -37,6 +37,7 @@ public class PlayerMovement : NetworkBehaviour
 
      private Animator playerAnimator;
 
+
      private bool isJumping = false;
      private bool isGrounded;
 
