@@ -1,5 +1,6 @@
 using System;
 using QFSW.QC;
+using Unity.Cinemachine;
 using Unity.Mathematics;
 using Unity.Netcode;
 using UnityEngine;
@@ -12,6 +13,7 @@ public class PlayerMovement : NetworkBehaviour
      [field: SerializeField] public InputReader InputReader { get; private set; }
      [field: SerializeField] public CharacterController CharacterController { get; private set; }
      [field: SerializeField] public Transform MainCameraTransform { get; private set; }
+     [field: SerializeField] public CinemachineInputAxisController AxisController { get; private set; }
 
      [Header("Movement Settings")]
      [field: SerializeField] public float WalkSpeed { get; private set; } = 6f;
@@ -55,6 +57,9 @@ public class PlayerMovement : NetworkBehaviour
           moveSpeed = WalkSpeed;
           InputReader.SprintEvent += Sprint;
           InputReader.JumpEvent += Jump;
+          if (!OneInsideLevelManager.Instance)
+               return;
+          OneInsideLevelManager.Instance.PlayerManager.OnEnableAllPlayersMovement += EnablePlayerMovement;
      }
 
      private void Update()
@@ -157,5 +162,21 @@ public class PlayerMovement : NetworkBehaviour
                return;
           InputReader.SprintEvent -= Sprint;
           InputReader.JumpEvent -= Jump;
+          if (!OneInsideLevelManager.Instance)
+               return;
+          OneInsideLevelManager.Instance.PlayerManager.OnEnableAllPlayersMovement -= EnablePlayerMovement;
+     }
+     private void EnablePlayerMovement(bool shouldMove)
+     {
+          if (!shouldMove)
+          {
+               InputReader.DisableGameplayInput();
+          }
+          else
+          {
+               InputReader.EnableGameplayInput();
+          }
+          if (AxisController)
+               AxisController.enabled = shouldMove;
      }
 }
