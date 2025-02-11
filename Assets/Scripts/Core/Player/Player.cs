@@ -13,7 +13,6 @@ public class Player : NetworkBehaviour
     [field: SerializeField] public GameObject Hitbox { get; private set; }
     [field: SerializeField] public CharacterController CharacterController { get; private set; }
     [field: SerializeField] public PlayerMovement PlayerMovement { get; private set; }
-    [field: SerializeField] public CinemachineInputAxisController AxisController { get; private set; }
 
     public NetworkVariable<bool> IsAlive = new NetworkVariable<bool>(true);
 
@@ -50,7 +49,6 @@ public class Player : NetworkBehaviour
             if (!OneInsideLevelManager.Instance)
                 return;
             OneInsideLevelManager.Instance.PlayerManager.OnResetALlPlayerPosition += ResetToSpawnPoint;
-            OneInsideLevelManager.Instance.PlayerManager.OnEnableAllPlayersMovement += EnablePlayerMovement;
         }
         Role.OnValueChanged += OnRoleChanged;
     }
@@ -67,7 +65,6 @@ public class Player : NetworkBehaviour
         if (!OneInsideLevelManager.Instance)
             return;
         OneInsideLevelManager.Instance.PlayerManager.OnResetALlPlayerPosition -= ResetToSpawnPoint;
-        OneInsideLevelManager.Instance.PlayerManager.OnEnableAllPlayersMovement -= EnablePlayerMovement;
 
     }
 
@@ -151,23 +148,6 @@ public class Player : NetworkBehaviour
         playerState.SetStunning(false);
     }
 
-    //--------------------------------------
-    // Movement & State Control Methods
-    //--------------------------------------
-
-    private void EnablePlayerMovement(bool shouldMove)
-    {
-        if (!shouldMove)
-        {
-            InputReader.DisableGameplayInput();
-        }
-        else
-        {
-            InputReader.EnableGameplayInput();
-        }
-        if (AxisController)
-            AxisController.enabled = shouldMove;
-    }
 
     //--------------------------------------
     // Network & Lifecycle Methods
