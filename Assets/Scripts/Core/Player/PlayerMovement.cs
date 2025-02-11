@@ -166,7 +166,7 @@ public class PlayerMovement : NetworkBehaviour
                return;
           OneInsideLevelManager.Instance.PlayerManager.OnEnableAllPlayersMovement -= EnablePlayerMovement;
      }
-     private void EnablePlayerMovement(bool shouldMove)
+     public void EnablePlayerMovement(bool shouldMove)
      {
           if (!shouldMove)
           {

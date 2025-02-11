@@ -48,13 +48,13 @@ public class QuestDrag : QuestInfo, IInteractable
     {
         if (!currentStatus)
         {
-            UpdateDoQuest(true);
+            UpdateDoQuest(true, interactionData);
             questDragUI.SetActive(true);
         }
     }
 
     public override void CancelQuest()
     {
-        UpdateDoQuest(false);
+        UpdateDoQuest(false, null);
     }
 }
