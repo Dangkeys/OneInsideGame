@@ -19,10 +19,10 @@ public class PlayerVoiceChat : NetworkBehaviour
     {
         currentAudioChannel = aliveAudioChannel;
         player = GetComponent<Player>();
-        if (OneInsideLevelManager.Instance.IsLoadedFromLobbyScene.Value)
-        {
-            //add lobbyId to the channel name
-        }
+        // if (OneInsideLevelManager.Instance.IsLoadedFromLobbyScene.Value)
+        // {
+                //add lobbyId to the channel name
+        // }
         VivoxService.Instance.ParticipantAddedToChannel += OnParticipantAddedToChannel;
     }
 
