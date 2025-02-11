@@ -55,14 +55,14 @@ public class QuestShootingDebris : QuestInfo, IInteractable
         if (!currentStatus)
         {
             changeCamera.SwitchCamera(0, 1);
-            UpdateDoQuest(true);
+            UpdateDoQuest(true, interactionData);
             questShootingUI.SetActive(true);
         }
     }
 
     public override void CancelQuest()
     {
-        UpdateDoQuest(false);
+        UpdateDoQuest(false, null);
         changeCamera.SwitchCamera(1, 0);
     }
 }

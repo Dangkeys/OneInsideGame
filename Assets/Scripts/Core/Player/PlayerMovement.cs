@@ -158,4 +158,16 @@ public class PlayerMovement : NetworkBehaviour
           InputReader.SprintEvent -= Sprint;
           InputReader.JumpEvent -= Jump;
      }
+
+    public void DoQuest()
+    {
+        InputReader.SprintEvent -= Sprint;
+        InputReader.JumpEvent -= Jump;
+    }
+
+    public void CancelQuest()
+    {
+        InputReader.SprintEvent += Sprint;
+        InputReader.JumpEvent += Jump;
+    }
 }

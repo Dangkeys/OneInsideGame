@@ -23,6 +23,6 @@ public class PressK : QuestInfo
     }
     public override void CancelQuest()
     {
-        UpdateDoQuest(false);
+        UpdateDoQuest(false, null);
     }
 }

@@ -49,13 +49,13 @@ public class QuestDodge : QuestInfo, IInteractable
     {
         if (!currentStatus)
         {
-            UpdateDoQuest(true);
+            UpdateDoQuest(true, interactionData);
             questDodgeUI.SetActive(true);
         }
     }
 
     public override void CancelQuest()
     {
-        UpdateDoQuest(false);
+        UpdateDoQuest(false, null);
     }
 }
