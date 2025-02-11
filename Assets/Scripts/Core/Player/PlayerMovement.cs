@@ -166,7 +166,7 @@ public class PlayerMovement : NetworkBehaviour
                return;
           OneInsideLevelManager.Instance.PlayerManager.OnEnableAllPlayersMovement -= EnablePlayerMovement;
      }
-     private void EnablePlayerMovement(bool shouldMove)
+     public void EnablePlayerMovement(bool shouldMove)
      {
           if (!shouldMove)
           {
@@ -179,16 +179,4 @@ public class PlayerMovement : NetworkBehaviour
           if (AxisController)
                AxisController.enabled = shouldMove;
      }
-
-    public void DoQuest()
-    {
-        InputReader.SprintEvent -= Sprint;
-        InputReader.JumpEvent -= Jump;
-    }
-
-    public void CancelQuest()
-    {
-        InputReader.SprintEvent += Sprint;
-        InputReader.JumpEvent += Jump;
-    }
 }

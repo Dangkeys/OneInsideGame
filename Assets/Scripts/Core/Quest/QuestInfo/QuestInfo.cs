@@ -54,17 +54,9 @@ public abstract class QuestInfo : NetworkBehaviour
         {
             playerMovement = interactionData.Interactor.gameObject.GetComponent<PlayerMovement>();
         }
-        Debug.Log(playerMovement);
         if (playerMovement)
         {
-            if (doQuest)
-            {
-                playerMovement.DoQuest();
-            }
-            else
-            {
-                playerMovement.CancelQuest();
-            }
+            playerMovement.EnablePlayerMovement(!doQuest);
         }
     }
 
