@@ -2,7 +2,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Unity.Netcode;
+using Unity.Services.Core;
 using Unity.Services.Vivox;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,7 +17,7 @@ public class PlayerVoiceChat : NetworkBehaviour
 
     private string currentAudioChannel;
     private readonly Channel3DProperties audio3DConfiguration = new Channel3DProperties(15, 7, 1, AudioFadeModel.InverseByDistance);
-    private void Awake()
+    private async void Awake()
     {
         currentAudioChannel = aliveAudioChannel;
         player = GetComponent<Player>();
@@ -23,6 +25,10 @@ public class PlayerVoiceChat : NetworkBehaviour
         // {
                 //add lobbyId to the channel name
         // }
+        if(VivoxService.Instance == null)
+        {
+            await UnityServices.InitializeAsync();
+        }
         VivoxService.Instance.ParticipantAddedToChannel += OnParticipantAddedToChannel;
     }
 
