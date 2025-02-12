@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -19,7 +20,9 @@ public class OneInsideLevelManager : NetworkBehaviour
 
     [field: SerializeField] public RoleManager RoleManager;
 
-    public NetworkVariable<bool> IsPlayerInitializationRequired = new NetworkVariable<bool>(true);
+    [field: SerializeField] public VivoxManager VivoxManager;
+
+    public NetworkVariable<bool> IsLoadedFromLobbyScene = new NetworkVariable<bool>();
 
     public static OneInsideLevelManager Instance { get; private set; }
 
@@ -28,17 +31,13 @@ public class OneInsideLevelManager : NetworkBehaviour
         Instance = this;
     }
 
-    public async override void OnNetworkSpawn()
+    public override void OnNetworkSpawn()
     {
         if (IsServer)
         {
+            IsLoadedFromLobbyScene.Value = false; 
             NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnSceneLoadComplete;
             State.OnValueChanged += OnGameStateChanged;
-        }
-
-        if(UnityServices.State == ServicesInitializationState.Uninitialized)
-        {
-            await ClientSingleton.Instance.CreateClient();
         }
 
     }
@@ -100,7 +99,7 @@ public class OneInsideLevelManager : NetworkBehaviour
     {
         if (sceneName != GameScene.TajdangScene.ToString())
             return;
-        IsPlayerInitializationRequired.Value = false;
+        IsLoadedFromLobbyScene.Value = true;
         State.Value = GameState.GamePlaying;
     }
 }
