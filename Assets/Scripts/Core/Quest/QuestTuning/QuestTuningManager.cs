@@ -55,9 +55,10 @@ public class QuestTuningManager : MonoBehaviour
 
     public void FinishRound()
     {
-        if(currentAmountDirection * percentWin >= maxAmountDirection)
+        if (currentAmountDirection >= maxAmountDirection * percentWin)
         {
             IncreaseScore(1);
         }
+        currentAmountDirection = 0;
     }
 }

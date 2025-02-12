@@ -15,6 +15,7 @@ public class DirectionSpawn : MonoBehaviour
     [SerializeField] private QuestTuningManager questTuningManager;
     [SerializeField] private Wave wave;
     private float size;
+    private bool isFirstSpawn = true;
     private void Awake()
     {
         size = direction.GetComponent<RectTransform>().rect.width * direction.GetComponent<RectTransform>().localScale.x;
@@ -38,6 +39,7 @@ public class DirectionSpawn : MonoBehaviour
         currentPosition = panel.position - new Vector3(panel.rect.width / 2, 0, 0);
         isRandomFinish = false;
         allDistance = 0;
+        isFirstSpawn = true;
         RandomPosition();
     }
 
@@ -64,6 +66,7 @@ public class DirectionSpawn : MonoBehaviour
             currentPosition = panel.position - new Vector3(panel.rect.width / 2, 0, 0);
             isRandomFinish = false;
             allDistance = 0;
+            isFirstSpawn = true;
             RandomPosition();
             questTuningManager.FinishRound();
         }
@@ -73,7 +76,8 @@ public class DirectionSpawn : MonoBehaviour
     {
         while (!isRandomFinish)
         {
-            bool isHorizontal = (Random.Range(0, 2) == 0) ? true : false;
+            bool isHorizontal = (Random.Range(0, 2) == 0) ? true : false  || isFirstSpawn;
+            isFirstSpawn = false;
             useDistance = 0f;
             while (useDistance < distance)
             {

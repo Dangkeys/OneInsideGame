@@ -75,7 +75,6 @@ public class Wave : MonoBehaviour
 
     private void GoToStart()
     {
-        Vector3 position = new Vector3(initPosition.x, transform.position.y);
-        transform.position = position;
+        transform.position = initPosition;
     }
 }
