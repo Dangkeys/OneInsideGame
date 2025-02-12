@@ -11,6 +11,7 @@ public class VentInteract : NetworkBehaviour, IInteractable
     private bool firstVentEntry = true;
     private int ventID;
     public bool InVent = false;
+    private PlayerRole playerRole;
     private Camera playerCamera;
     public UnityEvent OnInteractVent;
 
@@ -24,53 +25,56 @@ public class VentInteract : NetworkBehaviour, IInteractable
 
     public void Interact(InteractionData interactionData)
     {
-
-        if (firstVentEntry)
+        playerRole = interactionData.Interactor.GetComponent<Player>().Role.Value;
+        if (playerRole == PlayerRole.Imposter)
         {
-            
-            firstVentEntry = false;
-            ventID = Array.IndexOf(gameObject.GetComponentInParent<VentSystem>().VentsList, gameObject.transform);
-            gameObject.GetComponentInParent<VentSystem>().CurrentVentIndex = ventID;
-
-            if (interactionData.Interactor.TryGetComponent<Player>(out Player interactor))
+            if (firstVentEntry)
             {
-                if (interactor.TryGetComponent<NetworkObject>(out NetworkObject networkObject))
+                firstVentEntry = false;
+                ventID = Array.IndexOf(gameObject.GetComponentInParent<VentSystem>().VentsList, gameObject.transform);
+                gameObject.GetComponentInParent<VentSystem>().CurrentVentIndex = ventID;
+
+                if (interactionData.Interactor.TryGetComponent<Player>(out Player interactor))
                 {
-                    interactorID = networkObject.NetworkObjectId;
+                    if (interactor.TryGetComponent<NetworkObject>(out NetworkObject networkObject))
+                    {
+                        interactorID = networkObject.NetworkObjectId;
+                    }
+                }
+            }
+
+            if (interactionData.Interactor.TryGetComponent<Player>(out Player player))
+            {
+                CharacterController cc = player.GetComponent<CharacterController>();
+                if (!InVent)
+                {
+                    DisablePlayerServerRpc(interactorID); //notify server to disable player
+
+                    InVent = true;
+                    playerCamera.enabled = false;
+                    gameObject.GetComponentInParent<VentSystem>().VentsList[gameObject.GetComponentInParent<VentSystem>().CurrentVentIndex].GetComponentInChildren<Camera>().enabled = true;
+                    gameObject.GetComponentInParent<VentSystem>().VentsList[gameObject.GetComponentInParent<VentSystem>().CurrentVentIndex].GetComponentInChildren<VentCamera>().enabled = true;
+                    OnInteractVent.Invoke();
+                }
+
+                else if (InVent)
+                {
+                    cc.enabled = false;
+                    player.transform.position = gameObject.GetComponentInParent<VentSystem>().VentsList[gameObject.GetComponentInParent<VentSystem>().CurrentVentIndex].position;
+                    cc.enabled = true;
+                    EnablePlayerServerRpc(interactorID); //notify server to enable player visibility
+
+
+                    InVent = false;
+                    gameObject.GetComponentInParent<VentSystem>().VentsList[gameObject.GetComponentInParent<VentSystem>().CurrentVentIndex].GetComponentInChildren<Camera>().enabled = false;
+                    gameObject.GetComponentInParent<VentSystem>().VentsList[gameObject.GetComponentInParent<VentSystem>().CurrentVentIndex].GetComponentInChildren<VentCamera>().enabled = false;
+                    playerCamera.enabled = true;
+                    OnInteractVent.Invoke();
+                    firstVentEntry = true;
                 }
             }
         }
 
-        if (interactionData.Interactor.TryGetComponent<Player>(out Player player))
-        {
-            CharacterController cc = player.GetComponent<CharacterController>();
-            if (!InVent)
-            {
-                DisablePlayerServerRpc(interactorID); //notify server to disable player
-
-                InVent = true;
-                playerCamera.enabled = false;
-                gameObject.GetComponentInParent<VentSystem>().VentsList[gameObject.GetComponentInParent<VentSystem>().CurrentVentIndex].GetComponentInChildren<Camera>().enabled = true;
-                gameObject.GetComponentInParent<VentSystem>().VentsList[gameObject.GetComponentInParent<VentSystem>().CurrentVentIndex].GetComponentInChildren<VentCamera>().enabled = true;
-                OnInteractVent.Invoke();
-            }
-
-            else if (InVent)
-            {
-                cc.enabled = false;
-                player.transform.position = gameObject.GetComponentInParent<VentSystem>().VentsList[gameObject.GetComponentInParent<VentSystem>().CurrentVentIndex].position;
-                cc.enabled = true;
-                EnablePlayerServerRpc(interactorID); //notify server to enable player visibility
-                
-
-                InVent = false;
-                gameObject.GetComponentInParent<VentSystem>().VentsList[gameObject.GetComponentInParent<VentSystem>().CurrentVentIndex].GetComponentInChildren<Camera>().enabled = false;
-                gameObject.GetComponentInParent<VentSystem>().VentsList[gameObject.GetComponentInParent<VentSystem>().CurrentVentIndex].GetComponentInChildren<VentCamera>().enabled = false;
-                playerCamera.enabled = true;
-                OnInteractVent.Invoke();
-                firstVentEntry = true;
-            }
-        }
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -96,7 +100,8 @@ public class VentInteract : NetworkBehaviour, IInteractable
 
     [ClientRpc]
 
-    private void EnablePlayerVisibilityClientRpc(ulong playerID, bool enable){
+    private void EnablePlayerVisibilityClientRpc(ulong playerID, bool enable)
+    {
         if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(playerID, out NetworkObject playerObj))
         {
             playerObj.gameObject.SetActive(enable);
