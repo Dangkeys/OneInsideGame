@@ -107,7 +107,8 @@ public class Player : NetworkBehaviour
         if (Closest_Character != null)
         {
             Player targetPlayerScript = Closest_Character.GetComponent<Player>();
-            if (targetPlayerScript)
+            PlayerState targetPlayerState = Closest_Character.GetComponent<PlayerState>();
+            if (targetPlayerScript && targetPlayerState.Dead.Value == false)
             {
                 targetPlayerScript.Take_Damage_ServerRpc();
             }
@@ -136,7 +137,7 @@ public class Player : NetworkBehaviour
 
     private async void Take_Damage(int damage = 1)
     {
-        if (playerState.Stunning.Value)
+        if (playerState.Stunning.Value && playerState.Dead.Value)
             return;
 
         playerState.SetStunning(true);

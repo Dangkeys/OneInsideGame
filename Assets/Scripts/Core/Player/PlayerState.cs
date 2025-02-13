@@ -69,6 +69,11 @@ public class PlayerState : NetworkBehaviour
          NetworkVariableReadPermission.Everyone,
          NetworkVariableWritePermission.Server
     );
+    public NetworkVariable<bool> Spectator { get; private set; } = new NetworkVariable<bool>(
+         false,
+         NetworkVariableReadPermission.Everyone,
+         NetworkVariableWritePermission.Server
+    );
 
     [Header("Dependencies")]
     [field: SerializeField] public PlayerMovement PlayerMovement { get; private set; }
@@ -139,6 +144,12 @@ public class PlayerState : NetworkBehaviour
         SetDead(value);
     }
 
+    [ServerRpc]
+    public void SetSpectatorServerRpc(bool value)
+    {
+        SetSpectator(value);
+    }
+
     //--------------------------------------
     // State Management Methods
     //------------------------------
@@ -172,6 +183,14 @@ public class PlayerState : NetworkBehaviour
         {
             Dead.Value = value;
             Ragdoll.Value = value;
+        }
+    }
+
+    public void SetSpectator(bool value)
+    {
+        if (IsServer)
+        {
+            Spectator.Value = value;
         }
     }
 

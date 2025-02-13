@@ -6,6 +6,7 @@ public class PlayerAnimation : NetworkBehaviour
     [Header("References")]
     [field: SerializeField] public GameObject PlayerVisual { get; private set; }
     [field: SerializeField] public Player PlayerScript { get; private set; }
+    [field: SerializeField] public GameObject DeadbodyPrefab { get; private set; }
 
     //--------------------------------------
     // Private Variables
@@ -15,6 +16,7 @@ public class PlayerAnimation : NetworkBehaviour
     private Collider[] ragdollColliders;
     private CharacterController characterController;
     private PlayerState playerState;
+    private GameObject currentDeadbody;
 
     //--------------------------------------
     // Network & Lifecycle Methods
@@ -93,36 +95,52 @@ public class PlayerAnimation : NetworkBehaviour
     //--------------------------------------
     private void EnableRagdoll()
     {
-        playerAnimator.enabled = false;
-        characterController.enabled = false;
+        // playerAnimator.enabled = false;
+        // characterController.enabled = false;
 
-        foreach (var rb in ragdollRigidbodies)
-        {
-            rb.isKinematic = false;
-            rb.useGravity = true;
-        }
+        // foreach (var rb in ragdollRigidbodies)
+        // {
+        //     rb.isKinematic = false;
+        //     rb.useGravity = true;
+        // }
 
-        foreach (var col in ragdollColliders)
-        {
-            col.enabled = true;
-        }
+        // foreach (var col in ragdollColliders)
+        // {
+        //     col.enabled = true;
+        // }
+
+        if (!IsOwner)
+            return;
+
+        DisableRagdoll();
+        currentDeadbody = Instantiate(DeadbodyPrefab, transform.position, transform.rotation);
+        currentDeadbody.GetComponent<NetworkObject>().Spawn();
     }
 
     private void DisableRagdoll()
     {
-        playerAnimator.enabled = true;
-        characterController.enabled = true;
+        // playerAnimator.enabled = true;
+        // characterController.enabled = true;
 
-        foreach (var rb in ragdollRigidbodies)
-        {
-            rb.isKinematic = true;
-            rb.useGravity = false;
-        }
+        // foreach (var rb in ragdollRigidbodies)
+        // {
+        //     rb.isKinematic = true;
+        //     rb.useGravity = false;
+        // }
 
-        foreach (var col in ragdollColliders)
+        // foreach (var col in ragdollColliders)
+        // {
+        //     col.enabled = false;
+        // }
+
+        if (!IsOwner)
+            return;
+
+        if (currentDeadbody)
         {
-            col.enabled = false;
+            currentDeadbody.GetComponent<NetworkObject>().Despawn();
         }
+        currentDeadbody = null;
     }
 
     [ServerRpc(RequireOwnership = false)]
