@@ -403,7 +403,7 @@ GameObject:
   - component: {fileID: 423076803}
   - component: {fileID: 423076802}
   m_Layer: 5
-  m_Name: LoadingText
+  m_Name: BootstrapText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -596,6 +596,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2039577016288122240, guid: efb666f90a7f75a428249353a8cbcd4a, type: 3}
+      propertyPath: sfxMixerGroup
+      value: 
+      objectReference: {fileID: -6619841945055056296, guid: 4769672d4d6b03944ab0de55595bd9b1, type: 2}
+    - target: {fileID: 2039577016288122240, guid: efb666f90a7f75a428249353a8cbcd4a, type: 3}
+      propertyPath: musicMixerGroup
+      value: 
+      objectReference: {fileID: -2338934439723539794, guid: 4769672d4d6b03944ab0de55595bd9b1, type: 2}
+    - target: {fileID: 2039577016288122240, guid: efb666f90a7f75a428249353a8cbcd4a, type: 3}
+      propertyPath: soundsCollectionSO
+      value: 
+      objectReference: {fileID: 11400000, guid: cf7a7d04519cce244aa792d329788898, type: 2}
     - target: {fileID: 2762835158471965219, guid: efb666f90a7f75a428249353a8cbcd4a, type: 3}
       propertyPath: m_Name
       value: OneInsideGameManager
