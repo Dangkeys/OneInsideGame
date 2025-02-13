@@ -32,6 +32,9 @@ public class Player : NetworkBehaviour
 
         playerState = GetComponent<PlayerState>();
 
+        Role.OnValueChanged += OnRoleChanged;
+        playerState.Spectator.OnValueChanged += OnSpectatorChanged;
+
         if (!IsOwner)
         {
             // Other Player
@@ -50,12 +53,12 @@ public class Player : NetworkBehaviour
                 return;
             OneInsideLevelManager.Instance.PlayerManager.OnResetALlPlayerPosition += ResetToSpawnPoint;
         }
-        Role.OnValueChanged += OnRoleChanged;
     }
 
     public override void OnNetworkDespawn()
     {
         Role.OnValueChanged -= OnRoleChanged;
+        playerState.Spectator.OnValueChanged -= OnSpectatorChanged;
 
         if (!IsOwner)
             return;
@@ -173,5 +176,36 @@ public class Player : NetworkBehaviour
         CharacterController.enabled = false;
         transform.position = SpawnPoint.GetClientSpawnPos(NetworkManager.Singleton.LocalClientId);
         CharacterController.enabled = true;
+    }
+
+    //--------------------------------------
+    // Spectator
+    //--------------------------------------
+
+    private void OnSpectatorChanged(bool oldValue, bool newValue)
+    {
+        // Debug.Log($"Spectator changed to: {newValue}");
+        if (newValue)
+        {
+            EnableSpectator();
+        }
+        else
+        {
+            DisableSpectator();
+        }
+    }
+
+    private void EnableSpectator()
+    {
+        gameObject.layer = LayerMask.NameToLayer("Spectator");
+        // CharacterController.excludeLayers = LayerMask.NameToLayer("Player");
+        // Debug.Log(LayerMask.NameToLayer("Player"));
+    }
+
+
+    private void DisableSpectator()
+    {
+        gameObject.layer = LayerMask.NameToLayer("Player");
+        // CharacterController.excludeLayers = 0;
     }
 }

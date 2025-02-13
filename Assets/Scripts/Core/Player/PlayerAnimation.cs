@@ -109,7 +109,7 @@ public class PlayerAnimation : NetworkBehaviour
         //     col.enabled = true;
         // }
 
-        if (!IsOwner)
+        if (!IsServer)
             return;
 
         DisableRagdoll();
@@ -133,7 +133,7 @@ public class PlayerAnimation : NetworkBehaviour
         //     col.enabled = false;
         // }
 
-        if (!IsOwner)
+        if (!IsServer)
             return;
 
         if (currentDeadbody)

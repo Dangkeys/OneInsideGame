@@ -183,6 +183,7 @@ public class PlayerState : NetworkBehaviour
         {
             Dead.Value = value;
             Ragdoll.Value = value;
+            Spectator.Value = value;
         }
     }
 
