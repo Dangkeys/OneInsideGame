@@ -36,16 +36,7 @@ public class PlayerManager : NetworkBehaviour
             case GameState.WaitingToStart:
                 break;
             case GameState.GamePlaying:
-                if (OneInsideLevelManager.Instance.IsLoadedFromLobbyScene.Value)
-                {
-                    ClearAllPlayers();
-                    SpawnAllPlayers();
-                }
-                else
-                {
-                    SetParentForPlayers();
-                }
-
+                SetParentForPlayers();
                 ResetAllPlayerPositionClientRpc();
                 if (!IsHost)
                 {
@@ -67,36 +58,6 @@ public class PlayerManager : NetworkBehaviour
     {
         return players;
     }
-
-    private void SpawnAllPlayers()
-    {
-        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
-        {
-            // Debug.Log($"Spawning player {clientId}");
-            GameObject player = Instantiate(playerPrefab.gameObject, Vector3.zero, Quaternion.identity);
-            NetworkObject playerNetworkObject = player.GetComponent<NetworkObject>();
-            playerNetworkObject.SpawnAsPlayerObject(clientId, true);
-            playerNetworkObject.TrySetParent(players, true);
-            // player.name = clientId.ToString();
-        }
-    }
-
-    private void ClearAllPlayers()
-    {
-        if (!IsServer)
-            return;
-        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
-        {
-            if (NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out var client))
-            {
-                if (client.PlayerObject && client.PlayerObject.TryGetComponent<Player>(out var player))
-                {
-                    player.GetComponent<NetworkObject>().Despawn();
-                }
-            }
-        }
-    }
-
 
     private void SetParentForPlayers()
     {

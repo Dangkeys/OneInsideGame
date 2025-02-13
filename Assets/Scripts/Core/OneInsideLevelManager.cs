@@ -20,22 +20,34 @@ public class OneInsideLevelManager : NetworkBehaviour
 
     [field: SerializeField] public RoleManager RoleManager;
 
-    [field: SerializeField] public VivoxManager VivoxManager;
+    // [field: SerializeField] public VivoxManager VivoxManager;
 
-    public NetworkVariable<bool> IsLoadedFromLobbyScene = new NetworkVariable<bool>();
 
     public static OneInsideLevelManager Instance { get; private set; }
 
     private void Awake()
     {
         Instance = this;
+        NetworkManager.Singleton.ConnectionApprovalCallback += NetworkManager_ConnectionApprovalCallback;
+    }
+
+    private void NetworkManager_ConnectionApprovalCallback(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
+    {
+        if(State.Value != GameState.WaitingToStart)
+        {
+            response.Approved = false;
+        }
+        else
+        {
+            response.Approved = true;
+            response.CreatePlayerObject = true;
+        }
     }
 
     public override void OnNetworkSpawn()
     {
         if (IsServer)
         {
-            IsLoadedFromLobbyScene.Value = false; 
             NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnSceneLoadComplete;
             State.OnValueChanged += OnGameStateChanged;
         }
@@ -99,7 +111,6 @@ public class OneInsideLevelManager : NetworkBehaviour
     {
         if (sceneName != GameScene.TajdangScene.ToString())
             return;
-        IsLoadedFromLobbyScene.Value = true;
         State.Value = GameState.GamePlaying;
     }
 }
