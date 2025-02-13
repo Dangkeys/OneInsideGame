@@ -1,0 +1,24 @@
+#nullable enable
+using Unity.Services.Lobbies.Models;
+using UnityEngine;
+
+public class UpdateLobbyDto
+{
+    public UpdateLobbyDto(string? lobbyName, GameMode? gameMode, int? maxPlayers, int? imposterAmount, string? isPrivate)
+    {
+        LobbyName = lobbyName;
+        GameMode = gameMode;
+        MaxPlayers = maxPlayers;
+        ImposterAmount = imposterAmount;
+        IsPrivate = isPrivate;
+    }
+
+    public string? LobbyName { get; set; }
+
+    public GameMode? GameMode { get; set; }
+
+    public int? MaxPlayers { get; set; }
+
+    public int? ImposterAmount { get; set; }
+    public string? IsPrivate { get; set; }
+}

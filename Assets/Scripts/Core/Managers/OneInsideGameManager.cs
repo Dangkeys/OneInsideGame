@@ -23,7 +23,6 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
 
     private CharacterManager characterManager;
     private PerkManager perkManager;
-    private UserManager userManager;
     private AudioManager audioManager;
     private LobbyManager lobbyManager;
     private VoiceChatManager voiceChatManager;
@@ -38,7 +37,6 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
     {
         characterManager = GetComponentInChildren<CharacterManager>();
         perkManager = GetComponentInChildren<PerkManager>();
-        userManager = GetComponentInChildren<UserManager>();
         audioManager = GetComponentInChildren<AudioManager>();
         voiceChatManager = GetComponentInChildren<VoiceChatManager>();
         lobbyManager = GetComponentInChildren<LobbyManager>();
