@@ -2,7 +2,9 @@ using System;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Vivox;
+using UnityEditor.SearchService;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
 {
@@ -12,12 +14,12 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
     {
         "Initializing Unity Services",
         "Authenticating User",
+        "Generated Player Name",
         "Initializing Vivox Service",
         "Logging into Vivox Service",
         "Loading Main Menu"
     };
 
-    private int currentStep = 0;
 
     private CharacterManager characterManager;
     private PerkManager perkManager;
@@ -26,11 +28,10 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
     private LobbyManager lobbyManager;
     private VoiceChatManager voiceChatManager;
 
-    private void UpdateProgress(string status)
+    private void UpdateProgress(int currentStep)
     {
-        float progress = (float)currentStep / loadingSteps.Length;
-        OnBootstrapLoadingProgressChanged?.Invoke(progress, status);
-        currentStep++;
+        float progress = Mathf.Clamp((float)currentStep / loadingSteps.Length, 0, 1);
+        OnBootstrapLoadingProgressChanged?.Invoke(progress, loadingSteps[currentStep]);
     }
 
     async void Start()
@@ -42,20 +43,32 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
         voiceChatManager = GetComponentInChildren<VoiceChatManager>();
         lobbyManager = GetComponentInChildren<LobbyManager>();
 
-        UpdateProgress(loadingSteps[0]);
+        UpdateProgress(0);
         await UnityServices.InitializeAsync();
 
-        UpdateProgress(loadingSteps[1]);
-        await AuthenticationService.Instance.SignInAnonymouslyAsync();
-        Debug.Log("Player Name: " + AuthenticationService.Instance.PlayerName);
+        UpdateProgress(1);
+        AuthState state = await AuthenticationWrapper.DoAuth();
 
-        UpdateProgress(loadingSteps[2]);
+        if (state != AuthState.Authenticated)
+        {
+            //TODO Add logic to handle failed authentication
+            Debug.LogError("Failed to authenticate user");
+            return;
+        }
+
+        if (AuthenticationService.Instance.PlayerName == null)
+        {
+            UpdateProgress(2);
+            await PlayerNameGenerator.GenerateRandomPlayerName();
+        }
+
+        UpdateProgress(3);
         await VivoxService.Instance.InitializeAsync();
 
-        UpdateProgress(loadingSteps[3]);
+        UpdateProgress(4);
         await VivoxService.Instance.LoginAsync();
 
-        UpdateProgress(loadingSteps[4]);
-        Loader.Load(GameScene.MainMenuScene);
+        UpdateProgress(5);
+        SceneManager.LoadScene(GameScene.MainMenuScene.ToString());
     }
 }
