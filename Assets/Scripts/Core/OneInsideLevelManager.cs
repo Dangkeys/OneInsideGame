@@ -28,12 +28,16 @@ public class OneInsideLevelManager : NetworkBehaviour
     private void Awake()
     {
         Instance = this;
+
+    }
+    void Start()
+    {
         NetworkManager.Singleton.ConnectionApprovalCallback += NetworkManager_ConnectionApprovalCallback;
     }
 
     private void NetworkManager_ConnectionApprovalCallback(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
     {
-        if(State.Value != GameState.WaitingToStart)
+        if (State.Value != GameState.WaitingToStart)
         {
             response.Approved = false;
         }
@@ -100,12 +104,12 @@ public class OneInsideLevelManager : NetworkBehaviour
 
     public override void OnNetworkDespawn()
     {
+        NetworkManager.Singleton.ConnectionApprovalCallback -= NetworkManager_ConnectionApprovalCallback;
         if (!IsServer)
             return;
         NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= OnSceneLoadComplete;
+
     }
-
-
 
     private void OnSceneLoadComplete(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
     {
