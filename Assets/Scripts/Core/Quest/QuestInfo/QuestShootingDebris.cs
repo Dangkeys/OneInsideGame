@@ -24,7 +24,6 @@ public class QuestShootingDebris : QuestInfo, IInteractable
             FinishQuest();
             HandleFinishedServerRpc(finished);
         }
-        CancelQuest();
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -46,8 +45,12 @@ public class QuestShootingDebris : QuestInfo, IInteractable
 
     private void HandleFinished(bool finished)
     {
-        questShootingUI.SetActive(false);
-        changeCamera.SwitchCamera(1, 0);
+        if(questShootingUI.activeInHierarchy)
+        {
+            CancelQuest();
+            questShootingUI.SetActive(false);
+            changeCamera.SwitchCamera(1, 0);
+        }
     }
 
     public void Interact(InteractionData interactionData)

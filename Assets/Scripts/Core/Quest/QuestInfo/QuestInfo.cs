@@ -1,11 +1,9 @@
 using Unity.Netcode;
-using UnityEngine;
 
 public abstract class QuestInfo : NetworkBehaviour
 {
     protected bool currentStatus = false;
     public event System.Action<bool> questInfoStatus;
-    public event System.Action<bool> onDoQuest;
     private PlayerMovement playerMovement;
 
     protected void BreakQuest()

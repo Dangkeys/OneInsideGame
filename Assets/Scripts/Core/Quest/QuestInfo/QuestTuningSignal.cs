@@ -1,19 +1,19 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public class QuestCleaningTree : QuestInfo, IInteractable
+public class QuestTuningSignal : QuestInfo, IInteractable
 {
-    [SerializeField] private QuestCleaningTreeManager questCleaningTreeManager;
-    [SerializeField] private GameObject questCleaningUI;
+    [SerializeField] private QuestTuningManager questTuningManager;
+    [SerializeField] private GameObject questTuningUI;
 
     private void OnEnable()
     {
-        questCleaningTreeManager.OnFinishedQuest += Finished;
+        questTuningManager.OnFinishedQuest += Finished;
     }
 
     private void OnDisable()
     {
-        questCleaningTreeManager.OnFinishedQuest -= Finished;
+        questTuningManager.OnFinishedQuest -= Finished;
     }
 
     private void Finished(bool finished)
@@ -40,10 +40,10 @@ public class QuestCleaningTree : QuestInfo, IInteractable
 
     private void HandleFinished(bool finished)
     {
-        if(questCleaningUI.activeInHierarchy)
+        if(questTuningUI.activeInHierarchy)
         {
             CancelQuest();
-            questCleaningUI.SetActive(false);
+            questTuningUI.SetActive(false);
         }
     }
 
@@ -52,7 +52,7 @@ public class QuestCleaningTree : QuestInfo, IInteractable
         if (!currentStatus)
         {
             UpdateDoQuest(true, interactionData);
-            questCleaningUI.SetActive(true);
+            questTuningUI.SetActive(true);
         }
     }
 
