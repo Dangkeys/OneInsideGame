@@ -8,7 +8,6 @@ public class PlayerManager : NetworkBehaviour
 {
 
     [SerializeField] private Transform playerPrefab;
-    [SerializeField] private GameObject players;
 
 
     public event Action OnAllPlayersInTheGame;
@@ -63,11 +62,6 @@ public class PlayerManager : NetworkBehaviour
         }
     }
 
-    public GameObject GetPlayersGameObject()
-    {
-        return players;
-    }
-
     private void SpawnAllPlayers()
     {
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
@@ -76,7 +70,7 @@ public class PlayerManager : NetworkBehaviour
             GameObject player = Instantiate(playerPrefab.gameObject, Vector3.zero, Quaternion.identity);
             NetworkObject playerNetworkObject = player.GetComponent<NetworkObject>();
             playerNetworkObject.SpawnAsPlayerObject(clientId, true);
-            playerNetworkObject.TrySetParent(players, true);
+            playerNetworkObject.TrySetParent(OneInsideLevelManager.Players, true);
             // player.name = clientId.ToString();
         }
     }
@@ -108,7 +102,7 @@ public class PlayerManager : NetworkBehaviour
             {
                 if (client.PlayerObject && client.PlayerObject.TryGetComponent<Player>(out var player))
                 {
-                    player.GetComponent<NetworkObject>().TrySetParent(players, true);
+                    player.GetComponent<NetworkObject>().TrySetParent(OneInsideLevelManager.Players, true);
                 }
             }
         }

@@ -26,6 +26,9 @@ public class OneInsideLevelManager : NetworkBehaviour
 
     public static OneInsideLevelManager Instance { get; private set; }
 
+    [field: SerializeField] public static GameObject Players;
+    [field: SerializeField] public static GameObject DeadBodies;
+
     private void Awake()
     {
         Instance = this;
@@ -35,7 +38,7 @@ public class OneInsideLevelManager : NetworkBehaviour
     {
         if (IsServer)
         {
-            IsLoadedFromLobbyScene.Value = false; 
+            IsLoadedFromLobbyScene.Value = false;
             NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnSceneLoadComplete;
             State.OnValueChanged += OnGameStateChanged;
         }

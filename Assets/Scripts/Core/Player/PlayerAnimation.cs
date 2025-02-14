@@ -113,8 +113,16 @@ public class PlayerAnimation : NetworkBehaviour
             return;
 
         DisableRagdoll();
+
         currentDeadbody = Instantiate(DeadbodyPrefab, transform.position, transform.rotation);
-        currentDeadbody.GetComponent<NetworkObject>().Spawn();
+        NetworkObject deadbodyNetworkObject = currentDeadbody.GetComponent<NetworkObject>();
+        deadbodyNetworkObject.Spawn();
+
+        if (OneInsideLevelManager.Instance)
+        {
+            deadbodyNetworkObject.TrySetParent(OneInsideLevelManager.DeadBodies, true);
+        }
+
     }
 
     private void DisableRagdoll()
