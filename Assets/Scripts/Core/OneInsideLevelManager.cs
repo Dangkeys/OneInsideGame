@@ -17,21 +17,23 @@ public class OneInsideLevelManager : NetworkBehaviour
 
     [field: SerializeField] public PlayerManager PlayerManager;
     [field: SerializeField] public VoteManager VoteManager;
-
     [field: SerializeField] public RoleManager RoleManager;
-
     [field: SerializeField] public VivoxManager VivoxManager;
+
+    [field: SerializeField] public GameObject Players_OBJ;
+    [field: SerializeField] public GameObject DeadBodies_OBJ;
 
     public NetworkVariable<bool> IsLoadedFromLobbyScene = new NetworkVariable<bool>();
 
     public static OneInsideLevelManager Instance { get; private set; }
-
-    [field: SerializeField] public static GameObject Players;
-    [field: SerializeField] public static GameObject DeadBodies;
+    public static GameObject Players { get; private set; }
+    public static GameObject DeadBodies { get; private set; }
 
     private void Awake()
     {
         Instance = this;
+        Players = Players_OBJ;
+        DeadBodies = DeadBodies_OBJ;
     }
 
     public override void OnNetworkSpawn()
