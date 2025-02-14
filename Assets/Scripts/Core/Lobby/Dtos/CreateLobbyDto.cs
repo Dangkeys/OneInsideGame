@@ -3,13 +3,12 @@ using UnityEngine;
 
 public class CreateLobbyDto
 {
-    public CreateLobbyDto(string lobbyName, GameMode gameMode, int maxPlayers, int imposterAmount, string relayJoinCode, bool isPrivate)
+    public CreateLobbyDto(string lobbyName, GameMode gameMode, int maxPlayers, int imposterAmount, bool isPrivate)
     {
         LobbyName = lobbyName;
         GameMode = gameMode;
-        MaxPlayers = maxPlayers > OneInside.Constants.Player.MAX_PLAYERS ? OneInside.Constants.Player.MAX_PLAYERS : maxPlayers; 
+        MaxPlayers = Mathf.Clamp(maxPlayers, OneInside.Constants.Player.MIN_PLAYERS, OneInside.Constants.Player.MAX_PLAYERS); 
         ImposterAmount = imposterAmount;
-        RelayJoinCode = relayJoinCode;
         IsPrivate = isPrivate;
     }
 
@@ -21,7 +20,6 @@ public class CreateLobbyDto
 
     public int ImposterAmount { get; set; }
 
-    public string RelayJoinCode { get; set; }  
 
     public bool IsPrivate { get; set; }
 }

@@ -2,7 +2,7 @@ public enum GameScene
 {
     MainMenuScene,
     LoadingScene,
-    Lobby,
+    LobbyScene,
     TajdangScene,
     GameOver,
 }
