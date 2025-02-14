@@ -5,13 +5,12 @@ using UnityEngine;
 
 public class LobbyQueryDto : PaginationQueryDto
 {
-    public LobbyQueryDto(string? lobbyName, GameMode? gameMode, int? maxPlayers, int? imposterAmount, string? lobbyJoinCode,int pageSize, string? continuationToken = null) : base(pageSize, continuationToken)
+    public LobbyQueryDto(string? lobbyName, GameMode? gameMode, int? maxPlayers, int? imposterAmount,int pageSize, string? continuationToken = null) : base(pageSize, continuationToken)
     {
         LobbyName = lobbyName;
         GameMode = gameMode;
         MaxPlayers = maxPlayers;
         ImposterAmount = imposterAmount;
-        LobbyJoinCode = lobbyJoinCode;
     }
     public string? LobbyName { get; set; }
 
@@ -20,6 +19,4 @@ public class LobbyQueryDto : PaginationQueryDto
     public int? MaxPlayers { get; set; }
 
     public int? ImposterAmount { get; set; }
-
-    public string? LobbyJoinCode { get; set; }
 }

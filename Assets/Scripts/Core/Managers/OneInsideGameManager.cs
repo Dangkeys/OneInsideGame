@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mono.CSharp;
+using QFSW.QC;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
@@ -16,6 +17,9 @@ using UnityEngine.SceneManagement;
 public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
 {
     public event Action<float, string> OnLoadingProgressChanged;
+    public event Action<string, Action, Action> OnConfirmationRequired;
+
+    public event Action<string> OnShowMessageRequired;
     public enum LoadingSequence
     {
         GameInitialization,
@@ -37,66 +41,113 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
         { LoadingSequence.HostMatch, new string[]
         {
             "Creating Lobby",
-            "Starting Host",
             "Loading Lobby Scene",
             "Lobby Scene Loaded"
         }},
         { LoadingSequence.JoinMatch, new string[]
         {
             "Joining Lobby",
-            "Starting Client",
             "Loading Lobby Scene",
             "Lobby Scene Loaded"
         }}
     };
 
 
-    private CharacterManager characterManager;
-    private PerkManager perkManager;
-    private AudioManager audioManager;
-    private LobbyManager lobbyManager;
-    private VoiceChatManager voiceChatManager;
+    public CharacterManager CharacterManager { get; private set; }
+    public PerkManager PerkManager { get; private set; }
+    public AudioManager AudioManager { get; private set; }
+    public LobbyManager LobbyManager { get; private set; }
+    public VoiceChatManager VoiceChatManager { get; private set; }
+    public NetcodeManager NetcodeManager { get; private set; }
+    protected override void OnAwakeInitialization()
+    {
+        base.OnAwakeInitialization();
+        CharacterManager = GetComponentInChildren<CharacterManager>(true); // true to include inactive objects
+        PerkManager = GetComponentInChildren<PerkManager>(true);
+        AudioManager = GetComponentInChildren<AudioManager>(true);
+        VoiceChatManager = GetComponentInChildren<VoiceChatManager>(true);
+        LobbyManager = GetComponentInChildren<LobbyManager>(true);
+        NetcodeManager = GetComponentInChildren<NetcodeManager>(true);
 
+        if (CharacterManager == null)
+            Debug.LogError("CharacterManager not found!");
+        if (PerkManager == null)
+            Debug.LogError("PerkManager not found!");
+        if (AudioManager == null)
+            Debug.LogError("AudioManager not found!");
+        if (VoiceChatManager == null)
+            Debug.LogError("VoiceChatManager not found!");
+        if (LobbyManager == null)
+            Debug.LogError("LobbyManager not found!");
+        if (NetcodeManager == null)
+            Debug.LogError("NetcodeManager not found!");
+    }
 
     async void Start()
     {
         await InitializeGame();
     }
 
+    [Command]
+    public async Task LeaveMatchAsync()
+    {
+        //TODO migrate host(I don't think we can migrate in the current version of the netcode)
+
+        await LobbyManager.LeaveLobbyAsync();
+        NetcodeManager.LeaveMatch();
+    }
+
+    public async Task KickPlayerAsync(ulong clientId)
+    {
+        await LobbyManager.KickPlayerAsync(clientId.ToString());
+        NetcodeManager.KickPlayer(clientId);
+    }
+
     public async Task HostMatch(CreateLobbyDto createLobbyDto)
     {
-        UpdateHostMatchProgress(0);
-        CreateLobbyAllocationResponseDto responseDto = await lobbyManager.CreateLobbyAsync(createLobbyDto);
-
         UpdateHostMatchProgress(1);
-        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-        RelayServerData relayServerData = AllocationUtils.ToRelayServerData(responseDto.Allocation, "dtls");
-        transport.SetRelayServerData(relayServerData);
+        CreateLobbyAllocationResponseDto responseDto = await LobbyManager.CreateLobbyAsync(createLobbyDto);
 
-        NetworkManager.Singleton.StartHost();
+
+        NetcodeManager.InitializeHostRelayTransport(responseDto);
+
+        await Loader.LoadNetwork(GameScene.LobbyScene);
 
         UpdateHostMatchProgress(2);
-        Loader.LoadNetwork(GameScene.LobbyScene);
-
-        UpdateHostMatchProgress(3);
     }
 
-    public async Task JoinMatch(string identifier, bool useCode)
+    public async Task QuickJoinMatchAsync()
     {
-
-        UpdateJoinMatchProgress(0);
-        JoinLobbyAllocationResponseDto responseDto = await lobbyManager.JoinLobbyAsync(identifier, useCode);
-
         UpdateJoinMatchProgress(1);
-        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-        RelayServerData relayServerData = AllocationUtils.ToRelayServerData(responseDto.JoinAllocation, "dtls");
-        transport.SetRelayServerData(relayServerData);
+        JoinLobbyAllocationResponseDto responseDto = await LobbyManager.QuickJoinAsync();
+
+        NetcodeManager.InitializeClientRelayTransport(responseDto);
 
         UpdateJoinMatchProgress(2);
-        NetworkManager.Singleton.StartClient();
-
-        UpdateJoinMatchProgress(3);
     }
+
+
+
+    public async Task JoinMatchByCodeAsync(string joinCode)
+    {
+        UpdateJoinMatchProgress(1);
+        JoinLobbyAllocationResponseDto responseDto = await LobbyManager.JoinLobbyByCodeAsync(joinCode);
+
+        NetcodeManager.InitializeClientRelayTransport(responseDto);
+
+        UpdateJoinMatchProgress(2);
+    }
+
+    public async Task JoinMatchByLobbyIdAsync(string lobbyId)
+    {
+        UpdateJoinMatchProgress(1);
+        JoinLobbyAllocationResponseDto responseDto = await LobbyManager.JoinLobbyByIdAsync(lobbyId);
+
+        NetcodeManager.InitializeClientRelayTransport(responseDto);
+
+        UpdateJoinMatchProgress(2);
+    }
+
 
     public void StartGame()
     {
@@ -105,11 +156,6 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
 
     public async Task InitializeGame()
     {
-        characterManager = GetComponentInChildren<CharacterManager>();
-        perkManager = GetComponentInChildren<PerkManager>();
-        audioManager = GetComponentInChildren<AudioManager>();
-        voiceChatManager = GetComponentInChildren<VoiceChatManager>();
-        lobbyManager = GetComponentInChildren<LobbyManager>();
 
         UpdateGameInitializationProgress(0);
         await UnityServices.InitializeAsync();
@@ -119,7 +165,7 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
 
         if (state != AuthState.Authenticated)
         {
-            //TODO Add logic to handle failed authentication
+            //TODO Add more logic to handle failed authentication
             Debug.LogError("Failed to authenticate user");
             return;
         }
@@ -162,5 +208,20 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
     {
         UpdateProgress(LoadingSequence.JoinMatch, currentStep);
     }
+    public void ShowConfirmation(string message, Action onConfirm, Action onCancel = null)
+    {
+        OnConfirmationRequired?.Invoke(message, onConfirm, onCancel);
+    }
+
+    public void ShowMessage(string message)
+    {
+        OnShowMessageRequired?.Invoke(message);
+    }
+
+    public void ShowProgressChanged(float progress, string message)
+    {
+        OnLoadingProgressChanged?.Invoke(progress, message);
+    }
+
 
 }

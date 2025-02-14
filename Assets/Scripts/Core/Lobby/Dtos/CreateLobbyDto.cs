@@ -1,3 +1,4 @@
+using Unity.Services.Authentication;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
@@ -7,8 +8,8 @@ public class CreateLobbyDto
     {
         LobbyName = lobbyName;
         GameMode = gameMode;
-        MaxPlayers = Mathf.Clamp(maxPlayers, OneInside.Constants.Player.MIN_PLAYERS, OneInside.Constants.Player.MAX_PLAYERS); 
-        ImposterAmount = imposterAmount;
+        MaxPlayers = Mathf.Clamp(maxPlayers, OneInside.Constants.Player.MIN_PLAYERS, OneInside.Constants.Player.MAX_PLAYERS);
+        ImposterAmount = Mathf.Clamp(imposterAmount, OneInside.Constants.Player.MIN_IMPOSTERS, OneInside.Constants.Player.MAX_IMPOSTERS);
         IsPrivate = isPrivate;
     }
 
@@ -22,4 +23,6 @@ public class CreateLobbyDto
 
 
     public bool IsPrivate { get; set; }
+
+    //TODO (optional) add more map, region, useMic
 }

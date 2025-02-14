@@ -168,15 +168,6 @@ public class LobbyManager : MonoBehaviour
                 ));
             }
 
-            if (!string.IsNullOrEmpty(queryDto.LobbyJoinCode))
-            {
-                filters.Add(new QueryFilter(
-                    field: QueryFilter.FieldOptions.S3,
-                    op: QueryFilter.OpOptions.EQ,
-                    value: queryDto.LobbyJoinCode
-                ));
-            }
-
             var options = new QueryLobbiesOptions
             {
                 SampleResults = false,
@@ -224,7 +215,7 @@ public class LobbyManager : MonoBehaviour
 
     #endregion
     #region Player Methods
-    public async Task<JoinLobbyAllocationResponseDto> QuickJoin()
+    public async Task<JoinLobbyAllocationResponseDto> QuickJoinAsync()
     {
         try
         {
@@ -238,27 +229,6 @@ public class LobbyManager : MonoBehaviour
         {
             OnRequestFailed?.Invoke(new RequestErrorDto(e.ErrorCode, e.Message));
             Debug.LogError($"Quick join failed: {e.Message}");
-            return null;
-        }
-    }
-
-    public async Task<JoinLobbyAllocationResponseDto> JoinLobbyAsync(string identifier, bool useCode = false)
-    {
-        try
-        {
-            currentLoby = useCode
-                ? await LobbyService.Instance.JoinLobbyByCodeAsync(identifier)
-                : await LobbyService.Instance.JoinLobbyByIdAsync(identifier);
-
-            JoinAllocation joinAllocation = await JoinRelayAsync(currentLoby.Data[OneInside.Constants.Lobby.KEY_RELAY_JOIN_CODE].Value);
-
-            return new JoinLobbyAllocationResponseDto(currentLoby, joinAllocation);
-        }
-        catch (RequestFailedException e)
-        {
-            string context = useCode ? "by code" : "";
-            OnRequestFailed?.Invoke(new RequestErrorDto(e.ErrorCode, e.Message));
-            Debug.LogError($"Join lobby {context} failed: {e.Message}");
             return null;
         }
     }
@@ -281,7 +251,25 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
-    public async void LeaveLobbyAsync()
+    public async Task<JoinLobbyAllocationResponseDto> JoinLobbyByIdAsync(string lobbyId)
+    {
+        try
+        {
+            currentLoby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId);
+
+            JoinAllocation joinAllocation = await JoinRelayAsync(currentLoby.Data[OneInside.Constants.Lobby.KEY_RELAY_JOIN_CODE].Value);
+
+            return new JoinLobbyAllocationResponseDto(currentLoby, joinAllocation);
+        }
+        catch (RequestFailedException e)
+        {
+            OnRequestFailed?.Invoke(new RequestErrorDto(e.ErrorCode, e.Message));
+            Debug.LogError($"Join lobby by id failed: {e.Message}");
+            return null;
+        }
+    }
+
+    public async Task LeaveLobbyAsync()
     {
         try
         {
@@ -300,7 +288,7 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
-    public async void KickPlayerAsync(string playerId)
+    public async Task KickPlayerAsync(string playerId)
     {
         try
         {

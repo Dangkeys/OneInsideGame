@@ -16,6 +16,11 @@ public class UserInformationUI : MonoBehaviour
 
     private void Start()
     {
+        if(!AuthenticationService.Instance.IsSignedIn)
+        {
+            Debug.LogWarning("UserInformationUI: User is not signed in");
+            return;
+        }
         playerNameText.text = AuthenticationService.Instance.PlayerName;
 
         //TODO: Load player avatar

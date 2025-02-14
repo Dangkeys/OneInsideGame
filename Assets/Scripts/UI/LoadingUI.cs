@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,17 +8,23 @@ public class LoadingUI : MonoBehaviour
 {
     private TextMeshProUGUI bootstrapText;
     private Slider progressSlider;
+    private OneInsideGameManager gameManager;
 
-    void Start()
+    void Awake()
     {
         bootstrapText = GetComponentInChildren<TextMeshProUGUI>();
         progressSlider = GetComponentInChildren<Slider>();
-        OneInsideGameManager.Instance.OnLoadingProgressChanged += UpdateProgress;
+
+    }
+    void Start()
+    {
+        gameManager = OneInsideGameManager.Instance;
+        if (gameManager != null)
+        {
+            gameManager.OnLoadingProgressChanged += UpdateProgress;
+        }
         gameObject.SetActive(false);
     }
-
-
-    // Update is called once per frame
     void Update()
     {
 
@@ -25,18 +32,24 @@ public class LoadingUI : MonoBehaviour
 
     void OnDestroy()
     {
-       OneInsideGameManager.Instance.OnLoadingProgressChanged -= UpdateProgress; 
+        if (gameManager != null)
+        {
+            gameManager.OnLoadingProgressChanged -= UpdateProgress;
+        }
     }
 
     private void UpdateProgress(float progressValue, string progressText)
     {
-        if(progressValue == 1)
-        {
-            gameObject.SetActive(false);
-    
-        }
-        gameObject.SetActive(true);
         bootstrapText.text = progressText;
         progressSlider.value = progressValue;
+
+        if (progressValue < 1)
+        {
+            gameObject.SetActive(true);
+        }
+        else
+        {
+            gameObject.SetActive(false);
+        }
     }
 }
