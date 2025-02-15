@@ -44,7 +44,6 @@ public class QuestDodge : QuestInfo, IInteractable
         if (questDodgeUI.activeInHierarchy)
         {
             CancelQuest();
-            questDodgeUI.SetActive(false);
         }
     }
 
@@ -60,5 +59,6 @@ public class QuestDodge : QuestInfo, IInteractable
     public override void CancelQuest()
     {
         UpdateDoQuest(false, null);
+        questDodgeUI.SetActive(false);
     }
 }

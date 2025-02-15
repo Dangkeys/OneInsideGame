@@ -23,5 +23,6 @@ public class OxygenInteract : MonoBehaviour, IInteractable
         {
             playerMovement.EnablePlayerMovement(true);
         }
+        oxygen.SetActive(false);
     }
 }

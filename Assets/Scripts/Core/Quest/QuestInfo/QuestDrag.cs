@@ -43,7 +43,6 @@ public class QuestDrag : QuestInfo, IInteractable
         if (questDragUI.activeInHierarchy)
         {
             CancelQuest();
-            questDragUI.SetActive(false);
         }
     }
 
@@ -59,5 +58,6 @@ public class QuestDrag : QuestInfo, IInteractable
     public override void CancelQuest()
     {
         UpdateDoQuest(false, null);
+        questDragUI.SetActive(false);
     }
 }
