@@ -13,6 +13,7 @@ public class ViewPlayersUI : MonoBehaviour
     [SerializeField] private ReadyManager readyManager;
     [SerializeField] private Transform playerContainer;
     [SerializeField] private PlayerListItemUI playerPrefab;
+    private OneInsideGameManager oneInsideGameManager;
     private NetworkPlayerData networkPlayerData;
     private bool isReady = false;
 
@@ -20,7 +21,8 @@ public class ViewPlayersUI : MonoBehaviour
 
     void Awake()
     {
-        networkPlayerData = OneInsideGameManager.Instance.NetcodeManager.NetworkPlayerData;
+        oneInsideGameManager = OneInsideGameManager.Instance;
+        networkPlayerData = oneInsideGameManager.NetcodeManager.NetworkPlayerData;
     }
 
     void Start()
@@ -42,10 +44,22 @@ public class ViewPlayersUI : MonoBehaviour
 
             startGameButton.onClick.AddListener(() =>
             {
-                OneInsideGameManager.Instance.ShowConfirmation("Are you sure you want to start the game?", () =>
+                oneInsideGameManager.ShowConfirmation("Are you sure you want to start the game?", () =>
                     {
-                        OneInsideGameManager.Instance.ShowProgressChanged(.5f, "Starting Game...");
-                        OneInsideGameManager.Instance.StartGame();
+                        oneInsideGameManager.ShowProgressChanged(.5f, "Starting Game...");
+                        if (NetworkManager.Singleton.ConnectedClients.Count >=
+                        (oneInsideGameManager.LobbyManager.CurrentLobby.Data.TryGetValue(
+                            OneInside.Constants.Lobby.KEY_IMPOSTER_AMOUNT, out var imposterAmount) ?
+                        int.Parse(imposterAmount.Value) : OneInside.Constants.Player.MIN_IMPOSTERS))
+                        {
+
+                            oneInsideGameManager.StartGame();
+                        }
+                        else
+                        {
+                            oneInsideGameManager.ShowProgressChanged(1f, "Cannot start game, not enough players");
+                            oneInsideGameManager.ShowMessage("Cannot start game, not enough players");
+                        }
                     }, null);
             });
 

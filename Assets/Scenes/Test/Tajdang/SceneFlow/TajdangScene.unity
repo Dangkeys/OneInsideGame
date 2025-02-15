@@ -4352,6 +4352,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2266836278676407198, guid: efb666f90a7f75a428249353a8cbcd4a, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 4114812704
+      objectReference: {fileID: 0}
     - target: {fileID: 2762835158471965219, guid: efb666f90a7f75a428249353a8cbcd4a, type: 3}
       propertyPath: m_Name
       value: OneInsideGameManager
@@ -6336,11 +6340,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 28}
   m_Pivot: {x: 0.5, y: 1}
---- !u!1 &2026906048 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6245572269521530248, guid: 311146a16b03d9b4cab810499d19984f, type: 3}
-  m_PrefabInstance: {fileID: 5800376361966119529}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2047814599
 GameObject:
   m_ObjectHideFlags: 0
@@ -6964,31 +6963,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6311542512395723136, guid: 311146a16b03d9b4cab810499d19984f, type: 3}
   m_PrefabInstance: {fileID: 5800376361966119529}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2725571572847314351
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2026906048}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4105596313
-  InScenePlacedSourceGlobalObjectIdHash: 0
-  DeferredDespawnTick: 0
-  Ownership: 1
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
-  SyncOwnerTransformWhenParented: 1
-  AllowOwnerToParent: 0
 --- !u!1001 &3451890742809731684
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7055,7 +7029,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2450710185357753235, guid: e3cffca8405639e46addd3151d790838, type: 3}
       propertyPath: GamePlayingTimerMax
-      value: 30
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 2826085971031727050, guid: e3cffca8405639e46addd3151d790838, type: 3}
       propertyPath: GlobalObjectIdHash
@@ -7192,6 +7166,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1674331751}
     m_Modifications:
+    - target: {fileID: 2260103582585926689, guid: 311146a16b03d9b4cab810499d19984f, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 2754290894
+      objectReference: {fileID: 0}
     - target: {fileID: 6245572269521530248, guid: 311146a16b03d9b4cab810499d19984f, type: 3}
       propertyPath: m_Name
       value: NetworkManagerUI
@@ -7279,10 +7257,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6245572269521530248, guid: 311146a16b03d9b4cab810499d19984f, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2725571572847314351}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 311146a16b03d9b4cab810499d19984f, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

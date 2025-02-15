@@ -1,29 +1,26 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class ReadyManager : NetworkBehaviour
 {
-    public static ReadyManager Instance { get; private set; }
     public event Action<Dictionary<ulong, bool>> OnReadyStateChanged;
 
     private NetworkVariable<Dictionary<ulong, bool>> readyRegistry = new NetworkVariable<Dictionary<ulong, bool>>(
         new Dictionary<ulong, bool>()
     );
 
+    private OneInsideGameManager oneInsideGameManager;
+
     private bool previousAllPlayersReady = false;
 
     private void Awake()
     {
-        if (Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        Instance = this;
+        oneInsideGameManager = OneInsideGameManager.Instance;
     }
 
     public override void OnNetworkSpawn()
@@ -34,7 +31,7 @@ public class ReadyManager : NetworkBehaviour
             NetworkManager.Singleton.OnConnectionEvent += NetworkOnConnectionEvent;
         }
 
-        readyRegistry.OnValueChanged += ReadyDictionaryChanged;
+        readyRegistry.OnValueChanged += DictChanged;
     }
 
     public override void OnNetworkDespawn()
@@ -43,7 +40,11 @@ public class ReadyManager : NetworkBehaviour
         {
             NetworkManager.Singleton.OnConnectionEvent -= NetworkOnConnectionEvent;
         }
-        readyRegistry.OnValueChanged -= ReadyDictionaryChanged;
+        readyRegistry.OnValueChanged -= DictChanged;
+    }
+    private async void DictChanged(Dictionary<ulong, bool> previousValue, Dictionary<ulong, bool> newValue)
+    {
+        await ReadyDictionaryChanged(previousValue, newValue);
     }
 
     private void NetworkOnConnectionEvent(NetworkManager manager, ConnectionEventData data)
@@ -70,7 +71,7 @@ public class ReadyManager : NetworkBehaviour
         readyRegistry.Value = newDictionary;
     }
 
-    private void ReadyDictionaryChanged(Dictionary<ulong, bool> previousValue, Dictionary<ulong, bool> newValue)
+    private async Task ReadyDictionaryChanged(Dictionary<ulong, bool> previousValue, Dictionary<ulong, bool> newValue)
     {
         bool allPlayersReady = newValue.Count > 0 && newValue.All(kvp => kvp.Value);
 
@@ -82,8 +83,8 @@ public class ReadyManager : NetworkBehaviour
             previousAllPlayersReady = allPlayersReady;
             if (allPlayersReady)
             {
-                if(IsServer)
-                    OneInsideGameManager.Instance.StartGame();
+                if (IsServer && NetworkManager.Singleton.ConnectedClients.Count >= (oneInsideGameManager.LobbyManager.CurrentLobby.Data.TryGetValue(OneInside.Constants.Lobby.KEY_IMPOSTER_AMOUNT, out var imposterAmount) ? int.Parse(imposterAmount.Value) : OneInside.Constants.Player.MIN_IMPOSTERS))
+                    await oneInsideGameManager.StartGame();
             }
         }
     }

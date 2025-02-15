@@ -15,7 +15,7 @@ using UnityEngine;
 public class LobbyManager : MonoBehaviour
 {
     public event Action<RequestErrorDto> OnRequestFailed;
-    public Lobby CurrentLobby {get; private set;}
+    public Lobby CurrentLobby { get; private set; }
     #region CRUD Methods
 
 
@@ -72,7 +72,7 @@ public class LobbyManager : MonoBehaviour
             {
                 updateOptions.IsPrivate = updateLobbyDto.IsPrivate;
             }
-            if(updateLobbyDto.IsLocked != null)
+            if (updateLobbyDto.IsLocked != null)
             {
                 updateOptions.IsLocked = updateLobbyDto.IsLocked;
             }
@@ -275,9 +275,13 @@ public class LobbyManager : MonoBehaviour
             if (CurrentLobby.HostId == AuthenticationService.Instance.PlayerId)
             {
                 StopAllCoroutines();
+                await LobbyService.Instance.DeleteLobbyAsync(CurrentLobby.Id);
+            }
+            else
+            {
+                await LobbyService.Instance.RemovePlayerAsync(CurrentLobby.Id, AuthenticationService.Instance.PlayerId);
             }
 
-            await LobbyService.Instance.RemovePlayerAsync(CurrentLobby.Id, AuthenticationService.Instance.PlayerId);
             CurrentLobby = null;
         }
         catch (LobbyServiceException e)

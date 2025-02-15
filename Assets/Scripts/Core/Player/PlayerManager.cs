@@ -16,17 +16,26 @@ public class PlayerManager : NetworkBehaviour
     public event Action OnResetALlPlayerPosition;
 
     public event Action<bool> OnEnableAllPlayersMovement;
+    private OneInsideLevelManager oneInsideLevelManager;
+
+    private VoteManager voteManager;
+
+    void Awake()
+    {
+        oneInsideLevelManager = OneInsideLevelManager.Instance;
+        voteManager = oneInsideLevelManager.VoteManager;
+    }
 
 
     public override void OnNetworkSpawn()
     {
-        if (!OneInsideLevelManager.Instance)
+        if (oneInsideLevelManager == null)
             return;
         if (IsServer)
         {
-            OneInsideLevelManager.Instance.State.OnValueChanged += HandleGameStateChanged;
+            oneInsideLevelManager.State.OnValueChanged += HandleGameStateChanged;
         }
-        OneInsideLevelManager.Instance.VoteManager.OnStateChanged += OnVoteStateChangedServerRpc;
+        voteManager.OnStateChanged += OnVoteStateChangedServerRpc;
     }
 
     private void HandleGameStateChanged(GameState previousValue, GameState newValue)
@@ -50,7 +59,6 @@ public class PlayerManager : NetworkBehaviour
 
                 break;
             case GameState.GameOver:
-                ResetAllPlayerPositionClientRpc();
                 break;
         }
     }
@@ -114,13 +122,13 @@ public class PlayerManager : NetworkBehaviour
 
     public override void OnNetworkDespawn()
     {
-        if (!OneInsideLevelManager.Instance)
+        if (oneInsideLevelManager == null)
             return;
         if (IsServer)
         {
-            OneInsideLevelManager.Instance.State.OnValueChanged -= HandleGameStateChanged;
+            oneInsideLevelManager.State.OnValueChanged -= HandleGameStateChanged;
         }
-        OneInsideLevelManager.Instance.VoteManager.OnStateChanged -= OnVoteStateChangedServerRpc;
+        voteManager.OnStateChanged -= OnVoteStateChangedServerRpc;
     }
 
     private void SpawnAllPlayers()
@@ -132,6 +140,19 @@ public class PlayerManager : NetworkBehaviour
             playerNetworkObject.SpawnAsPlayerObject(clientId, true);
             playerNetworkObject.TrySetParent(players, true);
 
+        }
+    }
+    public void ClearAllPlayers()
+    {
+        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            if (NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out var client))
+            {
+                if (client.PlayerObject && client.PlayerObject.TryGetComponent<Player>(out var player))
+                {
+                    player.GetComponent<NetworkObject>().Despawn(true);
+                }
+            }
         }
     }
 }

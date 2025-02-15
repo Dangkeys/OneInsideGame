@@ -59,7 +59,6 @@ public class NetworkManagerUI : NetworkBehaviour
 
     public override void OnNetworkDespawn()
     {
-        Debug.Log("OnNetworkDespawn");
         startGameButton.gameObject.SetActive(false);
         disconnectButton.gameObject.SetActive(false);
         hostButton.gameObject.SetActive(true);

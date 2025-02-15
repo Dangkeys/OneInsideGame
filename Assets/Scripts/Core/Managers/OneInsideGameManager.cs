@@ -170,7 +170,7 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
     }
 
 
-    public async void StartGame()
+    public async Task StartGame()
     {
         var currentLobby = LobbyManager.CurrentLobby;
         if (currentLobby == null)
@@ -184,7 +184,7 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
         await Loader.LoadNetwork(GameScene.TajdangScene);
         OnLoadingProgressChanged?.Invoke(1, "Game Started");
     }
-    public async void StopGame()
+    public async Task StopGame()
     {
         var currentLobby = LobbyManager.CurrentLobby;
         if (currentLobby == null)
@@ -196,7 +196,7 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
         await LobbyManager.UpdateCurrentLobbyAsync(new UpdateLobbyDto(isLocked: false));
         OnLoadingProgressChanged?.Invoke(0.5f, "Stopping Game");
         await Loader.LoadNetwork(GameScene.LobbyScene);
-        OnLoadingProgressChanged?.Invoke(1, "Game Started");
+        OnLoadingProgressChanged?.Invoke(1, "Game Stopped");
     }
 
     public async Task InitializeGameAsync(bool shouldLoadScene = true)

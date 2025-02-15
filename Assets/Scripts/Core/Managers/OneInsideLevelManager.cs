@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
@@ -15,7 +16,7 @@ public class OneInsideLevelManager : NetworkBehaviour
     public NetworkVariable<float> GamePlayTimer = new NetworkVariable<float>();
     public NetworkVariable<GameState> State = new NetworkVariable<GameState>(GameState.WaitingToStart);
 
-    [field: SerializeField] public int ImposterAmount {get; private set;} = OneInside.Constants.Player.MAX_IMPOSTERS;
+    [field: SerializeField] public int ImposterAmount { get; private set; } = OneInside.Constants.Player.MAX_IMPOSTERS;
     [field: SerializeField] public PlayerManager PlayerManager;
     [field: SerializeField] public VoteManager VoteManager;
 
@@ -25,11 +26,12 @@ public class OneInsideLevelManager : NetworkBehaviour
 
 
     public static OneInsideLevelManager Instance { get; private set; }
+    private OneInsideGameManager oneInsideGameManager;
 
     private void Awake()
     {
         Instance = this;
-
+        oneInsideGameManager = OneInsideGameManager.Instance;
     }
 
     public override void OnNetworkSpawn()
@@ -37,30 +39,43 @@ public class OneInsideLevelManager : NetworkBehaviour
         if (IsServer)
         {
             NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnSceneLoadComplete;
-            State.OnValueChanged += OnGameStateChanged;
+            State.OnValueChanged += StateChanged;
         }
 
     }
 
-    private void OnGameStateChanged(GameState previousValue, GameState newValue)
+    private async void StateChanged(GameState previousValue, GameState newValue)
+    {
+        await OnGameStateChanged(previousValue, newValue);
+    }
+
+    private async Task OnGameStateChanged(GameState previousValue, GameState newValue)
     {
         switch (newValue)
         {
             case GameState.WaitingToStart:
                 break;
             case GameState.GamePlaying:
-                GamePlayTimer.Value = GamePlayingTimerMax;
+                if (IsServer)
+                {
+                    GamePlayTimer.Value = GamePlayingTimerMax;
+                }
                 break;
             case GameState.GameOver:
+                if (IsServer)
+                {
+                    if (OneInsideGameManager.Instance.LobbyManager.CurrentLobby != null)
+                    {
+                        PlayerManager.ClearAllPlayers();
+                        await Task.Delay(2000);
+                        await OneInsideGameManager.Instance.StopGame();
+                    }
+                    else
+                    {
+                        NetworkManager.Singleton.Shutdown();
+                    }
+                }
 
-                if (OneInsideGameManager.Instance.LobbyManager.CurrentLobby != null)
-                {
-                    OneInsideGameManager.Instance.StopGame();
-                }
-                else
-                {
-                    NetworkManager.Singleton.Shutdown();
-                }
                 break;
         }
     }
@@ -106,9 +121,12 @@ public class OneInsideLevelManager : NetworkBehaviour
     {
         if (IsServer)
         {
-            State.Value = GameState.WaitingToStart;
+            if (State != null)
+            {
+                State.Value = GameState.WaitingToStart;
+            }
             NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= OnSceneLoadComplete;
-            State.OnValueChanged -= OnGameStateChanged;
+            State.OnValueChanged -= StateChanged;
         }
 
     }

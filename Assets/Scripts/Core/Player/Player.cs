@@ -25,6 +25,13 @@ public class Player : NetworkBehaviour
     private BoxCollider[] hitBoxes;
     private PlayerState playerState;
 
+    private PlayerManager playerManager;
+
+    void Awake()
+    {
+      playerManager = OneInsideLevelManager.Instance.PlayerManager;  
+    }
+
     public override void OnNetworkSpawn()
     {
 
@@ -46,9 +53,9 @@ public class Player : NetworkBehaviour
             playerState.SetWalking(false);
             playerState.SetRunning(false);
             playerState.SetDead(false);
-            if (!OneInsideLevelManager.Instance)
+            if (!playerManager)
                 return;
-            OneInsideLevelManager.Instance.PlayerManager.OnResetALlPlayerPosition += ResetToSpawnPoint;
+            playerManager.OnResetALlPlayerPosition += ResetToSpawnPoint;
         }
         Role.OnValueChanged += OnRoleChanged;
     }
@@ -62,9 +69,9 @@ public class Player : NetworkBehaviour
 
         InputReader.AttackEvent -= On_Attack_Local;
 
-        if (!OneInsideLevelManager.Instance)
+        if (!playerManager)
             return;
-        OneInsideLevelManager.Instance.PlayerManager.OnResetALlPlayerPosition -= ResetToSpawnPoint;
+        playerManager.OnResetALlPlayerPosition -= ResetToSpawnPoint;
 
     }
 
