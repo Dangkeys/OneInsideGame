@@ -1,35 +1,31 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public class QuestShootingDebris : QuestInfo, IInteractable
+public class QuestSentEmail : QuestInfo, IInteractable
 {
     [SerializeField] private ChangeCamera changeCamera;
-    [SerializeField] private GameObject questShootingUI;
-    [SerializeField] private QuestShootingManager questShootingManager;
+    [SerializeField] private QuestSentingEmailManager questSentingEmailManager;
+    [SerializeField] private GameObject questSentingUI;
 
     private void OnEnable()
     {
-        questShootingManager.OnFinishedQuest += Finished;
+        questSentingEmailManager.OnFinishedQuest += Finished;
     }
 
     private void OnDisable()
     {
-        questShootingManager.OnFinishedQuest -= Finished;
+        questSentingEmailManager.OnFinishedQuest -= Finished;
     }
 
     private void Finished(bool finished)
     {
-        if (finished)
-        {
-            FinishQuest();
-            HandleFinishedServerRpc(finished);
-        }
+        FinishQuest();
+        HandleFinishedServerRpc(finished);
     }
 
     [ServerRpc(RequireOwnership = false)]
     private void HandleFinishedServerRpc(bool finished)
     {
-
         if (!IsHost)
         {
             HandleFinished(finished);
@@ -45,7 +41,7 @@ public class QuestShootingDebris : QuestInfo, IInteractable
 
     private void HandleFinished(bool finished)
     {
-        if(questShootingUI.activeInHierarchy)
+        if (questSentingUI.activeInHierarchy)
         {
             CancelQuest();
         }
@@ -55,16 +51,16 @@ public class QuestShootingDebris : QuestInfo, IInteractable
     {
         if (!currentStatus)
         {
-            changeCamera.SwitchCamera(0, 1);
+            changeCamera.SwitchCamera(0, 2);
             UpdateDoQuest(true, interactionData);
-            questShootingUI.SetActive(true);
+            questSentingUI.SetActive(true);
         }
     }
 
     public override void CancelQuest()
     {
+        changeCamera.SwitchCamera(2, 0);
         UpdateDoQuest(false, null);
-        changeCamera.SwitchCamera(1, 0);
-        questShootingUI.SetActive(false);
+        questSentingUI.SetActive(false);
     }
 }

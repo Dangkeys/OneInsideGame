@@ -43,7 +43,6 @@ public class QuestCleaningTree : QuestInfo, IInteractable
         if(questCleaningUI.activeInHierarchy)
         {
             CancelQuest();
-            questCleaningUI.SetActive(false);
         }
     }
 
@@ -59,5 +58,6 @@ public class QuestCleaningTree : QuestInfo, IInteractable
     public override void CancelQuest()
     {
         UpdateDoQuest(false, null);
+        questCleaningUI.SetActive(false);
     }
 }
