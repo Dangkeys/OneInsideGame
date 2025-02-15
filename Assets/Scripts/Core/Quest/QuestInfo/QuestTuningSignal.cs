@@ -43,7 +43,6 @@ public class QuestTuningSignal : QuestInfo, IInteractable
         if(questTuningUI.activeInHierarchy)
         {
             CancelQuest();
-            questTuningUI.SetActive(false);
         }
     }
 
@@ -59,5 +58,6 @@ public class QuestTuningSignal : QuestInfo, IInteractable
     public override void CancelQuest()
     {
         UpdateDoQuest(false, null);
+        questTuningUI.SetActive(false);
     }
 }
