@@ -15,7 +15,7 @@ using UnityEngine;
 public class LobbyManager : MonoBehaviour
 {
     public event Action<RequestErrorDto> OnRequestFailed;
-    private Lobby currentLoby;
+    public Lobby CurrentLobby {get; private set;}
     #region CRUD Methods
 
 
@@ -27,7 +27,7 @@ public class LobbyManager : MonoBehaviour
 
             string relayJoinCode = await GetRelayJoinCodeAsync(allocation);
 
-            currentLoby = await LobbyService.Instance.CreateLobbyAsync(createLobbyDto.LobbyName, createLobbyDto.MaxPlayers, new CreateLobbyOptions
+            CurrentLobby = await LobbyService.Instance.CreateLobbyAsync(createLobbyDto.LobbyName, createLobbyDto.MaxPlayers, new CreateLobbyOptions
             {
                 Player = new Unity.Services.Lobbies.Models.Player(AuthenticationService.Instance.PlayerId),
                 IsPrivate = createLobbyDto.IsPrivate,
@@ -42,7 +42,7 @@ public class LobbyManager : MonoBehaviour
             StopAllCoroutines();
             StartCoroutine(HeartbeatLobby());
 
-            return new CreateLobbyAllocationResponseDto(currentLoby, allocation);
+            return new CreateLobbyAllocationResponseDto(CurrentLobby, allocation);
         }
         catch (RequestFailedException e)
         {
@@ -73,10 +73,6 @@ public class LobbyManager : MonoBehaviour
                 updateOptions.IsPrivate = updateLobbyDto.IsPrivate;
             }
 
-            if (updateLobbyDto.HostId != null)
-            {
-                updateOptions.HostId = updateLobbyDto.HostId;
-            }
 
             if (updateLobbyDto.GameMode.HasValue)
             {
@@ -99,8 +95,8 @@ public class LobbyManager : MonoBehaviour
                 updateOptions.Data = dataToUpdate;
             }
 
-            currentLoby = await LobbyService.Instance.UpdateLobbyAsync(currentLoby.Id, updateOptions);
-            return currentLoby;
+            CurrentLobby = await LobbyService.Instance.UpdateLobbyAsync(CurrentLobby.Id, updateOptions);
+            return CurrentLobby;
         }
         catch (LobbyServiceException e)
         {
@@ -113,9 +109,9 @@ public class LobbyManager : MonoBehaviour
     {
         try
         {
-            var deletedLobby = currentLoby;
-            await LobbyService.Instance.DeleteLobbyAsync(currentLoby.Id);
-            currentLoby = null;
+            var deletedLobby = CurrentLobby;
+            await LobbyService.Instance.DeleteLobbyAsync(CurrentLobby.Id);
+            CurrentLobby = null;
             return deletedLobby;
         }
         catch (LobbyServiceException e)
@@ -219,11 +215,11 @@ public class LobbyManager : MonoBehaviour
     {
         try
         {
-            currentLoby = await LobbyService.Instance.QuickJoinLobbyAsync();
+            CurrentLobby = await LobbyService.Instance.QuickJoinLobbyAsync();
 
-            JoinAllocation joinAllocation = await JoinRelayAsync(currentLoby.Data[OneInside.Constants.Lobby.KEY_RELAY_JOIN_CODE].Value);
+            JoinAllocation joinAllocation = await JoinRelayAsync(CurrentLobby.Data[OneInside.Constants.Lobby.KEY_RELAY_JOIN_CODE].Value);
 
-            return new JoinLobbyAllocationResponseDto(currentLoby, joinAllocation);
+            return new JoinLobbyAllocationResponseDto(CurrentLobby, joinAllocation);
         }
         catch (RequestFailedException e)
         {
@@ -237,11 +233,11 @@ public class LobbyManager : MonoBehaviour
     {
         try
         {
-            currentLoby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode);
+            CurrentLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode);
 
-            JoinAllocation joinAllocation = await JoinRelayAsync(currentLoby.Data[OneInside.Constants.Lobby.KEY_RELAY_JOIN_CODE].Value);
+            JoinAllocation joinAllocation = await JoinRelayAsync(CurrentLobby.Data[OneInside.Constants.Lobby.KEY_RELAY_JOIN_CODE].Value);
 
-            return new JoinLobbyAllocationResponseDto(currentLoby, joinAllocation);
+            return new JoinLobbyAllocationResponseDto(CurrentLobby, joinAllocation);
         }
         catch (RequestFailedException e)
         {
@@ -255,11 +251,11 @@ public class LobbyManager : MonoBehaviour
     {
         try
         {
-            currentLoby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId);
+            CurrentLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId);
 
-            JoinAllocation joinAllocation = await JoinRelayAsync(currentLoby.Data[OneInside.Constants.Lobby.KEY_RELAY_JOIN_CODE].Value);
+            JoinAllocation joinAllocation = await JoinRelayAsync(CurrentLobby.Data[OneInside.Constants.Lobby.KEY_RELAY_JOIN_CODE].Value);
 
-            return new JoinLobbyAllocationResponseDto(currentLoby, joinAllocation);
+            return new JoinLobbyAllocationResponseDto(CurrentLobby, joinAllocation);
         }
         catch (RequestFailedException e)
         {
@@ -273,13 +269,13 @@ public class LobbyManager : MonoBehaviour
     {
         try
         {
-            if (currentLoby.HostId == AuthenticationService.Instance.PlayerId)
+            if (CurrentLobby.HostId == AuthenticationService.Instance.PlayerId)
             {
                 StopAllCoroutines();
             }
 
-            await LobbyService.Instance.RemovePlayerAsync(currentLoby.Id, AuthenticationService.Instance.PlayerId);
-            currentLoby = null;
+            await LobbyService.Instance.RemovePlayerAsync(CurrentLobby.Id, AuthenticationService.Instance.PlayerId);
+            CurrentLobby = null;
         }
         catch (LobbyServiceException e)
         {
@@ -292,7 +288,7 @@ public class LobbyManager : MonoBehaviour
     {
         try
         {
-            await LobbyService.Instance.RemovePlayerAsync(currentLoby.Id, playerId);
+            await LobbyService.Instance.RemovePlayerAsync(CurrentLobby.Id, playerId);
         }
         catch (LobbyServiceException e)
         {
@@ -309,14 +305,14 @@ public class LobbyManager : MonoBehaviour
     {
         try
         {
-            var newHost = currentLoby.Players.FirstOrDefault(p => p.Id != AuthenticationService.Instance.PlayerId);
+            var newHost = CurrentLobby.Players.FirstOrDefault(p => p.Id != AuthenticationService.Instance.PlayerId);
             if (newHost == null)
             {
                 Debug.LogWarning("No other player to migrate host to");
                 return;
             }
 
-            await LobbyService.Instance.UpdateLobbyAsync(currentLoby.Id, new UpdateLobbyOptions
+            await LobbyService.Instance.UpdateLobbyAsync(CurrentLobby.Id, new UpdateLobbyOptions
             {
                 HostId = newHost.Id
             });
@@ -336,13 +332,11 @@ public class LobbyManager : MonoBehaviour
         WaitForSecondsRealtime delay = new WaitForSecondsRealtime(OneInside.Constants.Lobby.HEART_BEAT_WAIT_TIME);
         while (true)
         {
-            Debug.Log("Trying to send heartbeat ping");
-            if (currentLoby == null || currentLoby.HostId != AuthenticationService.Instance.PlayerId)
+            if (CurrentLobby == null || CurrentLobby.HostId != AuthenticationService.Instance.PlayerId)
             {
                 yield break;
             }
-            Debug.Log("Sending heartbeat ping");
-            LobbyService.Instance.SendHeartbeatPingAsync(currentLoby.Id);
+            LobbyService.Instance.SendHeartbeatPingAsync(CurrentLobby.Id);
             yield return delay;
         }
     }

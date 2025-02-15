@@ -4,16 +4,14 @@ using UnityEngine;
 
 public class UpdateLobbyDto
 {
-    public UpdateLobbyDto(string? lobbyName, GameMode? gameMode, int? maxPlayers, int? imposterAmount, bool? isPrivate, string hostId)
+    public UpdateLobbyDto(string? lobbyName, GameMode? gameMode, int? maxPlayers, int? imposterAmount, bool? isPrivate)
     {
         LobbyName = lobbyName;
         GameMode = gameMode;
         MaxPlayers = maxPlayers;
         ImposterAmount = imposterAmount;
         IsPrivate = isPrivate;
-        HostId = hostId;
     }
-    public string? HostId { get; set; }
     public string? LobbyName { get; set; }
 
     public GameMode? GameMode { get; set; }

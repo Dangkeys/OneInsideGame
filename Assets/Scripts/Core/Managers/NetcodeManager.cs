@@ -28,7 +28,7 @@ public class NetcodeManager : NetworkBehaviour
 
     private void NetworkManger_ConnectionApprovalCallback(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
     {
-        if(NetworkManager.Singleton.ConnectedClientsList.Count >= OneInside.Constants.Player.MAX_PLAYERS)
+        if(NetworkManager.Singleton.ConnectedClientsList.Count >= OneInsideGameManager.Instance.LobbyManager.CurrentLobby.MaxPlayers)
         {
             response.Approved = false;
         }
