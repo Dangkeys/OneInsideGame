@@ -8,7 +8,7 @@ public class MainMenuUI : MonoBehaviour
     void Start()
     {
         quickPlayButton.onClick.AddListener(async ()=>{
-            await OneInsideGameManager.Instance.LobbyManager.QuickJoinAsync();
+            await OneInsideGameManager.Instance.QuickJoinMatchAsync();
         });
 
         exitButton.onClick.AddListener(()=>{

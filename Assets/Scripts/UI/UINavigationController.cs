@@ -70,6 +70,7 @@ public class UINavigationController : MonoBehaviour
         foreach (var parent in elements.Parents)
         {
             if(!parent) return;
+            parent.gameObject.SetActive(true);
             foreach (Transform child in parent)
             {
                 child.gameObject.SetActive(false);

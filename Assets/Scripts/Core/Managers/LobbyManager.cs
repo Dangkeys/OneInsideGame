@@ -47,7 +47,7 @@ public class LobbyManager : MonoBehaviour
         catch (RequestFailedException e)
         {
             OnRequestFailed?.Invoke(new RequestErrorDto(e.ErrorCode, e.Message));
-            Debug.LogError($"Lobby creation failed: {e.Message}");
+            Debug.LogWarning($"Lobby creation failed: {e.Message}");
             return null;
         }
     }
@@ -105,7 +105,7 @@ public class LobbyManager : MonoBehaviour
         catch (LobbyServiceException e)
         {
             OnRequestFailed?.Invoke(new RequestErrorDto(e.ErrorCode, e.Message));
-            Debug.LogError($"Lobby update failed: {e.Message}");
+            Debug.LogWarning($"Lobby update failed: {e.Message}");
             return null;
         }
     }
@@ -121,7 +121,7 @@ public class LobbyManager : MonoBehaviour
         catch (LobbyServiceException e)
         {
             OnRequestFailed?.Invoke(new RequestErrorDto(e.ErrorCode, e.Message));
-            Debug.LogError($"Lobby deletion failed: {e.Message}");
+            Debug.LogWarning($"Lobby deletion failed: {e.Message}");
             return null;
         }
     }
@@ -136,7 +136,7 @@ public class LobbyManager : MonoBehaviour
             {
                 filters.Add(new QueryFilter(
                     field: QueryFilter.FieldOptions.Name,
-                    op: QueryFilter.OpOptions.EQ,
+                    op: QueryFilter.OpOptions.CONTAINS,
                     value: queryDto.LobbyName
                 ));
             }
@@ -193,7 +193,7 @@ public class LobbyManager : MonoBehaviour
         catch (LobbyServiceException e)
         {
             OnRequestFailed?.Invoke(new RequestErrorDto(e.ErrorCode, e.Message));
-            Debug.LogError($"Lobby query failed: {e.Message}");
+            Debug.LogWarning($"Lobby query failed: {e.Message}");
             return null;
         }
     }
@@ -207,7 +207,7 @@ public class LobbyManager : MonoBehaviour
         catch (LobbyServiceException e)
         {
             OnRequestFailed?.Invoke(new RequestErrorDto(e.ErrorCode, e.Message));
-            Debug.LogError($"Lobby query failed: {e.Message}");
+            Debug.LogWarning($"Lobby query failed: {e.Message}");
             return null;
         }
     }
@@ -228,7 +228,7 @@ public class LobbyManager : MonoBehaviour
         catch (RequestFailedException e)
         {
             OnRequestFailed?.Invoke(new RequestErrorDto(e.ErrorCode, e.Message));
-            Debug.LogError($"Quick join failed: {e.Message}");
+            Debug.LogWarning($"Quick join failed: {e.Message}");
             return null;
         }
     }
@@ -246,7 +246,7 @@ public class LobbyManager : MonoBehaviour
         catch (RequestFailedException e)
         {
             OnRequestFailed?.Invoke(new RequestErrorDto(e.ErrorCode, e.Message));
-            Debug.LogError($"Join lobby by code failed: {e.Message}");
+            Debug.LogWarning($"Join lobby by code failed: {e.Message}");
             return null;
         }
     }
@@ -264,7 +264,7 @@ public class LobbyManager : MonoBehaviour
         catch (RequestFailedException e)
         {
             OnRequestFailed?.Invoke(new RequestErrorDto(e.ErrorCode, e.Message));
-            Debug.LogError($"Join lobby by id failed: {e.Message}");
+            Debug.LogWarning($"Join lobby by id failed: {e.Message}");
             return null;
         }
     }
@@ -284,7 +284,7 @@ public class LobbyManager : MonoBehaviour
         catch (LobbyServiceException e)
         {
             OnRequestFailed?.Invoke(new RequestErrorDto(e.ErrorCode, e.Message));
-            Debug.LogError($"Lobby leave failed: {e.Message}");
+            Debug.LogWarning($"Lobby leave failed: {e.Message}");
         }
     }
 
@@ -297,7 +297,7 @@ public class LobbyManager : MonoBehaviour
         catch (LobbyServiceException e)
         {
             OnRequestFailed?.Invoke(new RequestErrorDto(e.ErrorCode, e.Message));
-            Debug.LogError($"Player kick failed: {e.Message}");
+            Debug.LogWarning($"Player kick failed: {e.Message}");
         }
     }
 
@@ -312,7 +312,7 @@ public class LobbyManager : MonoBehaviour
             var newHost = currentLoby.Players.FirstOrDefault(p => p.Id != AuthenticationService.Instance.PlayerId);
             if (newHost == null)
             {
-                Debug.LogError("No other player to migrate host to");
+                Debug.LogWarning("No other player to migrate host to");
                 return;
             }
 
@@ -327,7 +327,7 @@ public class LobbyManager : MonoBehaviour
         catch (LobbyServiceException e)
         {
             OnRequestFailed?.Invoke(new RequestErrorDto(e.ErrorCode, e.Message));
-            Debug.LogError($"Host migration failed: {e.Message}");
+            Debug.LogWarning($"Host migration failed: {e.Message}");
         }
     }
 
@@ -336,11 +336,12 @@ public class LobbyManager : MonoBehaviour
         WaitForSecondsRealtime delay = new WaitForSecondsRealtime(OneInside.Constants.Lobby.HEART_BEAT_WAIT_TIME);
         while (true)
         {
+            Debug.Log("Trying to send heartbeat ping");
             if (currentLoby == null || currentLoby.HostId != AuthenticationService.Instance.PlayerId)
             {
                 yield break;
             }
-
+            Debug.Log("Sending heartbeat ping");
             LobbyService.Instance.SendHeartbeatPingAsync(currentLoby.Id);
             yield return delay;
         }
@@ -357,7 +358,7 @@ public class LobbyManager : MonoBehaviour
         catch (RelayServiceException e)
         {
             OnRequestFailed?.Invoke(new RequestErrorDto(e.ErrorCode, e.Message));
-            Debug.LogError($"Relay allocation failed: {e.Message}");
+            Debug.LogWarning($"Relay allocation failed: {e.Message}");
             return null;
         }
     }
@@ -372,7 +373,7 @@ public class LobbyManager : MonoBehaviour
         catch (RelayServiceException e)
         {
             OnRequestFailed?.Invoke(new RequestErrorDto(e.ErrorCode, e.Message));
-            Debug.LogError($"Relay join code failed: {e.Message}");
+            Debug.LogWarning($"Relay join code failed: {e.Message}");
             return null;
         }
     }
@@ -386,7 +387,7 @@ public class LobbyManager : MonoBehaviour
         catch (RelayServiceException e)
         {
             OnRequestFailed?.Invoke(new RequestErrorDto(e.ErrorCode, e.Message));
-            Debug.LogError($"Relay join failed: {e.Message}");
+            Debug.LogWarning($"Relay join failed: {e.Message}");
             return null;
         }
     }

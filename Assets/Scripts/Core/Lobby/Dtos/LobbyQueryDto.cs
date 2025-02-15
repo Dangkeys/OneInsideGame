@@ -5,6 +5,10 @@ using UnityEngine;
 
 public class LobbyQueryDto : PaginationQueryDto
 {
+    public LobbyQueryDto(int pageSize, string? continuationToken = null) : base(pageSize, continuationToken)
+    {
+    }
+
     public LobbyQueryDto(string? lobbyName, GameMode? gameMode, int? maxPlayers, int? imposterAmount,int pageSize, string? continuationToken = null) : base(pageSize, continuationToken)
     {
         LobbyName = lobbyName;

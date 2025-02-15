@@ -107,6 +107,11 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
     {
         UpdateHostMatchProgress(1);
         CreateLobbyAllocationResponseDto responseDto = await LobbyManager.CreateLobbyAsync(createLobbyDto);
+        if (responseDto == null)
+        {
+            OnLoadingProgressChanged?.Invoke(1, "Failed to create lobby");
+            return;
+        }
 
 
         NetcodeManager.InitializeHostRelayTransport(responseDto);
@@ -121,9 +126,14 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
         UpdateJoinMatchProgress(1);
         JoinLobbyAllocationResponseDto responseDto = await LobbyManager.QuickJoinAsync();
 
+        if (responseDto == null)
+        {
+            OnLoadingProgressChanged?.Invoke(1, "Failed to join lobby");
+            return;
+        }
+
         NetcodeManager.InitializeClientRelayTransport(responseDto);
 
-        UpdateJoinMatchProgress(2);
     }
 
 
@@ -133,25 +143,35 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
         UpdateJoinMatchProgress(1);
         JoinLobbyAllocationResponseDto responseDto = await LobbyManager.JoinLobbyByCodeAsync(joinCode);
 
+        if (responseDto == null)
+        {
+            OnLoadingProgressChanged?.Invoke(1, "Failed to join lobby");
+            return;
+        }
+
         NetcodeManager.InitializeClientRelayTransport(responseDto);
 
-        UpdateJoinMatchProgress(2);
     }
 
     public async Task JoinMatchByLobbyIdAsync(string lobbyId)
     {
         UpdateJoinMatchProgress(1);
         JoinLobbyAllocationResponseDto responseDto = await LobbyManager.JoinLobbyByIdAsync(lobbyId);
-
+        if (responseDto == null)
+        {
+            OnLoadingProgressChanged?.Invoke(1, "Failed to join lobby");
+            return;
+        }
         NetcodeManager.InitializeClientRelayTransport(responseDto);
 
-        UpdateJoinMatchProgress(2);
     }
 
 
-    public void StartGame()
+    public async void StartGame()
     {
-        Loader.LoadNetwork(GameScene.TajdangScene);
+        OnLoadingProgressChanged?.Invoke(0.5f, "Starting Game");
+        await Loader.LoadNetwork(GameScene.TajdangScene);
+        OnLoadingProgressChanged?.Invoke(1, "Game Started");
     }
 
     public async Task InitializeGame()

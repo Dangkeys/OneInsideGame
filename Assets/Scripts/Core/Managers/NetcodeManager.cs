@@ -6,7 +6,7 @@ using Unity.Services.Relay.Models;
 using UnityEngine;
 using UnityEngine.SocialPlatforms;
 
-public class NetcodeManager : MonoBehaviour
+public class NetcodeManager : NetworkBehaviour
 {
     private OneInsideGameManager gameManager;
     void Start()
@@ -17,6 +17,25 @@ public class NetcodeManager : MonoBehaviour
         }
         gameManager = OneInsideGameManager.Instance;
 
+    }
+    public override void OnNetworkSpawn()
+    {
+        if (IsServer)
+        {
+            NetworkManager.Singleton.ConnectionApprovalCallback += NetworkManger_ConnectionApprovalCallback;
+        }
+    }
+
+    private void NetworkManger_ConnectionApprovalCallback(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
+    {
+        if(NetworkManager.Singleton.ConnectedClientsList.Count >= OneInside.Constants.Player.MAX_PLAYERS)
+        {
+            response.Approved = false;
+        }
+        else
+        {
+            response.Approved = true;
+        }
     }
 
     private void NetworkManager_OnConnectionEvent(NetworkManager manager, ConnectionEventData data)
@@ -34,6 +53,7 @@ public class NetcodeManager : MonoBehaviour
                     }
                     else
                     {
+                        OneInsideGameManager.Instance.ShowProgressChanged(1f, "Connected to server");
                         Debug.Log($"Connected to server! Our ID: {data.ClientId}");
                         if (data.PeerClientIds.IsCreated)
                         {
@@ -63,10 +83,10 @@ public class NetcodeManager : MonoBehaviour
                     }
                     else
                     {
-                        Debug.Log("You disconnected from the server!");
+                        Debug.Log("Disconnected from the server!");
                         Loader.Load(GameScene.MainMenuScene);
                         OneInsideGameManager.Instance.ShowProgressChanged(1f, "Match Left");
-                        gameManager.ShowMessage("You disconnected from the server!");
+                        gameManager.ShowMessage("Disconnected from the server!");
                     }
                 }
                 else if (NetworkManager.Singleton.IsServer)
@@ -102,11 +122,18 @@ public class NetcodeManager : MonoBehaviour
     }
     public void KickPlayer(ulong clientId)
     {
-        if(NetworkManager.Singleton.IsServer)
+        if (NetworkManager.Singleton.IsServer)
             NetworkManager.Singleton.DisconnectClient(clientId);
     }
 
-    void OnDestroy()
+    public override void OnNetworkDespawn()
+    {
+        if (IsServer)
+        {
+            NetworkManager.Singleton.ConnectionApprovalCallback = NetworkManger_ConnectionApprovalCallback;
+        }
+    }
+    public override void OnDestroy()
     {
         if (NetworkManager.Singleton != null)
         {
