@@ -72,7 +72,10 @@ public class LobbyManager : MonoBehaviour
             {
                 updateOptions.IsPrivate = updateLobbyDto.IsPrivate;
             }
-
+            if(updateLobbyDto.IsLocked != null)
+            {
+                updateOptions.IsLocked = updateLobbyDto.IsLocked;
+            }
 
             if (updateLobbyDto.GameMode.HasValue)
             {

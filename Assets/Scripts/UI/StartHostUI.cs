@@ -2,7 +2,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-
 public class StartHostUI : MonoBehaviour
 {
     [SerializeField] private Toggle isPrivateToggle;
@@ -26,6 +25,7 @@ public class StartHostUI : MonoBehaviour
     {
         UpdateCountTexts();
         SetupButtons();
+        UpdateCreateLobbyButtonState();
     }
 
     private void SetupButtons()
@@ -40,6 +40,7 @@ public class StartHostUI : MonoBehaviour
                     imposterCount = playerCount - 1;
                 }
                 UpdateCountTexts();
+                UpdateCreateLobbyButtonState();
             }
         });
 
@@ -49,6 +50,7 @@ public class StartHostUI : MonoBehaviour
             {
                 playerCount++;
                 UpdateCountTexts();
+                UpdateCreateLobbyButtonState();
             }
         });
 
@@ -58,6 +60,7 @@ public class StartHostUI : MonoBehaviour
             {
                 imposterCount--;
                 UpdateCountTexts();
+                UpdateCreateLobbyButtonState();
             }
         });
 
@@ -67,6 +70,7 @@ public class StartHostUI : MonoBehaviour
             {
                 imposterCount++;
                 UpdateCountTexts();
+                UpdateCreateLobbyButtonState();
             }
         });
 
@@ -79,13 +83,35 @@ public class StartHostUI : MonoBehaviour
         imposterAmountText.text = imposterCount.ToString();
     }
 
+    private void UpdateCreateLobbyButtonState()
+    {
+        bool isValid = imposterCount >= OneInside.Constants.Player.MIN_IMPOSTERS &&
+                      imposterCount <= OneInside.Constants.Player.MAX_IMPOSTERS &&
+                      imposterCount < playerCount &&
+                      playerCount >= OneInside.Constants.Player.MIN_PLAYERS &&
+                      playerCount <= OneInside.Constants.Player.MAX_PLAYERS;
+
+        createLobbyButton.interactable = isValid;
+    }
+
     private async void HostMatch()
     {
         if (string.IsNullOrEmpty(lobbyNameInputField.text))
         {
-            Debug.LogWarning("Lobby name cannot be empty!");
+            OneInsideGameManager.Instance.ShowMessage("Please enter a valid lobby name");
             return;
         }
+
+        if (imposterCount < OneInside.Constants.Player.MIN_IMPOSTERS ||
+            imposterCount > OneInside.Constants.Player.MAX_IMPOSTERS ||
+            imposterCount >= playerCount ||
+            playerCount < OneInside.Constants.Player.MIN_PLAYERS ||
+            playerCount > OneInside.Constants.Player.MAX_PLAYERS)
+        {
+            OneInsideGameManager.Instance.ShowMessage("Invalid player or imposter count");
+            return;
+        }
+
         var createLobbyDto = new CreateLobbyDto(
             lobbyNameInputField.text,
             (GameMode)gameModeDropdown.value,

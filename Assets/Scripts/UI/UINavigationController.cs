@@ -6,39 +6,39 @@ using UnityEngine.UI;
 
 public abstract class UnitySerializedDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
 {
-   [SerializeField, HideInInspector]
-   private List<TKey> keyData = new List<TKey>();
+    [SerializeField, HideInInspector]
+    private List<TKey> keyData = new List<TKey>();
 
-   [SerializeField, HideInInspector]
-   private List<TValue> valueData = new List<TValue>();
+    [SerializeField, HideInInspector]
+    private List<TValue> valueData = new List<TValue>();
 
-   void ISerializationCallbackReceiver.OnAfterDeserialize()
-   {
-       Clear();
-       for (int i = 0; i < keyData.Count && i < valueData.Count; i++)
-       {
-           this[keyData[i]] = valueData[i];
-       }
-   }
+    void ISerializationCallbackReceiver.OnAfterDeserialize()
+    {
+        Clear();
+        for (int i = 0; i < keyData.Count && i < valueData.Count; i++)
+        {
+            this[keyData[i]] = valueData[i];
+        }
+    }
 
-   void ISerializationCallbackReceiver.OnBeforeSerialize()
-   {
-       keyData.Clear();
-       valueData.Clear();
+    void ISerializationCallbackReceiver.OnBeforeSerialize()
+    {
+        keyData.Clear();
+        valueData.Clear();
 
-       foreach (var item in this)
-       {
-           keyData.Add(item.Key);
-           valueData.Add(item.Value);
-       }
-   }
+        foreach (var item in this)
+        {
+            keyData.Add(item.Key);
+            valueData.Add(item.Value);
+        }
+    }
 }
 
 [Serializable]
 public struct NavigationTarget
 {
-   public List<Transform?> Parents;
-   public List<GameObject?> Targets;
+    public List<Transform?> Parents;
+    public List<GameObject?> Targets;
 }
 
 [Serializable]
@@ -46,40 +46,58 @@ public class UINavigationMap : UnitySerializedDictionary<Button, NavigationTarge
 
 public class UINavigationController : MonoBehaviour
 {
-   [SerializeField]
-   private UINavigationMap navigationControls = new();
+    [SerializeField]
+    private UINavigationMap navigationControls = new();
 
-   private void Start()
-   {
-       InitializeNavigationControls();
-   }
+    private void Start()
+    {
+        InitializeNavigationControls();
+    }
 
-   private void InitializeNavigationControls()
-   {
-       foreach (var navigationControl in navigationControls)
-       {
-           navigationControl.Key.onClick.AddListener(() =>
-           {
-               ActivateUIElements(navigationControl.Value);
-           });
-       }
-   }
+    private void InitializeNavigationControls()
+    {
+        foreach (var navigationControl in navigationControls)
+        {
+            navigationControl.Key.onClick.AddListener(() =>
+            {
+                ActivateUIElements(navigationControl.Value);
+            });
+        }
+    }
 
-   private void ActivateUIElements(NavigationTarget elements)
-   {
+    private void ActivateUIElements(NavigationTarget elements)
+    {
+        foreach (var target in elements.Targets)
+        {
+            bool found = false;
+            if (!target)
+            {
+                return;
+            }
+            if (target.activeSelf)
+            {
+                target.SetActive(false);
+                target.transform.parent.gameObject.SetActive(false);
+                found = true;
+            }
+            if (found)
+                return;
+        }
         foreach (var parent in elements.Parents)
         {
-            if(!parent) return;
+            if (!parent)
+                return;
             parent.gameObject.SetActive(true);
             foreach (Transform child in parent)
             {
                 child.gameObject.SetActive(false);
             }
         }
-        foreach(var target in elements.Targets)
+        foreach (var target in elements.Targets)
         {
-            if(!target) return;
+            if (!target)
+                return;
             target.SetActive(true);
         }
-   }
+    }
 }

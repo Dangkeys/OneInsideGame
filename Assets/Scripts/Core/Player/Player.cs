@@ -158,7 +158,7 @@ public class Player : NetworkBehaviour
     {
         if (IsOwner)
         {
-            Debug.Log($"Your role changed to: {newValue}");
+            OneInsideGameManager.Instance.ShowMessage($"YOUR ROLE IS {newValue.ToString().ToUpper()}");
         }
     }
 

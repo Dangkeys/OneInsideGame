@@ -9,18 +9,29 @@ public class RoleManager : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        OneInsideLevelManager.Instance.PlayerManager.OnAllPlayersInTheGame += HandleAllPlayersInTheGame;
+        OneInsideLevelManager.Instance.PlayerManager.OnAllPlayersSpawnInTheGame += HandleAllPlayersInTheGame;
     }
 
-    private void HandleAllPlayersInTheGame(){
-        if(IsServer){
-            AssignRandomRoles(1);
+    private void HandleAllPlayersInTheGame()
+    {
+        if (IsServer)
+        {
+            var currentLobby = OneInsideGameManager.Instance.LobbyManager.CurrentLobby;
+            if (currentLobby != null)
+            {
+                AssignRandomRoles(currentLobby.Data.TryGetValue(OneInside.Constants.Lobby.KEY_IMPOSTER_AMOUNT, out var imposters)
+                    ? int.Parse(imposters.Value)
+                    : OneInside.Constants.Player.MIN_IMPOSTERS);
+            }else{
+                //TODO add configuration
+                AssignRandomRoles(OneInsideLevelManager.Instance.ImposterAmount);
+            }
         }
     }
 
     public override void OnNetworkDespawn()
     {
-        OneInsideLevelManager.Instance.PlayerManager.OnAllPlayersInTheGame -= HandleAllPlayersInTheGame;
+        OneInsideLevelManager.Instance.PlayerManager.OnAllPlayersSpawnInTheGame -= HandleAllPlayersInTheGame;
     }
 
 

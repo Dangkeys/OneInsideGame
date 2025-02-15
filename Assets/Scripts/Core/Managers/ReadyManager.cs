@@ -8,7 +8,6 @@ using UnityEngine.SceneManagement;
 public class ReadyManager : NetworkBehaviour
 {
     public static ReadyManager Instance { get; private set; }
-    public event Action<bool> OnAllPlayersReadyChanged;
     public event Action<Dictionary<ulong, bool>> OnReadyStateChanged;
 
     private NetworkVariable<Dictionary<ulong, bool>> readyRegistry = new NetworkVariable<Dictionary<ulong, bool>>(
@@ -81,7 +80,11 @@ public class ReadyManager : NetworkBehaviour
         if (allPlayersReady != previousAllPlayersReady)
         {
             previousAllPlayersReady = allPlayersReady;
-            OnAllPlayersReadyChanged?.Invoke(allPlayersReady);
+            if (allPlayersReady)
+            {
+                if(IsServer)
+                    OneInsideGameManager.Instance.StartGame();
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -15,7 +16,15 @@ public class VoteManager : NetworkBehaviour
     public NetworkVariable<Dictionary<ulong, ulong>> VoteRegistry { get; private set; } =
         new NetworkVariable<Dictionary<ulong, ulong>>(new Dictionary<ulong, ulong>());
 
+    NetworkPlayerData networkPlayerData;
+
+
     public const ulong NO_VOTE = ulong.MaxValue;
+
+    void Awake()
+    {
+        networkPlayerData = OneInsideGameManager.Instance.NetcodeManager.NetworkPlayerData;
+    }
 
     public override void OnNetworkSpawn()
     {
@@ -149,14 +158,14 @@ public class VoteManager : NetworkBehaviour
         switch (mostVotedPlayers.Count)
         {
             case 0:
-                Debug.Log("No votes were cast");
+                OneInsideGameManager.Instance.ShowMessage("No votes were cast");
                 break;
             case 1:
-                Debug.Log($"Player {mostVotedPlayers[0]} has been voted to be the impostor by {highestVoteCount} players");
+                OneInsideGameManager.Instance.ShowMessage($"{GetPlayerName(mostVotedPlayers[0])} has been voted to be the impostor by {highestVoteCount} players");
                 break;
             default:
-                string tiedPlayers = string.Join(", ", mostVotedPlayers);
-                Debug.Log($"Tie vote! Players {tiedPlayers} each received {highestVoteCount} votes");
+                string tiedPlayers = string.Join(", ", mostVotedPlayers.Select(GetPlayerName));
+                OneInsideGameManager.Instance.ShowMessage($"Tie vote! Players {tiedPlayers} each received {highestVoteCount} votes");
                 break;
         }
     }
@@ -164,7 +173,7 @@ public class VoteManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void RaiseVoteStartServerRpc()
     {
-        if(OneInsideLevelManager.Instance.State.Value != GameState.GamePlaying)
+        if (OneInsideLevelManager.Instance.State.Value != GameState.GamePlaying)
         {
             Debug.LogWarning("Attempted to start a vote while not in game");
             return;
@@ -183,7 +192,7 @@ public class VoteManager : NetworkBehaviour
 
         if (votingPlayerId == clientId)
         {
-            Debug.LogWarning($"Player {votingPlayerId} attempted to vote for themselves");
+            Debug.LogWarning($"{GetPlayerName(clientId)} attempted to vote for themselves");
             return;
         }
 
@@ -192,5 +201,21 @@ public class VoteManager : NetworkBehaviour
             [votingPlayerId] = clientId
         };
         VoteRegistry.Value = newDictionary;
+    }
+    private string GetPlayerName(ulong clientId)
+    {
+        //TODO Refactor this into a shared method in netcode manager
+        if (networkPlayerData != null &&
+            networkPlayerData.ClientIdToAuth.Value.TryGetValue(clientId, out FixedString32Bytes authId) &&
+            networkPlayerData.AuthIdToUserData.Value.TryGetValue(authId, out UserDataDto userData))
+        {
+            if (clientId == NetworkManager.Singleton.LocalClientId)
+            {
+                return $"{userData.Name} (You)";
+            }
+            return userData.Name.ToString();
+        }
+
+        return clientId == NetworkManager.Singleton.LocalClientId ? "You" : $"Player {clientId}";
     }
 }

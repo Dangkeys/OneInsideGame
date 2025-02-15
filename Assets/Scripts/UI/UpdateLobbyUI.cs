@@ -42,18 +42,14 @@ public class UpdateLobbyUI : MonoBehaviour
             return;
         }
 
-        // Initialize connected players count
         currentConnectedPlayers = NetworkManager.Singleton.ConnectedClientsList.Count;
         
-        // Initialize player count from current lobby settings
         playerCount = lobby.MaxPlayers;
         
-        // Initialize imposter count from lobby data
         imposterCount = lobby.Data.TryGetValue(OneInside.Constants.Lobby.KEY_IMPOSTER_AMOUNT, out var imposters) 
             ? int.Parse(imposters.Value) 
             : OneInside.Constants.Player.MIN_IMPOSTERS;
 
-        // Initialize UI elements from current lobby settings
         lobbyNameInputField.text = lobby.Name;
         isPrivateToggle.isOn = lobby.IsPrivate;
         
@@ -177,7 +173,6 @@ public class UpdateLobbyUI : MonoBehaviour
 
         try
         {
-            // Disable UI during update
             SetUIInteractable(false);
 
             var updateLobbyDto = new UpdateLobbyDto(

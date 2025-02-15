@@ -15,6 +15,7 @@ public class OneInsideLevelManager : NetworkBehaviour
     public NetworkVariable<float> GamePlayTimer = new NetworkVariable<float>();
     public NetworkVariable<GameState> State = new NetworkVariable<GameState>(GameState.WaitingToStart);
 
+    [field: SerializeField] public int ImposterAmount {get; private set;} = OneInside.Constants.Player.MAX_IMPOSTERS;
     [field: SerializeField] public PlayerManager PlayerManager;
     [field: SerializeField] public VoteManager VoteManager;
 
@@ -29,23 +30,6 @@ public class OneInsideLevelManager : NetworkBehaviour
     {
         Instance = this;
 
-    }
-    void Start()
-    {
-        NetworkManager.Singleton.ConnectionApprovalCallback += NetworkManager_ConnectionApprovalCallback;
-    }
-
-    private void NetworkManager_ConnectionApprovalCallback(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
-    {
-        if (State.Value != GameState.WaitingToStart)
-        {
-            response.Approved = false;
-        }
-        else
-        {
-            response.Approved = true;
-            response.CreatePlayerObject = true;
-        }
     }
 
     public override void OnNetworkSpawn()
@@ -68,6 +52,15 @@ public class OneInsideLevelManager : NetworkBehaviour
                 GamePlayTimer.Value = GamePlayingTimerMax;
                 break;
             case GameState.GameOver:
+
+                if (OneInsideGameManager.Instance.LobbyManager.CurrentLobby != null)
+                {
+                    OneInsideGameManager.Instance.StopGame();
+                }
+                else
+                {
+                    NetworkManager.Singleton.Shutdown();
+                }
                 break;
         }
     }
@@ -100,14 +93,6 @@ public class OneInsideLevelManager : NetworkBehaviour
         if (!IsServer)
             return;
         State.Value = state;
-    }
-
-    public override void OnNetworkDespawn()
-    {
-        NetworkManager.Singleton.ConnectionApprovalCallback -= NetworkManager_ConnectionApprovalCallback;
-        if (!IsServer)
-            return;
-        NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= OnSceneLoadComplete;
 
     }
 
@@ -116,5 +101,15 @@ public class OneInsideLevelManager : NetworkBehaviour
         if (sceneName != GameScene.TajdangScene.ToString())
             return;
         State.Value = GameState.GamePlaying;
+    }
+    public override void OnNetworkDespawn()
+    {
+        if (IsServer)
+        {
+            State.Value = GameState.WaitingToStart;
+            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= OnSceneLoadComplete;
+            State.OnValueChanged -= OnGameStateChanged;
+        }
+
     }
 }

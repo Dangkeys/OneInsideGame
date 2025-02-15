@@ -6,7 +6,7 @@ using QFSW.QC;
 using UnityEngine.SceneManagement;
 using System;
 
-public class NetworkManagerUI : MonoBehaviour
+public class TestNetworkManagerUI : MonoBehaviour
 {
     [SerializeField] private Button hostButton;
     [SerializeField] private Button clientButton;

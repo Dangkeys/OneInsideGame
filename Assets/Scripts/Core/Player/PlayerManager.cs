@@ -11,7 +11,7 @@ public class PlayerManager : NetworkBehaviour
     [SerializeField] private GameObject players;
 
 
-    public event Action OnAllPlayersInTheGame;
+    public event Action OnAllPlayersSpawnInTheGame;
 
     public event Action OnResetALlPlayerPosition;
 
@@ -36,11 +36,12 @@ public class PlayerManager : NetworkBehaviour
             case GameState.WaitingToStart:
                 break;
             case GameState.GamePlaying:
+                SpawnAllPlayers();
                 SetParentForPlayers();
                 ResetAllPlayerPositionClientRpc();
                 if (!IsHost)
                 {
-                    OnAllPlayersInTheGame?.Invoke();
+                    OnAllPlayersSpawnInTheGame?.Invoke();
                 }
                 else
                 {
@@ -90,7 +91,7 @@ public class PlayerManager : NetworkBehaviour
     [ClientRpc]
     private void OnAllPlayersInTheGameClientRpc()
     {
-        OnAllPlayersInTheGame?.Invoke();
+        OnAllPlayersSpawnInTheGame?.Invoke();
     }
 
 
@@ -120,5 +121,17 @@ public class PlayerManager : NetworkBehaviour
             OneInsideLevelManager.Instance.State.OnValueChanged -= HandleGameStateChanged;
         }
         OneInsideLevelManager.Instance.VoteManager.OnStateChanged -= OnVoteStateChangedServerRpc;
+    }
+
+    private void SpawnAllPlayers()
+    {
+        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            GameObject player = Instantiate(playerPrefab.gameObject, Vector3.zero, Quaternion.identity);
+            NetworkObject playerNetworkObject = player.GetComponent<NetworkObject>();
+            playerNetworkObject.SpawnAsPlayerObject(clientId, true);
+            playerNetworkObject.TrySetParent(players, true);
+
+        }
     }
 }

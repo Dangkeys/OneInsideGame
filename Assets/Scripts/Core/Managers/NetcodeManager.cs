@@ -1,41 +1,68 @@
 using System;
+using System.Text;
+using JetBrains.Annotations;
+using Unity.Collections;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
+using Unity.Services.Authentication;
 using Unity.Services.Relay.Models;
 using UnityEngine;
 using UnityEngine.SocialPlatforms;
 
 public class NetcodeManager : NetworkBehaviour
 {
+    public NetworkPlayerData NetworkPlayerData { get; private set; }
     private OneInsideGameManager gameManager;
+
+    void Awake()
+    {
+        NetworkPlayerData = GetComponent<NetworkPlayerData>();
+    }
     void Start()
     {
         if (NetworkManager.Singleton != null)
         {
             NetworkManager.Singleton.OnConnectionEvent += NetworkManager_OnConnectionEvent;
+            NetworkManager.Singleton.ConnectionApprovalCallback += NetworkManger_ConnectionApprovalCallback;
         }
         gameManager = OneInsideGameManager.Instance;
 
     }
-    public override void OnNetworkSpawn()
-    {
-        if (IsServer)
-        {
-            NetworkManager.Singleton.ConnectionApprovalCallback += NetworkManger_ConnectionApprovalCallback;
-        }
-    }
 
     private void NetworkManger_ConnectionApprovalCallback(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
     {
-        if(NetworkManager.Singleton.ConnectedClientsList.Count >= OneInsideGameManager.Instance.LobbyManager.CurrentLobby.MaxPlayers)
+        var currentLobby = OneInsideGameManager.Instance.LobbyManager.CurrentLobby;
+        if (currentLobby == null)
+        {
+            var levelManager = OneInsideLevelManager.Instance;
+            if (levelManager == null)
+            {
+                response.Approved = false;
+                return;
+            }
+            if (levelManager != null && levelManager.State.Value != GameState.WaitingToStart)
+            {
+                response.Approved = false;
+                return;
+            }
+        }
+
+        if (currentLobby != null && (NetworkManager.Singleton.ConnectedClientsList.Count >= currentLobby.MaxPlayers || currentLobby.IsLocked))
         {
             response.Approved = false;
+            return;
         }
-        else
-        {
-            response.Approved = true;
-        }
+
+        string payload = Encoding.UTF8.GetString(request.Payload);
+        UserDataDto userData = JsonUtility.FromJson<UserDataDto>(payload);
+
+        Debug.Log(NetworkPlayerData.ClientIdToAuth);
+        NetworkPlayerData.ClientIdToAuth.Value[request.ClientNetworkId] = userData.AuthId;
+        NetworkPlayerData.AuthIdToUserData.Value[userData.AuthId] = userData;
+        Debug.Log(NetworkPlayerData.AuthIdToUserData.Value[userData.AuthId]);
+        response.Approved = true;
+
     }
 
     private void NetworkManager_OnConnectionEvent(NetworkManager manager, ConnectionEventData data)
@@ -77,20 +104,33 @@ public class NetcodeManager : NetworkBehaviour
                     if (NetworkManager.Singleton.IsServer)
                     {
                         Debug.Log("You stopped hosting the server!");
-                        Loader.Load(GameScene.MainMenuScene);
+                        if (OneInsideGameManager.Instance.LobbyManager.CurrentLobby != null)
+                            Loader.Load(GameScene.MainMenuScene);
                         OneInsideGameManager.Instance.ShowProgressChanged(1f, "Match Left");
                         gameManager.ShowMessage("You stopped hosting the server!");
                     }
                     else
                     {
                         Debug.Log("Disconnected from the server!");
-                        Loader.Load(GameScene.MainMenuScene);
+                        if (OneInsideGameManager.Instance.LobbyManager.CurrentLobby != null)
+                            Loader.Load(GameScene.MainMenuScene);
                         OneInsideGameManager.Instance.ShowProgressChanged(1f, "Match Left");
                         gameManager.ShowMessage("Disconnected from the server!");
                     }
                 }
                 else if (NetworkManager.Singleton.IsServer)
                 {
+
+                    if (NetworkPlayerData.ClientIdToAuth.Value.ContainsKey(data.ClientId))
+                    {
+                        FixedString32Bytes authId = NetworkPlayerData.ClientIdToAuth.Value[data.ClientId];
+                        if (NetworkPlayerData.AuthIdToUserData.Value.ContainsKey(authId))
+                        {
+                            NetworkPlayerData.AuthIdToUserData.Value.Remove(authId);
+                        }
+                        // Remove the client ID mapping
+                        NetworkPlayerData.ClientIdToAuth.Value.Remove(data.ClientId);
+                    }
                     Debug.Log($"Client disconnected! ID: {data.ClientId}");
                 }
                 break;
@@ -126,18 +166,12 @@ public class NetcodeManager : NetworkBehaviour
             NetworkManager.Singleton.DisconnectClient(clientId);
     }
 
-    public override void OnNetworkDespawn()
-    {
-        if (IsServer)
-        {
-            NetworkManager.Singleton.ConnectionApprovalCallback = NetworkManger_ConnectionApprovalCallback;
-        }
-    }
     public override void OnDestroy()
     {
         if (NetworkManager.Singleton != null)
         {
             NetworkManager.Singleton.OnConnectionEvent -= NetworkManager_OnConnectionEvent;
+            NetworkManager.Singleton.ConnectionApprovalCallback -= NetworkManger_ConnectionApprovalCallback;
         }
     }
     public static void InitializeHostRelayTransport(CreateLobbyAllocationResponseDto allocationResponse)
@@ -148,6 +182,9 @@ public class NetcodeManager : NetworkBehaviour
         UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
         RelayServerData relayServerData = AllocationUtils.ToRelayServerData(allocationResponse.Allocation, "dtls");
         transport.SetRelayServerData(relayServerData);
+        TransmitUserData();
+
+
         NetworkManager.Singleton.StartHost();
     }
 
@@ -159,7 +196,24 @@ public class NetcodeManager : NetworkBehaviour
         UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
         RelayServerData relayServerData = AllocationUtils.ToRelayServerData(allocationResponse.JoinAllocation, "dtls");
         transport.SetRelayServerData(relayServerData);
+        TransmitUserData();
+
         NetworkManager.Singleton.StartClient();
+    }
+
+    public static void TransmitUserData()
+    {
+        var userDataDto = new UserDataDto
+        {
+            AuthId = AuthenticationService.Instance.PlayerId,
+            Name = AuthenticationService.Instance.PlayerName
+        };
+
+        string payload = JsonUtility.ToJson(userDataDto);
+        byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);
+
+        NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
+
     }
 
 }

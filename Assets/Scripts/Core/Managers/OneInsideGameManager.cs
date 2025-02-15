@@ -85,7 +85,10 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
 
     async void Start()
     {
-        await InitializeGame();
+        if (SceneManager.GetActiveScene().name == GameScene.BootstrapScene.ToString())
+        {
+            await InitializeGameAsync();
+        }
     }
 
     [Command]
@@ -93,14 +96,14 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
     {
         //TODO migrate host(I don't think we can migrate in the current version of the netcode)
 
-        await LobbyManager.LeaveLobbyAsync();
         NetcodeManager.LeaveMatch();
+        await LobbyManager.LeaveLobbyAsync();
     }
 
     public async Task KickPlayerAsync(ulong clientId)
     {
-        await LobbyManager.KickPlayerAsync(clientId.ToString());
         NetcodeManager.KickPlayer(clientId);
+        await LobbyManager.KickPlayerAsync(clientId.ToString());
     }
 
     public async Task HostMatch(CreateLobbyDto createLobbyDto)
@@ -169,12 +172,34 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
 
     public async void StartGame()
     {
+        var currentLobby = LobbyManager.CurrentLobby;
+        if (currentLobby == null)
+        {
+            ShowMessage("Failed to start game, no lobby found");
+            return;
+        }
+
+        await LobbyManager.UpdateCurrentLobbyAsync(new UpdateLobbyDto(isLocked: true));
         OnLoadingProgressChanged?.Invoke(0.5f, "Starting Game");
         await Loader.LoadNetwork(GameScene.TajdangScene);
         OnLoadingProgressChanged?.Invoke(1, "Game Started");
     }
+    public async void StopGame()
+    {
+        var currentLobby = LobbyManager.CurrentLobby;
+        if (currentLobby == null)
+        {
+            ShowMessage("Failed to stop game, no lobby found");
+            return;
+        }
 
-    public async Task InitializeGame()
+        await LobbyManager.UpdateCurrentLobbyAsync(new UpdateLobbyDto(isLocked: false));
+        OnLoadingProgressChanged?.Invoke(0.5f, "Stopping Game");
+        await Loader.LoadNetwork(GameScene.LobbyScene);
+        OnLoadingProgressChanged?.Invoke(1, "Game Started");
+    }
+
+    public async Task InitializeGameAsync(bool shouldLoadScene = true)
     {
 
         UpdateGameInitializationProgress(0);
@@ -203,7 +228,8 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
         await VivoxService.Instance.LoginAsync();
 
         UpdateGameInitializationProgress(5);
-        await SceneManager.LoadSceneAsync(GameScene.MainMenuScene.ToString());
+        if (shouldLoadScene)
+            await SceneManager.LoadSceneAsync(GameScene.MainMenuScene.ToString());
         UpdateGameInitializationProgress(6);
     }
 
