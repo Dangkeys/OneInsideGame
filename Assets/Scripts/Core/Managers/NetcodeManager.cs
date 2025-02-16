@@ -114,7 +114,14 @@ public class NetcodeManager : NetworkBehaviour
                         if (OneInsideGameManager.Instance.LobbyManager.CurrentLobby != null)
                             Loader.Load(GameScene.MainMenuScene);
                         OneInsideGameManager.Instance.ShowProgressChanged(1f, "Match Left");
-                        gameManager.ShowMessage(manager.DisconnectReason);
+                        if (manager.DisconnectReason != "")
+                        {
+                            gameManager.ShowMessage(manager.DisconnectReason);
+                        }
+                        else
+                        {
+                            gameManager.ShowMessage("Disconnected from server");
+                        }
                     }
                 }
                 else if (NetworkManager.Singleton.IsServer)

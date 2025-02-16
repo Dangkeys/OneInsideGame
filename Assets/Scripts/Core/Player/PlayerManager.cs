@@ -46,7 +46,6 @@ public class PlayerManager : NetworkBehaviour
                 break;
             case GameState.GamePlaying:
                 SpawnAllPlayers();
-                SetParentForPlayers();
                 ResetAllPlayerPositionClientRpc();
                 if (!IsHost)
                 {
@@ -138,7 +137,6 @@ public class PlayerManager : NetworkBehaviour
             GameObject player = Instantiate(playerPrefab.gameObject, Vector3.zero, Quaternion.identity);
             NetworkObject playerNetworkObject = player.GetComponent<NetworkObject>();
             playerNetworkObject.SpawnAsPlayerObject(clientId, true);
-            playerNetworkObject.TrySetParent(players, true);
 
         }
     }
@@ -148,9 +146,11 @@ public class PlayerManager : NetworkBehaviour
         {
             if (NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out var client))
             {
+                Debug.Log(clientId);
                 if (client.PlayerObject && client.PlayerObject.TryGetComponent<Player>(out var player))
                 {
-                    player.GetComponent<NetworkObject>().Despawn(true);
+                    // Use NetworkObject.Despawn() instead of Destroy
+                    client.PlayerObject.Despawn();
                 }
             }
         }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Az_Hitbox : MonoBehaviour
@@ -28,28 +29,52 @@ public class Az_Hitbox : MonoBehaviour
      public static List<Collider> Get_Touching_Colliders(HitboxParams parameters)
      {
           List<Collider> touchingColliders = new List<Collider>();
-          HashSet<Collider> excludeSet = parameters.Exclude != null ? new HashSet<Collider>(parameters.Exclude) : null;
+
+          // Create exclude set only if we have exclusions
+          HashSet<Collider> excludeSet = parameters.Exclude?.ToHashSet();
+
+          // Pre-check if we need to do tag comparison
+          bool checkTag = !string.IsNullOrEmpty(parameters.Tag);
 
           foreach (BoxCollider hitbox in parameters.Hitboxs)
           {
-               Vector3 center = hitbox.transform.TransformPoint(hitbox.center);
-               Vector3 size = hitbox.size * 0.5f; // OverlapBox takes half-extents
+               if (hitbox == null)
+                    continue;  // Skip if hitbox is null
 
-               Collider[] colliders = Physics.OverlapBox(center, size, hitbox.transform.rotation);
+               // Transform hitbox properties to world space
+               Vector3 worldCenter = hitbox.transform.TransformPoint(hitbox.center);
+               Vector3 worldHalfExtents = Vector3.Scale(hitbox.size * 0.5f, hitbox.transform.lossyScale);
+               Quaternion worldRotation = hitbox.transform.rotation;
+
+               // Get all overlapping colliders
+               Collider[] colliders = Physics.OverlapBox(worldCenter, worldHalfExtents, worldRotation);
 
                foreach (Collider collider in colliders)
                {
-                    if (collider != hitbox &&
-                        (excludeSet == null || !excludeSet.Contains(collider)) && // Exclude check
-                        (string.IsNullOrEmpty(parameters.Tag) || collider.CompareTag(parameters.Tag)))
+                    // Skip invalid colliders or self-collision
+                    if (collider == null || collider == hitbox)
+                         continue;
+
+                    // Skip if collider is in exclude list
+                    if (excludeSet != null && excludeSet.Contains(collider))
+                         continue;
+
+                    // Skip if tag doesn't match (when tag checking is needed)
+                    if (checkTag && !collider.CompareTag(parameters.Tag))
+                         continue;
+
+                    // Handle collider type filtering
+                    bool shouldAdd = parameters.Type switch
                     {
-                         // Filter by collider type
-                         if (parameters.Type == Collider_Type.Any ||
-                             (parameters.Type == Collider_Type.CharacterController && collider.GetComponent<CharacterController>() != null) ||
-                             (parameters.Type == Collider_Type.Other && collider.GetComponent<CharacterController>() == null))
-                         {
-                              touchingColliders.Add(collider);
-                         }
+                         Collider_Type.Any => true,
+                         Collider_Type.CharacterController => collider.TryGetComponent<CharacterController>(out _),
+                         Collider_Type.Other => !collider.TryGetComponent<CharacterController>(out _),
+                         _ => false
+                    };
+
+                    if (shouldAdd && !touchingColliders.Contains(collider))
+                    {
+                         touchingColliders.Add(collider);
                     }
                }
           }

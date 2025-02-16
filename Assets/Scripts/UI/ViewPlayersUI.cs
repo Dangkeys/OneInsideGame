@@ -44,7 +44,7 @@ public class ViewPlayersUI : MonoBehaviour
 
             startGameButton.onClick.AddListener(() =>
             {
-                oneInsideGameManager.ShowConfirmation("Are you sure you want to start the game?", () =>
+                oneInsideGameManager.ShowConfirmation("Are you sure you want to start the game?", async () =>
                     {
                         oneInsideGameManager.ShowProgressChanged(.5f, "Starting Game...");
                         if (NetworkManager.Singleton.ConnectedClients.Count >=
@@ -53,7 +53,7 @@ public class ViewPlayersUI : MonoBehaviour
                         int.Parse(imposterAmount.Value) : OneInside.Constants.Player.MIN_IMPOSTERS))
                         {
 
-                            oneInsideGameManager.StartGame();
+                            await oneInsideGameManager.StartGame();
                         }
                         else
                         {

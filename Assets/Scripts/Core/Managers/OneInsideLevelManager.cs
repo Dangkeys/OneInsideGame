@@ -66,9 +66,11 @@ public class OneInsideLevelManager : NetworkBehaviour
                 {
                     if (OneInsideGameManager.Instance.LobbyManager.CurrentLobby != null)
                     {
-                        PlayerManager.ClearAllPlayers();
-                        await Task.Delay(2000);
-                        await OneInsideGameManager.Instance.StopGame();
+                        await OneInsideGameManager.Instance.LeaveMatchAsync();
+
+                        //TODO fix the stop game function
+                        // PlayerManager.ClearAllPlayers();
+                        // await OneInsideGameManager.Instance.StopGame();
                     }
                     else
                     {

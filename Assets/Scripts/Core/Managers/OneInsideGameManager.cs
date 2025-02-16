@@ -184,6 +184,7 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
         await Loader.LoadNetwork(GameScene.TajdangScene);
         OnLoadingProgressChanged?.Invoke(1, "Game Started");
     }
+    [Command]
     public async Task StopGame()
     {
         var currentLobby = LobbyManager.CurrentLobby;
