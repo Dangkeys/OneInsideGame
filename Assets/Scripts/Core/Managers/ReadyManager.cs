@@ -83,7 +83,7 @@ public class ReadyManager : NetworkBehaviour
             previousAllPlayersReady = allPlayersReady;
             if (allPlayersReady)
             {
-                if (IsServer && NetworkManager.Singleton.ConnectedClients.Count >= (oneInsideGameManager.LobbyManager.CurrentLobby.Data.TryGetValue(OneInside.Constants.Lobby.KEY_IMPOSTER_AMOUNT, out var imposterAmount) ? int.Parse(imposterAmount.Value) : OneInside.Constants.Player.MIN_IMPOSTERS))
+                if (IsServer && NetworkManager.ConnectedClients.Count == oneInsideGameManager.LobbyManager.CurrentLobby.MaxPlayers)
                     await oneInsideGameManager.StartGame();
             }
         }

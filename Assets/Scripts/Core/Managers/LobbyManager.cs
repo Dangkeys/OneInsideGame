@@ -99,6 +99,7 @@ public class LobbyManager : MonoBehaviour
             }
 
             CurrentLobby = await LobbyService.Instance.UpdateLobbyAsync(CurrentLobby.Id, updateOptions);
+
             return CurrentLobby;
         }
         catch (LobbyServiceException e)
