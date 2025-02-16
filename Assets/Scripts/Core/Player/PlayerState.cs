@@ -43,18 +43,6 @@ public class PlayerState : NetworkBehaviour
          NetworkVariableReadPermission.Everyone,
          NetworkVariableWritePermission.Owner
     );
-    [field: SerializeField]
-    public NetworkVariable<bool> Ragdoll { get; private set; } = new NetworkVariable<bool>(
-         default,
-         NetworkVariableReadPermission.Everyone,
-         NetworkVariableWritePermission.Server
-    );
-    [field: SerializeField]
-    public NetworkVariable<bool> Spectator { get; private set; } = new NetworkVariable<bool>(
-         false,
-         NetworkVariableReadPermission.Everyone,
-         NetworkVariableWritePermission.Server
-    );
 
     [Header("Health")]
     [field: SerializeField]
@@ -69,15 +57,10 @@ public class PlayerState : NetworkBehaviour
          NetworkVariableReadPermission.Everyone,
          NetworkVariableWritePermission.Server
     );
-    [field: SerializeField]
-    public NetworkVariable<bool> Dead { get; private set; } = new NetworkVariable<bool>(
-         false,
-         NetworkVariableReadPermission.Everyone,
-         NetworkVariableWritePermission.Server
-    );
 
     [Header("Dependencies")]
     [field: SerializeField] public PlayerMovement PlayerMovement { get; private set; }
+    [field: SerializeField] public Player Player { get; private set; }
 
     //--------------------------------------
     // Network & Lifecycle Methods
@@ -91,41 +74,44 @@ public class PlayerState : NetworkBehaviour
             CurrentHealth.Value = MaxHealth.Value;
         }
 
-        Attacking.OnValueChanged += Update_Can_Move;
-        Stunning.OnValueChanged += Update_Can_Move;
-        Dead.OnValueChanged += Update_Can_Move;
+        Attacking.OnValueChanged += UpdateCanMove;
+        Stunning.OnValueChanged += UpdateCanMove;
+        Player.IsAlive.OnValueChanged += UpdateCanMove;
     }
 
     public override void OnNetworkDespawn()
     {
-        Attacking.OnValueChanged -= Update_Can_Move;
-        Stunning.OnValueChanged -= Update_Can_Move;
-        Dead.OnValueChanged -= Update_Can_Move;
+        Attacking.OnValueChanged -= UpdateCanMove;
+        Stunning.OnValueChanged -= UpdateCanMove;
+        Player.IsAlive.OnValueChanged -= UpdateCanMove;
     }
 
     //--------------------------------------
     // Health Management Methods
     //--------------------------------------
+
+    private void UpdateAlive()
+    {
+        SetAliveServerRpc(CurrentHealth.Value > 0);
+    }
+
     [ServerRpc(RequireOwnership = false)]
     public void TakeDamageServerRpc(int damage)
     {
-        if (IsServer && !Dead.Value)
+        if (IsServer && Player.IsAlive.Value)
         {
             CurrentHealth.Value = Mathf.Max(CurrentHealth.Value - damage, 0);
-
-            if (CurrentHealth.Value <= 0)
-            {
-                SetDeadServerRpc(true);
-            }
+            UpdateAlive();
         }
     }
 
     [ServerRpc(RequireOwnership = false)]
     public void HealServerRpc(int healAmount)
     {
-        if (IsServer && !Dead.Value)
+        if (IsServer)
         {
             CurrentHealth.Value = Mathf.Min(CurrentHealth.Value + healAmount, MaxHealth.Value);
+            UpdateAlive();
         }
     }
 
@@ -134,21 +120,15 @@ public class PlayerState : NetworkBehaviour
     {
         if (IsServer)
         {
-            CurrentHealth.Value = Mathf.Min(CurrentHealth.Value + amount, MaxHealth.Value);
-            Dead.Value = false;
+            CurrentHealth.Value = Mathf.Max(Mathf.Min(amount, MaxHealth.Value), 0);
+            UpdateAlive();
         }
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void SetDeadServerRpc(bool value)
+    public void SetAliveServerRpc(bool value)
     {
-        SetDead(value);
-    }
-
-    [ServerRpc]
-    public void SetSpectatorServerRpc(bool value)
-    {
-        SetSpectator(value);
+        SetAlive(value);
     }
 
     //--------------------------------------
@@ -178,35 +158,25 @@ public class PlayerState : NetworkBehaviour
         { Running.Value = value; }
     }
 
-    public void SetDead(bool value)
+    public void SetAlive(bool value)
     {
         if (IsServer)
         {
-            Dead.Value = value;
-            Ragdoll.Value = value;
-            Spectator.Value = value;
-        }
-    }
-
-    public void SetSpectator(bool value)
-    {
-        if (IsServer)
-        {
-            Spectator.Value = value;
+            Player.IsAlive.Value = value;
         }
     }
 
     //--------------------------------------
     // Movement Control Methods
     //--------------------------------------
-    public bool Is_Can_Move()
+    public bool IsCanMove()
     {
         return !(Stunning.Value || Attacking.Value);
     }
 
-    private void Update_Can_Move(bool previous, bool current)
+    private void UpdateCanMove(bool previous, bool current)
     {
-        PlayerMovement.enabled = Is_Can_Move();
+        PlayerMovement.enabled = IsCanMove();
     }
 
     //--------------------------------------

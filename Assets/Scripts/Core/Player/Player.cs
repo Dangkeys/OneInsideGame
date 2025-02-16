@@ -1,4 +1,5 @@
 using System;
+using OneInside.Constants;
 using Unity.Cinemachine;
 using Unity.Collections;
 using Unity.Netcode;
@@ -40,7 +41,7 @@ public class Player : NetworkBehaviour
         defaultPlayerMaterial = playerRenderer.material;
 
         Role.OnValueChanged += OnRoleChanged;
-        playerState.Spectator.OnValueChanged += OnSpectatorChanged;
+        IsAlive.OnValueChanged += OnAliveChanged;
 
         if (!IsOwner)
         {
@@ -49,13 +50,14 @@ public class Player : NetworkBehaviour
         }
         else
         {
-            InputReader.AttackEvent += On_Attack_Local;
+            InputReader.AttackEvent += OnAttackLocal;
 
             playerState.SetAttacking(false);
             playerState.SetStunning(false);
             playerState.SetWalking(false);
             playerState.SetRunning(false);
-            playerState.SetDead(false);
+            playerState.SetAlive(true);
+
             if (!OneInsideLevelManager.Instance)
                 return;
             OneInsideLevelManager.Instance.PlayerManager.OnResetALlPlayerPosition += ResetToSpawnPoint;
@@ -65,12 +67,12 @@ public class Player : NetworkBehaviour
     public override void OnNetworkDespawn()
     {
         Role.OnValueChanged -= OnRoleChanged;
-        playerState.Spectator.OnValueChanged -= OnSpectatorChanged;
+        IsAlive.OnValueChanged -= OnAliveChanged;
 
         if (!IsOwner)
             return;
 
-        InputReader.AttackEvent -= On_Attack_Local;
+        InputReader.AttackEvent -= OnAttackLocal;
 
         if (!OneInsideLevelManager.Instance)
             return;
@@ -89,7 +91,7 @@ public class Player : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            playerState.SetDeadServerRpc(false);
+            playerState.SetAliveServerRpc(true);
             playerState.SetHealthServerRpc(playerState.MaxHealth.Value);
         }
     }
@@ -97,30 +99,29 @@ public class Player : NetworkBehaviour
     // Attack Methods
     //--------------------------------------
 
-    public async void On_Attack_Local()
+    public async void OnAttackLocal()
     {
-        if (!playerState.Is_Can_Move())
+        if (!playerState.IsCanMove())
             return;
 
         playerState.SetAttacking(true);
 
         // get closest character
-        var All_Hit_Characters = Az_Hitbox.Get_Touching_Objects(new Az_Hitbox.HitboxParams
+        var AllHitCharacters = AzHitbox.GetTouchingObjects(new AzHitbox.HitboxParams
         {
             Hitboxs = hitBoxes,
-            Type = Az_Hitbox.Collider_Type.CharacterController,
+            Type = AzHitbox.ColliderType.CharacterController,
             Exclude = new Collider[] { CharacterController }
         });
 
-        GameObject Closest_Character = Az_Normal.Get_Closet_Target(transform.position, All_Hit_Characters);
+        GameObject closestCharacter = AzNormal.GetClosetTarget(transform.position, AllHitCharacters);
 
-        if (Closest_Character != null)
+        if (closestCharacter != null)
         {
-            Player targetPlayerScript = Closest_Character.GetComponent<Player>();
-            PlayerState targetPlayerState = Closest_Character.GetComponent<PlayerState>();
-            if (targetPlayerScript && targetPlayerState.Dead.Value == false && !PlayerManager_Local.GetLocalPlayer().GetComponent<PlayerState>().Dead.Value)
+            Player targetPlayerScript = closestCharacter.GetComponent<Player>();
+            if (targetPlayerScript && targetPlayerScript.IsAlive.Value && PlayerManager.GetLocalPlayerScript().IsAlive.Value)
             {
-                targetPlayerScript.Take_Damage_ServerRpc();
+                targetPlayerScript.TakeDamageServerRpc();
             }
         }
 
@@ -134,14 +135,14 @@ public class Player : NetworkBehaviour
     //--------------------------------------
 
     [ServerRpc(RequireOwnership = false)]
-    private void Take_Damage_ServerRpc(int damage = 1)
+    private void TakeDamageServerRpc(int damage = 1)
     {
-        Take_Damage(damage);
+        TakeDamage(damage);
     }
 
-    private async void Take_Damage(int damage = 1)
+    private async void TakeDamage(int damage = 1)
     {
-        if (playerState.Stunning.Value && playerState.Dead.Value)
+        if (playerState.Stunning.Value || !IsAlive.Value)
             return;
 
         playerState.SetStunning(true);
@@ -183,51 +184,47 @@ public class Player : NetworkBehaviour
     // Spectator
     //--------------------------------------
 
-    private void OnSpectatorChanged(bool oldValue, bool newValue)
+    private void OnAliveChanged(bool oldValue, bool newValue)
     {
-        // Debug.Log($"Spectator changed to: {newValue}");
         if (newValue)
         {
-            EnableSpectator();
+            DisableSpectator();
         }
         else
         {
-            DisableSpectator();
+            EnableSpectator();
         }
     }
 
     private void EnableSpectator()
     {
-        gameObject.layer = LayerMask.NameToLayer("Spectator");
+        gameObject.layer = LayerMask.NameToLayer(OneInsideLayers.SPECTATOR);
         playerRenderer.material = SpectatorMaterial;
 
-        if (IsLocalPlayer)
+        if (IsOwner)
         {
-            foreach (Player player in PlayerManager_Local.GetSpectatorPlayers(false))
+            foreach (Player player in PlayerManager.GetSpectatorPlayers(false))
             {
                 player.gameObject.SetActive(true);
             }
         }
         else
         {
-            if (!PlayerManager_Local.GetLocalPlayer().GetComponent<PlayerState>().Spectator.Value)
-            {
-                gameObject.SetActive(false);
-            }
+            gameObject.SetActive(!PlayerManager.GetLocalPlayerScript().IsAlive.Value);
         }
     }
 
 
     private void DisableSpectator()
     {
-        gameObject.layer = LayerMask.NameToLayer("Player");
+        gameObject.layer = LayerMask.NameToLayer(OneInsideLayers.PLAYER);
         playerRenderer.material = defaultPlayerMaterial;
 
         gameObject.SetActive(true);
 
-        if (IsLocalPlayer)
+        if (IsOwner)
         {
-            foreach (Player player in PlayerManager_Local.GetSpectatorPlayers(false))
+            foreach (Player player in PlayerManager.GetSpectatorPlayers(false))
             {
                 player.gameObject.SetActive(false);
             }

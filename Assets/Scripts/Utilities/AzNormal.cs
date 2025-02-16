@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Az_Normal : MonoBehaviour
+public class AzNormal : MonoBehaviour
 {
     /// <summary>
     /// Returns the closest target to the given source position.
@@ -9,7 +9,7 @@ public class Az_Normal : MonoBehaviour
     /// <param name="srcPosition">The source position.</param>
     /// <param name="targets">The targets.</param>
     /// <returns>The closest target.</returns>
-    public static GameObject Get_Closet_Target(Vector3 srcPosition, List<GameObject> targets)
+    public static GameObject GetClosetTarget(Vector3 srcPosition, List<GameObject> targets)
     {
         GameObject closestTarget = null;
         float closestDistance = Mathf.Infinity;
