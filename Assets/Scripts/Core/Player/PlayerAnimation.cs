@@ -109,6 +109,14 @@ public class PlayerAnimation : NetworkBehaviour
         //     col.enabled = true;
         // }
 
+        if (!IsLocalPlayer)
+        {
+            if (!PlayerManager_Local.GetLocalPlayer().GetComponent<PlayerState>().Spectator.Value)
+            {
+                gameObject.SetActive(false);
+            }
+        }
+
         if (!IsServer)
             return;
 
@@ -140,6 +148,8 @@ public class PlayerAnimation : NetworkBehaviour
         // {
         //     col.enabled = false;
         // }
+
+        // PlayerManager_Local.UpdatePlayersVisible();
 
         if (!IsServer)
             return;

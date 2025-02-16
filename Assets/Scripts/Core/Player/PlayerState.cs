@@ -49,6 +49,12 @@ public class PlayerState : NetworkBehaviour
          NetworkVariableReadPermission.Everyone,
          NetworkVariableWritePermission.Server
     );
+    [field: SerializeField]
+    public NetworkVariable<bool> Spectator { get; private set; } = new NetworkVariable<bool>(
+         false,
+         NetworkVariableReadPermission.Everyone,
+         NetworkVariableWritePermission.Server
+    );
 
     [Header("Health")]
     [field: SerializeField]
@@ -65,11 +71,6 @@ public class PlayerState : NetworkBehaviour
     );
     [field: SerializeField]
     public NetworkVariable<bool> Dead { get; private set; } = new NetworkVariable<bool>(
-         false,
-         NetworkVariableReadPermission.Everyone,
-         NetworkVariableWritePermission.Server
-    );
-    public NetworkVariable<bool> Spectator { get; private set; } = new NetworkVariable<bool>(
          false,
          NetworkVariableReadPermission.Everyone,
          NetworkVariableWritePermission.Server
@@ -200,7 +201,7 @@ public class PlayerState : NetworkBehaviour
     //--------------------------------------
     public bool Is_Can_Move()
     {
-        return !(Stunning.Value || Attacking.Value || Dead.Value);
+        return !(Stunning.Value || Attacking.Value);
     }
 
     private void Update_Can_Move(bool previous, bool current)

@@ -111,7 +111,7 @@ public class Player : NetworkBehaviour
         {
             Player targetPlayerScript = Closest_Character.GetComponent<Player>();
             PlayerState targetPlayerState = Closest_Character.GetComponent<PlayerState>();
-            if (targetPlayerScript && targetPlayerState.Dead.Value == false)
+            if (targetPlayerScript && targetPlayerState.Dead.Value == false && !PlayerManager_Local.GetLocalPlayer().GetComponent<PlayerState>().Dead.Value)
             {
                 targetPlayerScript.Take_Damage_ServerRpc();
             }
@@ -120,12 +120,6 @@ public class Player : NetworkBehaviour
         await Awaitable.WaitForSecondsAsync(1);
 
         playerState.SetAttacking(false);
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void Attack_ServerRpc(bool value = true)
-    {
-        // Attacking.Value = value;
     }
 
     //--------------------------------------
@@ -200,6 +194,21 @@ public class Player : NetworkBehaviour
         gameObject.layer = LayerMask.NameToLayer("Spectator");
         // CharacterController.excludeLayers = LayerMask.NameToLayer("Player");
         // Debug.Log(LayerMask.NameToLayer("Player"));
+
+        if (IsLocalPlayer)
+        {
+            foreach (Player player in PlayerManager_Local.GetSpectatorPlayers(false))
+            {
+                player.gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            if (!PlayerManager_Local.GetLocalPlayer().GetComponent<PlayerState>().Spectator.Value)
+            {
+                gameObject.SetActive(false);
+            }
+        }
     }
 
 
@@ -207,5 +216,7 @@ public class Player : NetworkBehaviour
     {
         gameObject.layer = LayerMask.NameToLayer("Player");
         // CharacterController.excludeLayers = 0;
+
+        gameObject.SetActive(true);
     }
 }
