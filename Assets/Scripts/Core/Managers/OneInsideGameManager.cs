@@ -221,11 +221,21 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
             await PlayerNameGenerator.GenerateRandomPlayerName();
         }
 
-        UpdateGameInitializationProgress(3);
-        await VivoxService.Instance.InitializeAsync();
+        //TODO Fix vivox service to handle failed login or InitializeAsync
+        try
+        {
+            UpdateGameInitializationProgress(3);
+            await VivoxService.Instance.InitializeAsync();
 
-        UpdateGameInitializationProgress(4);
-        await VivoxService.Instance.LoginAsync();
+            UpdateGameInitializationProgress(4);
+            await VivoxService.Instance.LoginAsync();
+
+        }
+        catch (RequestFailedException e)
+        {
+            UpdateGameInitializationProgress(6);
+            Debug.LogWarning(e);
+        }
 
         UpdateGameInitializationProgress(5);
         if (shouldLoadScene)
