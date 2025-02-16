@@ -51,7 +51,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3599195126
+  GlobalObjectIdHash: 994968856
   InScenePlacedSourceGlobalObjectIdHash: 3220267787
   DeferredDespawnTick: 0
   Ownership: 1
@@ -86,10 +86,10 @@ MonoBehaviour:
   VoteManager: {fileID: 3454218363725562644}
   RoleManager: {fileID: 6459766613761483988}
   VivoxManager: {fileID: 5525845421978206272}
-  IsPlayerInitializationRequired:
-    m_InternalValue: 1
-  IsPlayerInitializationRequired:
-    m_InternalValue: 1
+  Players_OBJ: {fileID: 7395644895410054645}
+  DeadBodies_OBJ: {fileID: 6187402818156472811}
+  IsLoadedFromLobbyScene:
+    m_InternalValue: 0
 --- !u!1 &6187402818156472811
 GameObject:
   m_ObjectHideFlags: 0
@@ -214,7 +214,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1900650890298574790, guid: ffe30ded518bc68448da28c9d8cd4cc4, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 3835378938
+      value: 994968856
       objectReference: {fileID: 0}
     - target: {fileID: 1900650890298574790, guid: ffe30ded518bc68448da28c9d8cd4cc4, type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
