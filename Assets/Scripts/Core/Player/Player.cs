@@ -14,6 +14,10 @@ public class Player : NetworkBehaviour
     [field: SerializeField] public CharacterController CharacterController { get; private set; }
     [field: SerializeField] public PlayerMovement PlayerMovement { get; private set; }
 
+    [Header("Spectator")]
+    [field: SerializeField] public Material SpectatorMaterial { get; private set; }
+    [field: SerializeField] public GameObject CurrentPlayerVisual { get; private set; }
+
     public NetworkVariable<bool> IsAlive = new NetworkVariable<bool>(true);
 
     public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>(PlayerRole.None);
@@ -24,13 +28,16 @@ public class Player : NetworkBehaviour
 
     private BoxCollider[] hitBoxes;
     private PlayerState playerState;
+    private Renderer playerRenderer;
+    private Material defaultPlayerMaterial;
 
     public override void OnNetworkSpawn()
     {
-
         hitBoxes = Hitbox.GetComponents<BoxCollider>();
-
         playerState = GetComponent<PlayerState>();
+
+        playerRenderer = CurrentPlayerVisual.GetComponent<Renderer>();
+        defaultPlayerMaterial = playerRenderer.material;
 
         Role.OnValueChanged += OnRoleChanged;
         playerState.Spectator.OnValueChanged += OnSpectatorChanged;
@@ -192,8 +199,7 @@ public class Player : NetworkBehaviour
     private void EnableSpectator()
     {
         gameObject.layer = LayerMask.NameToLayer("Spectator");
-        // CharacterController.excludeLayers = LayerMask.NameToLayer("Player");
-        // Debug.Log(LayerMask.NameToLayer("Player"));
+        playerRenderer.material = SpectatorMaterial;
 
         if (IsLocalPlayer)
         {
@@ -215,8 +221,16 @@ public class Player : NetworkBehaviour
     private void DisableSpectator()
     {
         gameObject.layer = LayerMask.NameToLayer("Player");
-        // CharacterController.excludeLayers = 0;
+        playerRenderer.material = defaultPlayerMaterial;
 
         gameObject.SetActive(true);
+
+        if (IsLocalPlayer)
+        {
+            foreach (Player player in PlayerManager_Local.GetSpectatorPlayers(false))
+            {
+                player.gameObject.SetActive(false);
+            }
+        }
     }
 }

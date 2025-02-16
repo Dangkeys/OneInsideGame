@@ -338,6 +338,8 @@ MonoBehaviour:
     m_InternalValue: 0
   <Ragdoll>k__BackingField:
     m_InternalValue: 0
+  <Spectator>k__BackingField:
+    m_InternalValue: 0
   <CurrentHealth>k__BackingField:
     m_InternalValue: 3
   <MaxHealth>k__BackingField:
@@ -363,6 +365,8 @@ MonoBehaviour:
   <Hitbox>k__BackingField: {fileID: 3435790326839173604}
   <CharacterController>k__BackingField: {fileID: 4450134948998468091}
   <PlayerMovement>k__BackingField: {fileID: 295962568890882461}
+  <SpectatorMaterial>k__BackingField: {fileID: 2100000, guid: 820158f1bc8fa7a4faa58682e23b1cee, type: 2}
+  <CurrentPlayerVisual>k__BackingField: {fileID: 6733539319599685802}
   IsAlive:
     m_InternalValue: 1
   Role:
@@ -1295,6 +1299,11 @@ Transform:
 --- !u!4 &6595192579084696524 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2383991533042498037, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
+  m_PrefabInstance: {fileID: 8832534265727795769}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6733539319599685802 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2873614647388709523, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
   m_PrefabInstance: {fileID: 8832534265727795769}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &8896104640911753412 stripped
