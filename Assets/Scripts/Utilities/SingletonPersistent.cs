@@ -15,7 +15,7 @@ public class SingletonPersistent<T> : MonoBehaviour where T : MonoBehaviour
                 
                 if (instance == null)
                 {
-                    Debug.LogError($"[Singleton] An instance of {typeof(T)} is needed in the scene, but there is none.");
+                    Debug.LogWarning($"[Singleton] An instance of {typeof(T)} is needed in the scene, but there is none.");
                 }
             }
             return instance;

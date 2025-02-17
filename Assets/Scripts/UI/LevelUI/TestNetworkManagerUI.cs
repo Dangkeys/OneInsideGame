@@ -21,10 +21,11 @@ public class TestNetworkManagerUI : MonoBehaviour
 
     private void Awake()
     {
-      SceneManager.sceneLoaded += OnSceneLoadComplete;
+        SceneManager.sceneLoaded += OnSceneLoadComplete;
     }
 
-    private void OnSceneLoadComplete(Scene arg0, LoadSceneMode arg1){
+    private void OnSceneLoadComplete(Scene arg0, LoadSceneMode arg1)
+    {
         SceneManager.sceneLoaded -= OnSceneLoadComplete;
         gameObject.SetActive(false);
     }
@@ -51,16 +52,18 @@ public class TestNetworkManagerUI : MonoBehaviour
         disconnectButton.onClick.AddListener(Disconnect);
         startGameButton.onClick.AddListener(() =>
         {
-            if (OneInsideLevelManager.Instance != null)
+            if (OneInsideLevelManager.Instance != null && OneInsideGameManager.Instance != null)
             {
 
                 OneInsideLevelManager.Instance.SetGameState(GameState.GamePlaying);
             }
             else
             {
-                Debug.Log("Can not start game, Please make sure OneInsideLevelManager is present in the scene");
+                Debug.Log("Can not start game, Please make sure OneInsideLevelManager and GameManager is present in the scene");
             }
-            startGameButton.gameObject.SetActive(false);
+            {
+                startGameButton.gameObject.SetActive(false);
+            }
         });
     }
 

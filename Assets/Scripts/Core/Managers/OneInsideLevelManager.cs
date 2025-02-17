@@ -19,19 +19,24 @@ public class OneInsideLevelManager : NetworkBehaviour
     [field: SerializeField] public int ImposterAmount { get; private set; } = OneInside.Constants.Player.MAX_IMPOSTERS;
     [field: SerializeField] public PlayerManager PlayerManager;
     [field: SerializeField] public VoteManager VoteManager;
-
     [field: SerializeField] public RoleManager RoleManager;
-
     // [field: SerializeField] public VivoxManager VivoxManager;
+
+    [field: SerializeField] public GameObject PlayersContainer;
+    [field: SerializeField] public GameObject DeadBodiesContainer;
 
 
     public static OneInsideLevelManager Instance { get; private set; }
     private OneInsideGameManager oneInsideGameManager;
+    public static GameObject Players { get; private set; }
+    public static GameObject DeadBodies { get; private set; }
 
     private void Awake()
     {
         Instance = this;
         oneInsideGameManager = OneInsideGameManager.Instance;
+        Players = PlayersContainer;
+        DeadBodies = DeadBodiesContainer;
     }
 
     public override void OnNetworkSpawn()

@@ -23,6 +23,11 @@ public class VoteManager : NetworkBehaviour
 
     void Awake()
     {
+        if (OneInsideGameManager.Instance == null)
+        {
+            Debug.LogWarning("OneInsideGameManager.Instance is null");
+            return;
+        }
         networkPlayerData = OneInsideGameManager.Instance.NetcodeManager.NetworkPlayerData;
     }
 

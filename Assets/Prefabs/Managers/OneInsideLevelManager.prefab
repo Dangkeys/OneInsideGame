@@ -82,14 +82,12 @@ MonoBehaviour:
     m_InternalValue: 0
   State:
     m_InternalValue: 0
+  <ImposterAmount>k__BackingField: 1
   PlayerManager: {fileID: 2191784326608909631}
   VoteManager: {fileID: 3454218363725562644}
   RoleManager: {fileID: 6459766613761483988}
-  VivoxManager: {fileID: 5525845421978206272}
-  IsPlayerInitializationRequired:
-    m_InternalValue: 1
-  IsPlayerInitializationRequired:
-    m_InternalValue: 1
+  PlayersContainer: {fileID: 0}
+  DeadBodiesContainer: {fileID: 0}
 --- !u!1 &6187402818156472811
 GameObject:
   m_ObjectHideFlags: 0
@@ -134,8 +132,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 994968856
-  InScenePlacedSourceGlobalObjectIdHash: 0
+  GlobalObjectIdHash: 3327877976
+  InScenePlacedSourceGlobalObjectIdHash: 3220267787
   DeferredDespawnTick: 0
   Ownership: 1
   AlwaysReplicateAsRoot: 0
@@ -191,8 +189,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 994968856
-  InScenePlacedSourceGlobalObjectIdHash: 0
+  GlobalObjectIdHash: 2582866722
+  InScenePlacedSourceGlobalObjectIdHash: 3220267787
   DeferredDespawnTick: 0
   Ownership: 1
   AlwaysReplicateAsRoot: 0
@@ -347,7 +345,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8564632743897696803, guid: 9bac52a300cfbbc45b8e204261249980, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 994968856
+      value: 2644147999
       objectReference: {fileID: 0}
     - target: {fileID: 8564632743897696803, guid: 9bac52a300cfbbc45b8e204261249980, type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
@@ -384,7 +382,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -3148562235969899357, guid: 8af9277b40fcc124687d3068b341f1ff, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 994968856
+      value: 311953129
       objectReference: {fileID: 0}
     - target: {fileID: -3148562235969899357, guid: 8af9277b40fcc124687d3068b341f1ff, type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
@@ -521,14 +519,3 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6740527424323368716, guid: ee84f57d81cde1c43985265bdeb80bbb, type: 3}
   m_PrefabInstance: {fileID: 7121662879835605801}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5525845421978206272 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3349136102368021353, guid: ee84f57d81cde1c43985265bdeb80bbb, type: 3}
-  m_PrefabInstance: {fileID: 7121662879835605801}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33b27af53bff43b4e9b1defe7226ca96, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
