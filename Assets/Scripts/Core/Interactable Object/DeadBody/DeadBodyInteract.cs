@@ -14,6 +14,8 @@ public class DeadBodyInteract : NetworkBehaviour, IInteractable
             ulong interactorID = interactorNetworkObject.OwnerClientId;
 
             Debug.Log($"Player {interactorID} found body of {deadBodyOwnerID}");
+
+            OneInsideLevelManager.Instance.VoteManager.RaiseVoteStartServerRpc();
         }
     }
 
