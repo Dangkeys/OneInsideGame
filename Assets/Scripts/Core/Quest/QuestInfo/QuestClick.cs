@@ -59,7 +59,6 @@ public class QuestClick : QuestInfo, IInteractable
         if(questClickUI.activeInHierarchy)
         {
             CancelQuest();
-            questClickUI.SetActive(false);
         }
     }
     private void HandleWord(string newWord)
@@ -87,5 +86,6 @@ public class QuestClick : QuestInfo, IInteractable
     public override void CancelQuest()
     {
         UpdateDoQuest(false, null);
+        questClickUI.SetActive(false);
     }
 }

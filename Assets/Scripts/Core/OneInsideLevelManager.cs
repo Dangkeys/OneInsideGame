@@ -17,25 +17,30 @@ public class OneInsideLevelManager : NetworkBehaviour
 
     [field: SerializeField] public PlayerManager PlayerManager;
     [field: SerializeField] public VoteManager VoteManager;
-
     [field: SerializeField] public RoleManager RoleManager;
-
     [field: SerializeField] public VivoxManager VivoxManager;
+
+    [field: SerializeField] public GameObject PlayersContainer;
+    [field: SerializeField] public GameObject DeadBodiesContainer;
 
     public NetworkVariable<bool> IsLoadedFromLobbyScene = new NetworkVariable<bool>();
 
     public static OneInsideLevelManager Instance { get; private set; }
+    public static GameObject Players { get; private set; }
+    public static GameObject DeadBodies { get; private set; }
 
     private void Awake()
     {
         Instance = this;
+        Players = PlayersContainer;
+        DeadBodies = DeadBodiesContainer;
     }
 
     public override void OnNetworkSpawn()
     {
         if (IsServer)
         {
-            IsLoadedFromLobbyScene.Value = false; 
+            IsLoadedFromLobbyScene.Value = false;
             NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnSceneLoadComplete;
             State.OnValueChanged += OnGameStateChanged;
         }
