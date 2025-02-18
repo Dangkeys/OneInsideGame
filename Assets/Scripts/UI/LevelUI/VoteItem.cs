@@ -54,14 +54,14 @@ public class VoteItem : MonoBehaviour
         UpdateVisualState(newValue);
     }
 
-    public void Initialise(ulong playerId, bool hasVoted)
+    public void Initialise(string playerName,ulong playerId, bool hasVoted)
     {
         this.playerId = playerId;
         if(playerId == NetworkManager.Singleton.LocalClientId)
         {
             voteButton.gameObject.SetActive(false);
         }
-        playerNameText.text = playerId.ToString();
+        playerNameText.text = playerName;
         voteImage.gameObject.SetActive(hasVoted);
 
         voteButton.onClick.RemoveAllListeners();

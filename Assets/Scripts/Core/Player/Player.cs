@@ -32,6 +32,13 @@ public class Player : NetworkBehaviour
     private Renderer playerRenderer;
     private Material defaultPlayerMaterial;
 
+    private PlayerManager playerManager;
+
+    void Awake()
+    {
+      playerManager = OneInsideLevelManager.Instance.PlayerManager;  
+    }
+
     public override void OnNetworkSpawn()
     {
         hitBoxes = Hitbox.GetComponents<BoxCollider>();
@@ -58,9 +65,9 @@ public class Player : NetworkBehaviour
             playerState.SetRunning(false);
             playerState.SetAlive(true);
 
-            if (!OneInsideLevelManager.Instance)
+            if (!playerManager)
                 return;
-            OneInsideLevelManager.Instance.PlayerManager.OnResetALlPlayerPosition += ResetToSpawnPoint;
+            playerManager.OnResetALlPlayerPosition += ResetToSpawnPoint;
         }
     }
 
@@ -74,9 +81,9 @@ public class Player : NetworkBehaviour
 
         InputReader.AttackEvent -= OnAttackLocal;
 
-        if (!OneInsideLevelManager.Instance)
+        if (!playerManager)
             return;
-        OneInsideLevelManager.Instance.PlayerManager.OnResetALlPlayerPosition -= ResetToSpawnPoint;
+        playerManager.OnResetALlPlayerPosition -= ResetToSpawnPoint;
 
     }
 
@@ -164,7 +171,7 @@ public class Player : NetworkBehaviour
     {
         if (IsOwner)
         {
-            Debug.Log($"Your role changed to: {newValue}");
+            OneInsideGameManager.Instance.ShowMessage($"YOUR ROLE IS {newValue.ToString().ToUpper()}");
         }
     }
 

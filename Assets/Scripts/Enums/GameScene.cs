@@ -1,7 +1,8 @@
 public enum GameScene
 {
+    BootstrapScene,
+    LoadingScene,
+    LobbyScene,
     MainMenuScene,
-    Lobby,
     TajdangScene,
-    GameOver,
 }

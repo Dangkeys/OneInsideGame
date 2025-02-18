@@ -45,6 +45,13 @@ public class PlayerMovement : NetworkBehaviour
 
     private PlayerState playerState;
 
+     private PlayerManager playerManager;
+
+     void Awake()
+     {
+          playerManager = OneInsideLevelManager.Instance.PlayerManager;
+     }
+
     public override void OnNetworkSpawn()
     {
         if (!IsOwner)
@@ -57,9 +64,9 @@ public class PlayerMovement : NetworkBehaviour
         moveSpeed = WalkSpeed;
         InputReader.SprintEvent += Sprint;
         InputReader.JumpEvent += Jump;
-        if (!OneInsideLevelManager.Instance)
+        if(!playerManager)
             return;
-        OneInsideLevelManager.Instance.PlayerManager.OnEnableAllPlayersMovement += EnablePlayerMovement;
+        playerManager.OnEnableAllPlayersMovement += EnablePlayerMovement;
     }
 
     private void Update()
@@ -162,9 +169,9 @@ public class PlayerMovement : NetworkBehaviour
             return;
         InputReader.SprintEvent -= Sprint;
         InputReader.JumpEvent -= Jump;
-        if (!OneInsideLevelManager.Instance)
+        if(!playerManager)
             return;
-        OneInsideLevelManager.Instance.PlayerManager.OnEnableAllPlayersMovement -= EnablePlayerMovement;
+        playerManager.OnEnableAllPlayersMovement -= EnablePlayerMovement;
     }
     public void EnablePlayerMovement(bool shouldMove)
     {
