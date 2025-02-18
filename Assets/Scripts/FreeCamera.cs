@@ -29,4 +29,9 @@ public class FreeCamera : MonoBehaviour
 
         transform.localRotation = Quaternion.Euler(rotationX, rotationY, 0f);
     }
+
+    public void DisableMove()
+    {
+        moveInputAction.action.Disable();
+    }
 }
