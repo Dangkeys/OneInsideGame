@@ -14,6 +14,7 @@ public class SabotageDevice : NetworkBehaviour
     {
         if (SabotageAction.action.WasPressedThisFrame())
         {
+            Debug.Log("Sabotage button pressed");
             if (gameObject.GetComponent<Player>().Role.Value == PlayerRole.Imposter)
             {
                 if (!isSabotaging)
