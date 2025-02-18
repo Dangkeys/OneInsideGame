@@ -28,10 +28,7 @@ public class NetworkServer : IDisposable
 
         clientIdToAuth[request.ClientNetworkId] = userData.UserAuthId;
         authIdToUserData[userData.UserAuthId] = userData;
-
-
         response.Approved = true;
-        // response.CreatePlayerObject = true;
     }
     private void OnNetworkReady()
     {

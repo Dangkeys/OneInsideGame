@@ -3,145 +3,139 @@ using UnityEngine;
 
 public class PlayerAnimation : NetworkBehaviour
 {
-     [Header("References")]
-     [field: SerializeField] public GameObject PlayerVisual { get; private set; }
-     [field: SerializeField] public Player PlayerScript { get; private set; }
+    [Header("References")]
+    [field: SerializeField] public GameObject PlayerVisual { get; private set; }
+    [field: SerializeField] public Player PlayerScript { get; private set; }
+    [field: SerializeField] public GameObject DeadbodyPrefab { get; private set; }
 
-     //--------------------------------------
-     // Private Variables
-     //--------------------------------------
-     private Animator playerAnimator;
-     private Rigidbody[] ragdollRigidbodies;
-     private Collider[] ragdollColliders;
-     private CharacterController characterController;
-     private PlayerState playerState;
+    //--------------------------------------
+    // Private Variables
+    //--------------------------------------
+    private Animator playerAnimator;
+    private PlayerState playerState;
+    private GameObject currentDeadbody;
 
-     //--------------------------------------
-     // Network & Lifecycle Methods
-     //--------------------------------------
-     public override void OnNetworkSpawn()
-     {
-          playerAnimator = GetComponent<Animator>();
+    //--------------------------------------
+    // Network & Lifecycle Methods
+    //--------------------------------------
+    public override void OnNetworkSpawn()
+    {
+        playerAnimator = GetComponent<Animator>();
 
-          characterController = GetComponent<CharacterController>();
+        playerState = GetComponent<PlayerState>();
+        playerState.Attacking.OnValueChanged += OnAttackingChanged;
+        playerState.Stunning.OnValueChanged += OnStunningChanged;
+        playerState.Walking.OnValueChanged += OnWalkingChanged;
+        playerState.Running.OnValueChanged += OnRunningChanged;
+        PlayerScript.IsAlive.OnValueChanged += OnAliveChanged;
 
-          ragdollColliders = PlayerVisual.GetComponentsInChildren<Collider>();
-          ragdollRigidbodies = PlayerVisual.GetComponentsInChildren<Rigidbody>();
+        DisableRagdoll();
+    }
 
-          playerState = GetComponent<PlayerState>();
-          playerState.Attacking.OnValueChanged += OnAttackingChanged;
-          playerState.Stunning.OnValueChanged += OnStunningChanged;
-          playerState.Walking.OnValueChanged += OnWalkingChanged;
-          playerState.Running.OnValueChanged += OnRunningChanged;
-          playerState.Ragdoll.OnValueChanged += OnRagdollChanged;
+    public override void OnNetworkDespawn()
+    {
+        playerState.Attacking.OnValueChanged -= OnAttackingChanged;
+        playerState.Stunning.OnValueChanged -= OnStunningChanged;
+        playerState.Walking.OnValueChanged -= OnWalkingChanged;
+        playerState.Running.OnValueChanged -= OnRunningChanged;
+        PlayerScript.IsAlive.OnValueChanged -= OnAliveChanged;
+    }
 
-          DisableRagdoll();
-     }
+    //--------------------------------------
+    // State Change Handlers
+    //--------------------------------------
+    private void OnAttackingChanged(bool previousValue, bool newValue)
+    {
+        if (newValue)
+        {
+            playerAnimator.SetTrigger("Attack");
+        }
+    }
 
-     public override void OnNetworkDespawn()
-     {
-          playerState.Attacking.OnValueChanged -= OnAttackingChanged;
-          playerState.Stunning.OnValueChanged -= OnStunningChanged;
-          playerState.Walking.OnValueChanged -= OnWalkingChanged;
-          playerState.Running.OnValueChanged -= OnRunningChanged;
-          playerState.Ragdoll.OnValueChanged -= OnRagdollChanged;
-     }
+    private void OnStunningChanged(bool previousValue, bool newValue)
+    {
+        if (newValue)
+        {
+            playerAnimator.SetTrigger("Stun");
+        }
+    }
 
-     //--------------------------------------
-     // State Change Handlers
-     //--------------------------------------
-     private void OnAttackingChanged(bool previousValue, bool newValue)
-     {
-          if (newValue)
-          {
-               playerAnimator.SetTrigger("Attack");
-          }
-     }
+    private void OnWalkingChanged(bool previousValue, bool newValue)
+    {
+        playerAnimator.SetBool("Walking", newValue);
+    }
 
-     private void OnStunningChanged(bool previousValue, bool newValue)
-     {
-          if (newValue)
-          {
-               playerAnimator.SetTrigger("Stun");
-          }
-     }
+    private void OnRunningChanged(bool previousValue, bool newValue)
+    {
+        playerAnimator.SetBool("Running", newValue);
+    }
 
-     private void OnWalkingChanged(bool previousValue, bool newValue)
-     {
-          playerAnimator.SetBool("Walking", newValue);
-     }
+    private void OnAliveChanged(bool previousValue, bool newValue)
+    {
+        if (newValue)
+        {
+            DisableRagdoll();
+        }
+        else
+        {
+            EnableRagdoll();
+        }
+    }
 
-     private void OnRunningChanged(bool previousValue, bool newValue)
-     {
-          playerAnimator.SetBool("Running", newValue);
-     }
+    //--------------------------------------
+    // Ragdoll Methods
+    //--------------------------------------
 
-     private void OnRagdollChanged(bool previousValue, bool newValue)
-     {
-          if (newValue)
-          {
-               EnableRagdoll();
-          }
-          else
-          {
-               DisableRagdoll();
-          }
-     }
+    private void EnableRagdoll()
+    {
+        if (!IsLocalPlayer)
+        {
+            if (!PlayerManager.GetLocalPlayerScript().IsAlive.Value)
+            {
+                gameObject.SetActive(false);
+            }
+        }
 
-     //--------------------------------------
-     // Ragdoll Methods
-     //--------------------------------------
-     private void EnableRagdoll()
-     {
-          playerAnimator.enabled = false;
-          characterController.enabled = false;
+        if (!IsServer)
+            return;
 
-          foreach (var rb in ragdollRigidbodies)
-          {
-               rb.isKinematic = false;
-               rb.useGravity = true;
-          }
+        DisableRagdoll();
 
-          foreach (var col in ragdollColliders)
-          {
-               col.enabled = true;
-          }
-     }
+        currentDeadbody = Instantiate(DeadbodyPrefab, transform.position, transform.rotation);
+        NetworkObject deadbodyNetworkObject = currentDeadbody.GetComponent<NetworkObject>();
+        deadbodyNetworkObject.Spawn();
 
-     private void DisableRagdoll()
-     {
-          playerAnimator.enabled = true;
-          characterController.enabled = true;
+        if (OneInsideLevelManager.Instance)
+        {
+            deadbodyNetworkObject.TrySetParent(OneInsideLevelManager.DeadBodies, true);
+        }
 
-          foreach (var rb in ragdollRigidbodies)
-          {
-               rb.isKinematic = true;
-               rb.useGravity = false;
-          }
+    }
 
-          foreach (var col in ragdollColliders)
-          {
-               col.enabled = false;
-          }
-     }
+    private void DisableRagdoll()
+    {
+        if (!IsServer)
+            return;
 
-     [ServerRpc(RequireOwnership = false)]
-     public void Set_Dead_ServerRpc(bool value = true)
-     {
-          playerState.SetDeadServerRpc(value);
-     }
+        if (currentDeadbody)
+        {
+            currentDeadbody.GetComponent<NetworkObject>().Despawn();
+        }
+        currentDeadbody = null;
+    }
 
-     //--------------------------------------
-     // Network Methods
-     //--------------------------------------
-     [ClientRpc]
-     public void TriggerStunAnimationClientRpc()
-     {
-          TriggerStunAnimation();
-     }
+    //--------------------------------------
+    // Network Methods
+    //--------------------------------------
 
-     public void TriggerStunAnimation()
-     {
-          playerAnimator.SetTrigger("Stun");
-     }
+    [ClientRpc]
+    public void TriggerStunAnimationClientRpc()
+    {
+        TriggerStunAnimation();
+    }
+
+    public void TriggerStunAnimation()
+    {
+        playerAnimator.SetTrigger("Stun");
+    }
 }

@@ -74,6 +74,7 @@ public class NetworkManagerUI : MonoBehaviour
 
     private void OnDestroy()
     {
+        SceneManager.sceneLoaded -= OnSceneLoadComplete;
         if (NetworkManager.Singleton != null)
         {
             NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;

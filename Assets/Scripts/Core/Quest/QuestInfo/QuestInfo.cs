@@ -1,11 +1,10 @@
 using Unity.Netcode;
-using UnityEngine;
 
 public abstract class QuestInfo : NetworkBehaviour
 {
     protected bool currentStatus = false;
     public event System.Action<bool> questInfoStatus;
-    public event System.Action<bool> onDoQuest;
+    private PlayerMovement playerMovement;
 
     protected void BreakQuest()
     {
@@ -47,10 +46,16 @@ public abstract class QuestInfo : NetworkBehaviour
         currentStatus = status;
     }
 
-    protected void UpdateDoQuest(bool doQuest)
+    protected void UpdateDoQuest(bool doQuest, InteractionData interactionData)
     {
-        onDoQuest?.Invoke(doQuest);
-        Debug.Log(NetworkManager.Singleton.LocalClientId);
+        if (!playerMovement && interactionData != null)
+        {
+            playerMovement = interactionData.Interactor.gameObject.GetComponent<PlayerMovement>();
+        }
+        if (playerMovement)
+        {
+            playerMovement.EnablePlayerMovement(!doQuest);
+        }
     }
 
     public abstract void CancelQuest();

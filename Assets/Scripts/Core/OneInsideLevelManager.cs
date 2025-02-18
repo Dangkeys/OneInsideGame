@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -16,29 +17,32 @@ public class OneInsideLevelManager : NetworkBehaviour
 
     [field: SerializeField] public PlayerManager PlayerManager;
     [field: SerializeField] public VoteManager VoteManager;
-
     [field: SerializeField] public RoleManager RoleManager;
+    [field: SerializeField] public VivoxManager VivoxManager;
 
-    public NetworkVariable<bool> IsPlayerInitializationRequired = new NetworkVariable<bool>(true);
+    [field: SerializeField] public GameObject PlayersContainer;
+    [field: SerializeField] public GameObject DeadBodiesContainer;
+
+    public NetworkVariable<bool> IsLoadedFromLobbyScene = new NetworkVariable<bool>();
 
     public static OneInsideLevelManager Instance { get; private set; }
+    public static GameObject Players { get; private set; }
+    public static GameObject DeadBodies { get; private set; }
 
     private void Awake()
     {
         Instance = this;
+        Players = PlayersContainer;
+        DeadBodies = DeadBodiesContainer;
     }
 
-    public async override void OnNetworkSpawn()
+    public override void OnNetworkSpawn()
     {
         if (IsServer)
         {
+            IsLoadedFromLobbyScene.Value = false;
             NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnSceneLoadComplete;
             State.OnValueChanged += OnGameStateChanged;
-        }
-
-        if(UnityServices.State == ServicesInitializationState.Uninitialized)
-        {
-            await ClientSingleton.Instance.CreateClient();
         }
 
     }
@@ -100,7 +104,7 @@ public class OneInsideLevelManager : NetworkBehaviour
     {
         if (sceneName != GameScene.TajdangScene.ToString())
             return;
-        IsPlayerInitializationRequired.Value = false;
+        IsLoadedFromLobbyScene.Value = true;
         State.Value = GameState.GamePlaying;
     }
 }

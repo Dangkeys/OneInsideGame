@@ -9,9 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a9c665d0940e03408d997a196b60128, type: 3}
-  m_Name: Press F
+  m_Script: {fileID: 11500000, guid: b58a3bc647e70774b8c7225eb3b51e7e, type: 3}
+  m_Name: UnityPlayerAccountSettings
   m_EditorClassIdentifier: 
-  questName: PressF
-  questDescription: Press F to win
-  questObjectName: PressF
+  clientId: 
+  scopeMask: 7
+  useCustomDeepLinkUri: 0
+  customScheme: 
+  customHost: 

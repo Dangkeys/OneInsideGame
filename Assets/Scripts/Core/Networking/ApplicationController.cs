@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Services.Authentication;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ApplicationController : MonoBehaviour
 {
@@ -32,7 +33,7 @@ public class ApplicationController : MonoBehaviour
             
             if (authenticated)
             {
-                clientSingleton.GameManager.GoToMenu();
+                SceneManager.LoadScene(GameScene.MainMenuScene.ToString());
             }
 
         }

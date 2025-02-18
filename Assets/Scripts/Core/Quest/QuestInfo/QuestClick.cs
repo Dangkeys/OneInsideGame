@@ -35,7 +35,6 @@ public class QuestClick : QuestInfo, IInteractable
     private void Finished(bool finished)
     {
         FinishQuest();
-        CancelQuest();
         HandleFinishedServerRpc(finished);
     }
 
@@ -57,7 +56,10 @@ public class QuestClick : QuestInfo, IInteractable
 
     private void HandleFinished(bool finished)
     {
-        questClickUI.SetActive(false);
+        if(questClickUI.activeInHierarchy)
+        {
+            CancelQuest();
+        }
     }
     private void HandleWord(string newWord)
     {
@@ -76,13 +78,14 @@ public class QuestClick : QuestInfo, IInteractable
     {
         if(!currentStatus)
         {
-            UpdateDoQuest(true);
+            UpdateDoQuest(true, interactionData);
             questClickUI.SetActive(true);
         }
     }
 
     public override void CancelQuest()
     {
-        UpdateDoQuest(false);
+        UpdateDoQuest(false, null);
+        questClickUI.SetActive(false);
     }
 }

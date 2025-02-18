@@ -12,6 +12,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Text;
 using Unity.Services.Authentication;
+using Unity.Services.Vivox;
+using Unity.Services.Lobbies.Models;
+using Unity.Services.Lobbies;
 
 public class ClientGameManager : IDisposable
 {
@@ -25,6 +28,10 @@ public class ClientGameManager : IDisposable
 
         AuthState authState = await AuthenticationWrapper.DoAuth();
 
+        await VivoxService.Instance.InitializeAsync();
+        Debug.Log("Vivox logging in...");
+        await VivoxService.Instance.LoginAsync();
+        Debug.Log("Vivox logged in!");
         if (authState == AuthState.Authenticated)
         {
             return true;
@@ -32,11 +39,11 @@ public class ClientGameManager : IDisposable
 
         return false;
     }
-
-    public void GoToMenu()
+    public async Task<Lobby> GetLobbyByJoinCode(string joinCode)
     {
-        SceneManager.LoadScene(GameScene.MainMenuScene.ToString());
+        return await LobbyService.Instance.JoinLobbyByCodeAsync(joinCode);
     }
+
     public async Task StartClientAsync(string relayJoinCode)
     {
         try
@@ -54,15 +61,8 @@ public class ClientGameManager : IDisposable
         RelayServerData relayServerData = AllocationUtils.ToRelayServerData(allocation, "dtls");
         transport.SetRelayServerData(relayServerData);
 
-        UserData userData = new UserData
-        {
-            UserName = "Tajdang",
-            UserAuthId = AuthenticationService.Instance.PlayerId
-        };
-        string payload = JsonUtility.ToJson(userData);
-        byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);
 
-        NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
+        TransmitUserData();
 
 
         NetworkManager.Singleton.StartClient();
@@ -75,6 +75,18 @@ public class ClientGameManager : IDisposable
     public void Disconnect()
     {
         networkClient.Disconnect();
+    }
+
+    public void TransmitUserData()
+    {
+        UserData userData = new UserData
+        {
+            UserAuthId = AuthenticationService.Instance.PlayerId
+        };
+        string payload = JsonUtility.ToJson(userData);
+        byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);
+
+        NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
     }
 
 
