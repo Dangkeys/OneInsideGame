@@ -14,14 +14,8 @@ public class VivoxManager : Singleton<VivoxManager>
     [SerializeField] private Toggle muteInputToggle;
     [SerializeField] private Toggle muteOutputToggle;
 
-    private async void Start()
+    private void Start()
     {
-        Debug.Log("Vivox Starting...");
-        if (UnityServices.State == ServicesInitializationState.Uninitialized)
-        {
-            await ClientSingleton.Instance.CreateClient();
-        }
-        Debug.Log("Vivox Initialized");
         if(muteInputToggle == null || muteOutputToggle == null)
         {
             Debug.Log("Mute input or output toggle is not assigned");
