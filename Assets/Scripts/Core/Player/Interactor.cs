@@ -47,7 +47,10 @@ public class Interactor : NetworkBehaviour
         {
             if (collider.TryGetComponent(out IInteractable interactable))
             {
-                interactables.Add(interactable);
+                if (interactable.CanInteract(new InteractionData(this)))
+                {
+                    interactables.Add(interactable);
+                }
             }
         }
         return interactables;

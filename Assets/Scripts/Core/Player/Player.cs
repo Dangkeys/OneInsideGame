@@ -1,4 +1,5 @@
 using System;
+using OneInside.Constants;
 using Unity.Cinemachine;
 using Unity.Collections;
 using Unity.Netcode;
@@ -14,6 +15,10 @@ public class Player : NetworkBehaviour
     [field: SerializeField] public CharacterController CharacterController { get; private set; }
     [field: SerializeField] public PlayerMovement PlayerMovement { get; private set; }
 
+    [Header("Spectator")]
+    [field: SerializeField] public Material SpectatorMaterial { get; private set; }
+    [field: SerializeField] public GameObject CurrentPlayerVisual { get; private set; }
+
     public NetworkVariable<bool> IsAlive = new NetworkVariable<bool>(true);
 
     public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>(PlayerRole.None);
@@ -24,13 +29,26 @@ public class Player : NetworkBehaviour
 
     private BoxCollider[] hitBoxes;
     private PlayerState playerState;
+    private Renderer playerRenderer;
+    private Material defaultPlayerMaterial;
+
+    private PlayerManager playerManager;
+
+    void Awake()
+    {
+      playerManager = OneInsideLevelManager.Instance.PlayerManager;  
+    }
 
     public override void OnNetworkSpawn()
     {
-
         hitBoxes = Hitbox.GetComponents<BoxCollider>();
-
         playerState = GetComponent<PlayerState>();
+
+        playerRenderer = CurrentPlayerVisual.GetComponent<Renderer>();
+        defaultPlayerMaterial = playerRenderer.material;
+
+        Role.OnValueChanged += OnRoleChanged;
+        IsAlive.OnValueChanged += OnAliveChanged;
 
         if (!IsOwner)
         {
@@ -39,32 +57,33 @@ public class Player : NetworkBehaviour
         }
         else
         {
-            InputReader.AttackEvent += On_Attack_Local;
+            InputReader.AttackEvent += OnAttackLocal;
 
             playerState.SetAttacking(false);
             playerState.SetStunning(false);
             playerState.SetWalking(false);
             playerState.SetRunning(false);
-            playerState.SetDead(false);
-            if (!OneInsideLevelManager.Instance)
+            playerState.SetAlive(true);
+
+            if (!playerManager)
                 return;
-            OneInsideLevelManager.Instance.PlayerManager.OnResetALlPlayerPosition += ResetToSpawnPoint;
+            playerManager.OnResetALlPlayerPosition += ResetToSpawnPoint;
         }
-        Role.OnValueChanged += OnRoleChanged;
     }
 
     public override void OnNetworkDespawn()
     {
         Role.OnValueChanged -= OnRoleChanged;
+        IsAlive.OnValueChanged -= OnAliveChanged;
 
         if (!IsOwner)
             return;
 
-        InputReader.AttackEvent -= On_Attack_Local;
+        InputReader.AttackEvent -= OnAttackLocal;
 
-        if (!OneInsideLevelManager.Instance)
+        if (!playerManager)
             return;
-        OneInsideLevelManager.Instance.PlayerManager.OnResetALlPlayerPosition -= ResetToSpawnPoint;
+        playerManager.OnResetALlPlayerPosition -= ResetToSpawnPoint;
 
     }
 
@@ -79,7 +98,7 @@ public class Player : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            playerState.SetDeadServerRpc(false);
+            playerState.SetAliveServerRpc(true);
             playerState.SetHealthServerRpc(playerState.MaxHealth.Value);
         }
     }
@@ -87,29 +106,29 @@ public class Player : NetworkBehaviour
     // Attack Methods
     //--------------------------------------
 
-    public async void On_Attack_Local()
+    public async void OnAttackLocal()
     {
-        if (!playerState.Is_Can_Move())
+        if (!playerState.IsCanMove())
             return;
 
         playerState.SetAttacking(true);
 
         // get closest character
-        var All_Hit_Characters = Az_Hitbox.Get_Touching_Objects(new Az_Hitbox.HitboxParams
+        var AllHitCharacters = AzHitbox.GetTouchingObjects(new AzHitbox.HitboxParams
         {
             Hitboxs = hitBoxes,
-            Type = Az_Hitbox.Collider_Type.CharacterController,
+            Type = AzHitbox.ColliderType.CharacterController,
             Exclude = new Collider[] { CharacterController }
         });
 
-        GameObject Closest_Character = Az_Normal.Get_Closet_Target(transform.position, All_Hit_Characters);
+        GameObject closestCharacter = AzNormal.GetClosetTarget(transform.position, AllHitCharacters);
 
-        if (Closest_Character != null)
+        if (closestCharacter != null)
         {
-            Player targetPlayerScript = Closest_Character.GetComponent<Player>();
-            if (targetPlayerScript)
+            Player targetPlayerScript = closestCharacter.GetComponent<Player>();
+            if (targetPlayerScript && targetPlayerScript.IsAlive.Value && PlayerManager.GetLocalPlayerScript().IsAlive.Value)
             {
-                targetPlayerScript.Take_Damage_ServerRpc();
+                targetPlayerScript.TakeDamageServerRpc();
             }
         }
 
@@ -118,25 +137,19 @@ public class Player : NetworkBehaviour
         playerState.SetAttacking(false);
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void Attack_ServerRpc(bool value = true)
-    {
-        // Attacking.Value = value;
-    }
-
     //--------------------------------------
     // Damage & Health Methods
     //--------------------------------------
 
     [ServerRpc(RequireOwnership = false)]
-    private void Take_Damage_ServerRpc(int damage = 1)
+    private void TakeDamageServerRpc(int damage = 1)
     {
-        Take_Damage(damage);
+        TakeDamage(damage);
     }
 
-    private async void Take_Damage(int damage = 1)
+    private async void TakeDamage(int damage = 1)
     {
-        if (playerState.Stunning.Value)
+        if (playerState.Stunning.Value || !IsAlive.Value)
             return;
 
         playerState.SetStunning(true);
@@ -158,7 +171,7 @@ public class Player : NetworkBehaviour
     {
         if (IsOwner)
         {
-            Debug.Log($"Your role changed to: {newValue}");
+            OneInsideGameManager.Instance.ShowMessage($"YOUR ROLE IS {newValue.ToString().ToUpper()}");
         }
     }
 
@@ -172,5 +185,56 @@ public class Player : NetworkBehaviour
         CharacterController.enabled = false;
         transform.position = SpawnPoint.GetClientSpawnPos(NetworkManager.Singleton.LocalClientId);
         CharacterController.enabled = true;
+    }
+
+    //--------------------------------------
+    // Spectator
+    //--------------------------------------
+
+    private void OnAliveChanged(bool oldValue, bool newValue)
+    {
+        if (newValue)
+        {
+            DisableSpectator();
+        }
+        else
+        {
+            EnableSpectator();
+        }
+    }
+
+    private void EnableSpectator()
+    {
+        gameObject.layer = LayerMask.NameToLayer(OneInsideLayers.SPECTATOR);
+        playerRenderer.material = SpectatorMaterial;
+
+        if (IsOwner)
+        {
+            foreach (Player player in PlayerManager.GetSpectatorPlayers(false))
+            {
+                player.gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            gameObject.SetActive(!PlayerManager.GetLocalPlayerScript().IsAlive.Value);
+        }
+    }
+
+
+    private void DisableSpectator()
+    {
+        gameObject.layer = LayerMask.NameToLayer(OneInsideLayers.PLAYER);
+        playerRenderer.material = defaultPlayerMaterial;
+
+        gameObject.SetActive(true);
+
+        if (IsOwner)
+        {
+            foreach (Player player in PlayerManager.GetSpectatorPlayers(false))
+            {
+                player.gameObject.SetActive(false);
+            }
+        }
     }
 }

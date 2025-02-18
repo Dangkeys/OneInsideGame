@@ -19,7 +19,6 @@ public class QuestDrag : QuestInfo, IInteractable
     private void Finished(bool finished)
     {
         FinishQuest();
-        CancelQuest();
         HandleFinishedServerRpc(finished);
     }
 
@@ -41,7 +40,10 @@ public class QuestDrag : QuestInfo, IInteractable
 
     private void HandleFinished(bool finished)
     {
-        questDragUI.SetActive(false);
+        if (questDragUI.activeInHierarchy)
+        {
+            CancelQuest();
+        }
     }
 
     public void Interact(InteractionData interactionData)
@@ -56,5 +58,6 @@ public class QuestDrag : QuestInfo, IInteractable
     public override void CancelQuest()
     {
         UpdateDoQuest(false, null);
+        questDragUI.SetActive(false);
     }
 }

@@ -19,7 +19,6 @@ public class QuestDodge : QuestInfo, IInteractable
     private void Finished(bool finished)
     {
         FinishQuest();
-        CancelQuest();
         HandleFinishedServerRpc(finished);
     }
 
@@ -42,7 +41,10 @@ public class QuestDodge : QuestInfo, IInteractable
 
     private void HandleFinished(bool finished)
     {
-        questDodgeUI.SetActive(false);
+        if (questDodgeUI.activeInHierarchy)
+        {
+            CancelQuest();
+        }
     }
 
     public void Interact(InteractionData interactionData)
@@ -57,5 +59,6 @@ public class QuestDodge : QuestInfo, IInteractable
     public override void CancelQuest()
     {
         UpdateDoQuest(false, null);
+        questDodgeUI.SetActive(false);
     }
 }

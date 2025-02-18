@@ -1,8 +1,9 @@
 using System;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 
-public class GamePlayingTimerUI : MonoBehaviour
+public class GamePlayingTimerUI : NetworkBehaviour
 {
     [SerializeField] private TextMeshProUGUI timerText;
 
@@ -21,5 +22,10 @@ public class GamePlayingTimerUI : MonoBehaviour
     {
         gameObject.SetActive(true);
         timerText.text = TimeSpan.FromSeconds(newValue).ToString(@"mm\:ss");
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        gameObject.SetActive(false);
     }
 }

@@ -6,15 +6,14 @@ public class PlayerAnimation : NetworkBehaviour
     [Header("References")]
     [field: SerializeField] public GameObject PlayerVisual { get; private set; }
     [field: SerializeField] public Player PlayerScript { get; private set; }
+    [field: SerializeField] public GameObject DeadbodyPrefab { get; private set; }
 
     //--------------------------------------
     // Private Variables
     //--------------------------------------
     private Animator playerAnimator;
-    private Rigidbody[] ragdollRigidbodies;
-    private Collider[] ragdollColliders;
-    private CharacterController characterController;
     private PlayerState playerState;
+    private GameObject currentDeadbody;
 
     //--------------------------------------
     // Network & Lifecycle Methods
@@ -23,17 +22,12 @@ public class PlayerAnimation : NetworkBehaviour
     {
         playerAnimator = GetComponent<Animator>();
 
-        characterController = GetComponent<CharacterController>();
-
-        ragdollColliders = PlayerVisual.GetComponentsInChildren<Collider>();
-        ragdollRigidbodies = PlayerVisual.GetComponentsInChildren<Rigidbody>();
-
         playerState = GetComponent<PlayerState>();
         playerState.Attacking.OnValueChanged += OnAttackingChanged;
         playerState.Stunning.OnValueChanged += OnStunningChanged;
         playerState.Walking.OnValueChanged += OnWalkingChanged;
         playerState.Running.OnValueChanged += OnRunningChanged;
-        playerState.Ragdoll.OnValueChanged += OnRagdollChanged;
+        PlayerScript.IsAlive.OnValueChanged += OnAliveChanged;
 
         DisableRagdoll();
     }
@@ -44,7 +38,7 @@ public class PlayerAnimation : NetworkBehaviour
         playerState.Stunning.OnValueChanged -= OnStunningChanged;
         playerState.Walking.OnValueChanged -= OnWalkingChanged;
         playerState.Running.OnValueChanged -= OnRunningChanged;
-        playerState.Ragdoll.OnValueChanged -= OnRagdollChanged;
+        PlayerScript.IsAlive.OnValueChanged -= OnAliveChanged;
     }
 
     //--------------------------------------
@@ -76,64 +70,64 @@ public class PlayerAnimation : NetworkBehaviour
         playerAnimator.SetBool("Running", newValue);
     }
 
-    private void OnRagdollChanged(bool previousValue, bool newValue)
+    private void OnAliveChanged(bool previousValue, bool newValue)
     {
         if (newValue)
         {
-            EnableRagdoll();
+            DisableRagdoll();
         }
         else
         {
-            DisableRagdoll();
+            EnableRagdoll();
         }
     }
 
     //--------------------------------------
     // Ragdoll Methods
     //--------------------------------------
+
     private void EnableRagdoll()
     {
-        playerAnimator.enabled = false;
-        characterController.enabled = false;
-
-        foreach (var rb in ragdollRigidbodies)
+        if (!IsLocalPlayer)
         {
-            rb.isKinematic = false;
-            rb.useGravity = true;
+            if (!PlayerManager.GetLocalPlayerScript().IsAlive.Value)
+            {
+                gameObject.SetActive(false);
+            }
         }
 
-        foreach (var col in ragdollColliders)
+        if (!IsServer)
+            return;
+
+        DisableRagdoll();
+
+        currentDeadbody = Instantiate(DeadbodyPrefab, transform.position, transform.rotation);
+        NetworkObject deadbodyNetworkObject = currentDeadbody.GetComponent<NetworkObject>();
+        deadbodyNetworkObject.Spawn();
+
+        if (OneInsideLevelManager.Instance)
         {
-            col.enabled = true;
+            deadbodyNetworkObject.TrySetParent(OneInsideLevelManager.DeadBodies, true);
         }
+
     }
 
     private void DisableRagdoll()
     {
-        playerAnimator.enabled = true;
-        characterController.enabled = true;
+        if (!IsServer)
+            return;
 
-        foreach (var rb in ragdollRigidbodies)
+        if (currentDeadbody)
         {
-            rb.isKinematic = true;
-            rb.useGravity = false;
+            currentDeadbody.GetComponent<NetworkObject>().Despawn();
         }
-
-        foreach (var col in ragdollColliders)
-        {
-            col.enabled = false;
-        }
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void Set_Dead_ServerRpc(bool value = true)
-    {
-        playerState.SetDeadServerRpc(value);
+        currentDeadbody = null;
     }
 
     //--------------------------------------
     // Network Methods
     //--------------------------------------
+
     [ClientRpc]
     public void TriggerStunAnimationClientRpc()
     {

@@ -19,7 +19,6 @@ public class QuestCleaningTree : QuestInfo, IInteractable
     private void Finished(bool finished)
     {
         FinishQuest();
-        CancelQuest();
         HandleFinishedServerRpc(finished);
     }
 
@@ -41,7 +40,10 @@ public class QuestCleaningTree : QuestInfo, IInteractable
 
     private void HandleFinished(bool finished)
     {
-        questCleaningUI.SetActive(false);
+        if(questCleaningUI.activeInHierarchy)
+        {
+            CancelQuest();
+        }
     }
 
     public void Interact(InteractionData interactionData)
@@ -56,5 +58,6 @@ public class QuestCleaningTree : QuestInfo, IInteractable
     public override void CancelQuest()
     {
         UpdateDoQuest(false, null);
+        questCleaningUI.SetActive(false);
     }
 }
