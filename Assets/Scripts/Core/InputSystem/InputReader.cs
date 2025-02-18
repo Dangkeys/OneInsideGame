@@ -14,6 +14,9 @@ public class InputReader : MonoBehaviour, IPlayerActions
 
     public Action<bool> JumpEvent;
 
+    public Action OpenSabotageUIEvent;
+
+
 
     private void Start()
     {
@@ -120,6 +123,8 @@ public class InputReader : MonoBehaviour, IPlayerActions
 
     public void OnOpenSabotageWindow(InputAction.CallbackContext context)
     {
-        //OPTIONAL
+        if(context.started){
+            OpenSabotageUIEvent?.Invoke();
+        }
     }
 }

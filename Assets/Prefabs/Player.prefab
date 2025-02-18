@@ -54,7 +54,7 @@ GameObject:
   - component: {fileID: 2130162687114717125}
   - component: {fileID: 2729509851161141685}
   - component: {fileID: 4306191308514871289}
-  - component: {fileID: 12612083427418111}
+  - component: {fileID: 3413147936205317404}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -94,7 +94,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3463517192
+  GlobalObjectIdHash: 10364231
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -454,7 +454,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
---- !u!114 &12612083427418111
+--- !u!114 &3413147936205317404
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -469,6 +469,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   SabotageAction: {fileID: -3243957626730004280, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   SabotageUI: {fileID: 1724005076792048241}
+  <InputReader>k__BackingField: {fileID: 3937043524520739152}
 --- !u!1 &3435790326839173604
 GameObject:
   m_ObjectHideFlags: 0

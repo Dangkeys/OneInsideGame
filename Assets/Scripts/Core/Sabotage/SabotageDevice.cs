@@ -9,12 +9,18 @@ public class SabotageDevice : NetworkBehaviour
     public InputActionReference SabotageAction;
     private bool isSabotaging;
     public GameObject SabotageUI;
+    [field: SerializeField, Tooltip("Reference to the input system")]
+    public InputReader InputReader { get; private set; }
 
-    void Update()
+    public override void OnNetworkSpawn()
     {
-        if (SabotageAction.action.WasPressedThisFrame())
-        {
-            Debug.Log("Sabotage button pressed");
+        if (!IsOwner)
+            return;
+        InputReader.OpenSabotageUIEvent += OpenSabotageUI;
+    }
+
+    private void OpenSabotageUI(){
+        Debug.Log("Sabotage button pressed");
             if (gameObject.GetComponent<Player>().Role.Value == PlayerRole.Imposter)
             {
                 if (!isSabotaging)
@@ -28,7 +34,13 @@ public class SabotageDevice : NetworkBehaviour
                     SabotageUI.SetActive(false);
                 }
             }
-        }
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if (!IsOwner)
+            return;
+        InputReader.OpenSabotageUIEvent -= OpenSabotageUI;
     }
 
 }
