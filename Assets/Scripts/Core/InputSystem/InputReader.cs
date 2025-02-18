@@ -117,4 +117,9 @@ public class InputReader : MonoBehaviour, IPlayerActions
     {
         //OPTIONAL
     }
+
+    public void OnOpenSabotageWindow(InputAction.CallbackContext context)
+    {
+        //OPTIONAL
+    }
 }

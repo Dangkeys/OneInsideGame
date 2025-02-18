@@ -1,16 +1,20 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
+using Unity.Netcode;
 
-public class SabotageDevice : MonoBehaviour, IInteractable
+public class SabotageDevice : NetworkBehaviour
 {
+    public InputActionReference SabotageAction;
     private bool isSabotaging;
     public GameObject SabotageUI;
-    public void Interact(InteractionData interactionData)
+
+    void Update()
     {
-        if (interactionData.Interactor.TryGetComponent<Player>(out Player player))
+        if (SabotageAction.action.WasPressedThisFrame())
         {
-            if (player.Role.Value == PlayerRole.Imposter)
+            if (gameObject.GetComponent<Player>().Role.Value == PlayerRole.Imposter)
             {
                 if (!isSabotaging)
                 {
@@ -26,7 +30,4 @@ public class SabotageDevice : MonoBehaviour, IInteractable
         }
     }
 
-    private void ActivateSabotageUI(){
-        
-    }
 }
