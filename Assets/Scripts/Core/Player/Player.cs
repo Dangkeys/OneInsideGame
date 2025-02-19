@@ -104,14 +104,14 @@ public class Player : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            CharacterManager.ChangeCharacterServerRpc(CharacterManager.CharactersCollectionStatic.Characters[0].name);
+            OneInsideGameManager.Instance.CharacterManager.ChangeCharacterServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[0].name);
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            CharacterManager.ChangeCharacterServerRpc(CharacterManager.CharactersCollectionStatic.Characters[1].name);
+            OneInsideGameManager.Instance.CharacterManager.ChangeCharacterServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[1].name);
         }
     }
-    //------------------------------
+    //--------------
     // Attack Methods
     //--------------------------------------
 

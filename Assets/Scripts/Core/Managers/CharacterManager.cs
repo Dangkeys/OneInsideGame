@@ -3,16 +3,13 @@ using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
-public class CharacterManager : MonoBehaviour
+public class CharacterManager : NetworkBehaviour
 {
     [SerializeField] public CharacterDatabase CharactersCollection;
 
-    public static CharacterDatabase CharactersCollectionStatic;
-
     private void Awake()
     {
-        CharactersCollectionStatic = CharactersCollection;
-        CharactersCollectionStatic.Initialize();
+        CharactersCollection.Initialize();
     }
 
     //--------------------------------------
@@ -36,18 +33,18 @@ public class CharacterManager : MonoBehaviour
     //--------------------------------------
 
     [ServerRpc]
-    public static void ChangeCharacterServerRpc(string character, Character.SearchType searchType = Character.SearchType.Default, ServerRpcParams serverRpcParams = default)
+    public void ChangeCharacterServerRpc(string character, Character.SearchType searchType = Character.SearchType.Default, ServerRpcParams serverRpcParams = default)
     {
         Debug.Log(serverRpcParams.Receive.SenderClientId);
         ChangeCharacterClientRpc(serverRpcParams.Receive.SenderClientId, character, searchType);
     }
 
     [ClientRpc]
-    public static void ChangeCharacterClientRpc(ulong clientId, string character, Character.SearchType searchType)
+    public void ChangeCharacterClientRpc(ulong clientId, string character, Character.SearchType searchType)
     {
         Debug.Log(clientId);
         Player targetPlayer = PlayerManager.GetPlayerByClientId(clientId);
-        CharacterSO characterSO = CharactersCollectionStatic.GetCharacter(character, searchType);
+        CharacterSO characterSO = OneInsideGameManager.Instance.CharacterManager.CharactersCollection.GetCharacter(character, searchType);
         if (characterSO == null)
         {
             Debug.LogError($"Character '{character}' not found");
