@@ -478,7 +478,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -715,7 +716,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -1014,6 +1016,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9ff74a955786314bbf5d40611b7eeb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   voteItemPrefab: {fileID: 7918360046853580956, guid: 26fb5c74dd6fd7047afd0ee29555700b, type: 3}
   voteItemParent: {fileID: 45542119}
   votingTimerSlider: {fileID: 1084344742}
@@ -1029,7 +1032,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1686858696
+  GlobalObjectIdHash: 971527708
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -2305,6 +2308,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50868884de02caf4e8dfac0406521f82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   timerText: {fileID: 204924948}
 --- !u!222 &1177353814
 CanvasRenderer:
@@ -2642,7 +2646,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -3907,7 +3912,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1107707292627979345, guid: e3cffca8405639e46addd3151d790838, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 311953129
+      value: 1453970321
       objectReference: {fileID: 0}
     - target: {fileID: 1168847400003970533, guid: e3cffca8405639e46addd3151d790838, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3951,19 +3956,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1685535911463994085, guid: e3cffca8405639e46addd3151d790838, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 3599195126
+      value: 1528022629
       objectReference: {fileID: 0}
     - target: {fileID: 1895091517106854057, guid: e3cffca8405639e46addd3151d790838, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 3835378938
+      value: 3574036704
       objectReference: {fileID: 0}
     - target: {fileID: 1895091517106854057, guid: e3cffca8405639e46addd3151d790838, type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 3220267787
       objectReference: {fileID: 0}
+    - target: {fileID: 2826085971031727050, guid: e3cffca8405639e46addd3151d790838, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 71479767
+      objectReference: {fileID: 0}
+    - target: {fileID: 3436717849684059419, guid: e3cffca8405639e46addd3151d790838, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 2829610435
+      objectReference: {fileID: 0}
     - target: {fileID: 7174535436257154584, guid: e3cffca8405639e46addd3151d790838, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 2644147999
+      value: 1077092867
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
