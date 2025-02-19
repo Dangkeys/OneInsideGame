@@ -38,12 +38,14 @@ public class CharacterManager : MonoBehaviour
     [ServerRpc]
     public static void ChangeCharacterServerRpc(string character, Character.SearchType searchType = Character.SearchType.Default, ServerRpcParams serverRpcParams = default)
     {
+        Debug.Log(serverRpcParams.Receive.SenderClientId);
         ChangeCharacterClientRpc(serverRpcParams.Receive.SenderClientId, character, searchType);
     }
 
     [ClientRpc]
     public static void ChangeCharacterClientRpc(ulong clientId, string character, Character.SearchType searchType)
     {
+        Debug.Log(clientId);
         Player targetPlayer = PlayerManager.GetPlayerByClientId(clientId);
         CharacterSO characterSO = CharactersCollectionStatic.GetCharacter(character, searchType);
         if (characterSO == null)
@@ -51,16 +53,18 @@ public class CharacterManager : MonoBehaviour
             Debug.LogError($"Character '{character}' not found");
             return;
         }
-        ChangeChracter(targetPlayer, characterSO);
+        Animator animator = targetPlayer.GetComponent<Animator>();
+        ChangeChracter(targetPlayer.PlayerVisual, characterSO, animator);
     }
 
-    public static void ChangeChracter(Player targetPlayer, CharacterSO characterSO)
+    public static void ChangeChracter(GameObject targetPlayerVisual, CharacterSO characterSO, Animator animator = null)
     {
-        GameObject currentPlayerSkin = GetCharacterSkin(targetPlayer.PlayerVisual);
-        Animator animator = targetPlayer.GetComponent<Animator>();
-
+        GameObject currentPlayerSkin = GetCharacterSkin(targetPlayerVisual);
         GameObject targetPlayerSkin = characterSO.CharacterSkin;
-        animator.avatar = characterSO.CharacterAvatar;
+        if (animator)
+        {
+            animator.avatar = characterSO.CharacterAvatar;
+        }
 
         SkinnedMeshRenderer currentPlayerSkinRenderer = currentPlayerSkin.GetComponent<SkinnedMeshRenderer>(),
          targetPlayerSkinRenderer = targetPlayerSkin.GetComponent<SkinnedMeshRenderer>();
