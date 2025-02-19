@@ -17,7 +17,7 @@ public class Player : NetworkBehaviour
 
     [Header("Spectator")]
     [field: SerializeField] public Material SpectatorMaterial { get; private set; }
-    [field: SerializeField] public GameObject CurrentPlayerVisual { get; private set; }
+    [field: SerializeField] public GameObject PlayerVisual { get; private set; }
 
     public NetworkVariable<bool> IsAlive = new NetworkVariable<bool>(true);
 
@@ -36,7 +36,7 @@ public class Player : NetworkBehaviour
 
     void Awake()
     {
-      playerManager = OneInsideLevelManager.Instance.PlayerManager;  
+        playerManager = OneInsideLevelManager.Instance.PlayerManager;
     }
 
     public override void OnNetworkSpawn()
@@ -44,7 +44,7 @@ public class Player : NetworkBehaviour
         hitBoxes = Hitbox.GetComponents<BoxCollider>();
         playerState = GetComponent<PlayerState>();
 
-        playerRenderer = CurrentPlayerVisual.GetComponent<Renderer>();
+        playerRenderer = PlayerVisual.GetComponent<Renderer>();
         defaultPlayerMaterial = playerRenderer.material;
 
         Role.OnValueChanged += OnRoleChanged;
