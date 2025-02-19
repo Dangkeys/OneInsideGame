@@ -14,16 +14,15 @@ public class CharacterSO : ScriptableObject
     public GameObject CharacterSkin { get; private set; }
     public Avatar CharacterAvatar { get; private set; }
 
-    private void Awake()
+    public void Initialize()
     {
-        if (CharacterVisual.name == null)
+        if (CharacterVisual != null)
         {
             CharacterVisual.name = CharacterName;
+
+            // Setup character skin
+            CharacterSkin = CharacterManager.GetCharacterSkin(CharacterVisual);
+            CharacterAvatar = CharacterVisual.GetComponent<Animator>()?.avatar;
         }
-
-        // Setup character skin
-
-        CharacterSkin = PlayerCharacterManager.GetCharacterSkin(CharacterVisual);
-        CharacterAvatar = CharacterVisual.GetComponent<Animator>().avatar;
     }
 }

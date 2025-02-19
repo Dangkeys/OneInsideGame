@@ -15,8 +15,13 @@ public class CharacterDatabase : ScriptableObject
         return Characters.Find(character => character.name == name);
     }
 
-    public CharacterSO GetCharacterBySearchType(string search, Character.SearchType searchType = Character.SearchType.Name)
+    public CharacterSO GetCharacter(string search, Character.SearchType searchType)
     {
+        if (searchType == Character.SearchType.Default)
+        {
+            searchType = Character.SearchType.Name;
+        }
+
         CharacterSO characterSO = null;
         switch (searchType)
         {
@@ -28,5 +33,13 @@ public class CharacterDatabase : ScriptableObject
                 break;
         }
         return characterSO;
+    }
+
+    public void Initialize()
+    {
+        foreach (CharacterSO character in Characters)
+        {
+            character.Initialize();
+        }
     }
 }

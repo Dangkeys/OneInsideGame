@@ -44,7 +44,7 @@ public class Player : NetworkBehaviour
         hitBoxes = Hitbox.GetComponents<BoxCollider>();
         playerState = GetComponent<PlayerState>();
 
-        playerRenderer = PlayerVisual.GetComponent<Renderer>();
+        playerRenderer = CharacterManager.GetCharacterSkin(PlayerVisual).GetComponent<Renderer>();
         defaultPlayerMaterial = playerRenderer.material;
 
         Role.OnValueChanged += OnRoleChanged;
@@ -101,8 +101,17 @@ public class Player : NetworkBehaviour
             playerState.SetAliveServerRpc(true);
             playerState.SetHealthServerRpc(playerState.MaxHealth.Value);
         }
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            CharacterManager.ChangeCharacterServerRpc(CharacterManager.CharactersCollectionStatic.Characters[0].name);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            CharacterManager.ChangeCharacterServerRpc(CharacterManager.CharactersCollectionStatic.Characters[1].name);
+        }
     }
-    //--------------------------------------
+    //------------------------------
     // Attack Methods
     //--------------------------------------
 
