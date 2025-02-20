@@ -53,7 +53,7 @@ GameObject:
   - component: {fileID: 3378184907274422936}
   - component: {fileID: 2130162687114717125}
   - component: {fileID: 2729509851161141685}
-  - component: {fileID: -5972453901100391572}
+  - component: {fileID: 4824826090655842994}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -92,8 +92,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3463517192
-  InScenePlacedSourceGlobalObjectIdHash: 0
+  GlobalObjectIdHash: 2988666616
+  InScenePlacedSourceGlobalObjectIdHash: 10364231
   DeferredDespawnTick: 0
   Ownership: 1
   AlwaysReplicateAsRoot: 0
@@ -443,7 +443,7 @@ MonoBehaviour:
   - m_Rig: {fileID: 0}
     m_Active: 1
   m_Effectors: []
---- !u!114 &-5972453901100391572
+--- !u!114 &4824826090655842994
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -452,12 +452,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 837731845563932383}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d4962fc4e3e08b44e969c780b6c5d87b, type: 3}
+  m_Script: {fileID: 11500000, guid: fad3dc373cb25b7498df5557ee084f23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  SabotageAction: {fileID: -3243957626730004280, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  SabotageUI: {fileID: 0}
+  sabotageUI: {fileID: 0}
   <InputReader>k__BackingField: {fileID: 3937043524520739152}
 --- !u!1 &3435790326839173604
 GameObject:

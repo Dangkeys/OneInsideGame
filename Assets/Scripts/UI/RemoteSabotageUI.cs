@@ -2,25 +2,34 @@ using System;
 using UnityEngine;
 using UnityEngine.ProBuilder.Shapes;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
+using Unity.Netcode;
 
-public class RemoteSabotageUI : MonoBehaviour
+public class RemoteSabotageUI : NetworkBehaviour
 {
-    private Button doorButton;
-
-    void Start()
+    //Attached to Player //Send Signal
+    [field: SerializeField, Tooltip("Reference to the input system")]
+    public InputReader InputReader { get; private set; }
+    public static event Action SignalSabotageUIEvent;
+    public override void OnNetworkSpawn()
     {
-        doorButton = GetComponentInChildren<Button>();
-        doorButton.onClick.AddListener(DisableDoor);
+        if (!IsOwner)
+            return;
+        InputReader.OpenSabotageUIEvent += SignalToOpenSabotageDevice;
     }
 
-    private void DisableDoor()
+    public void SignalToOpenSabotageDevice()
     {
-        DoorSabotage doorSabotage = FindAnyObjectByType<DoorSabotage>();
-        Debug.Log($"Found door sabotage: {doorSabotage}");
-        if (doorSabotage != null)
+        if (gameObject.GetComponent<Player>().Role.Value == PlayerRole.Imposter)
         {
-            Debug.Log("Disabling door");
-            doorSabotage.DisableDoor();
+            SignalSabotageUIEvent?.Invoke();
         }
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if (!IsOwner)
+            return;
+        InputReader.OpenSabotageUIEvent -= SignalToOpenSabotageDevice;
     }
 }

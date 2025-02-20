@@ -19,6 +19,7 @@ public class DoorSabotage : NetworkBehaviour
     public void DisableDoor()
     {
         DisableDoorServerRpc();
+        
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -39,16 +40,16 @@ public class DoorSabotage : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void StartDelayServerRpc(ulong doorID)
     {
-        Debug.Log("Start Delay");
+        //Debug.Log("Start Delay");
         StartCoroutine(DisableScript(5, doorID));
     }
 
     IEnumerator DisableScript(float delay, ulong doorID)
     {
             DisableScriptClientRpc(doorID, true);
-            Debug.Log("Door Disabling");
+            //Debug.Log("Door Disabling");
             yield return new WaitForSeconds(delay);
-            Debug.Log("Door re-enabled");
+            //Debug.Log("Door re-enabled");
             DisableScriptClientRpc(doorID, false);
 
     }

@@ -6,40 +6,32 @@ using Unity.Netcode;
 
 public class SabotageDevice : NetworkBehaviour
 {
-    public InputActionReference SabotageAction;
+    //Attached to UI in Canvas //Subscriber
     private bool isSabotaging;
-    public GameObject SabotageUI;
-    [field: SerializeField, Tooltip("Reference to the input system")]
-    public InputReader InputReader { get; private set; }
 
-    public override void OnNetworkSpawn()
+    private void Start()
     {
-        if (!IsOwner)
-            return;
-        InputReader.OpenSabotageUIEvent += OpenSabotageUI;
+        RemoteSabotageUI.SignalSabotageUIEvent += OpenSabotageDevice;
+        gameObject.SetActive(false);
     }
 
-    private void OpenSabotageUI(){
-            if (gameObject.GetComponent<Player>().Role.Value == PlayerRole.Imposter)
-            {
-                if (!isSabotaging)
-                {
-                    isSabotaging = true;
-                    SabotageUI.SetActive(true);
-                }
-                else
-                {
-                    isSabotaging = false;
-                    SabotageUI.SetActive(false);
-                }
-            }
+    private void OpenSabotageDevice()
+    {
+        if (!isSabotaging)
+        {
+            isSabotaging = true;
+            gameObject.SetActive(true);
+        }
+        else
+        {
+            isSabotaging = false;
+            gameObject.SetActive(false);
+        }
     }
 
     public override void OnNetworkDespawn()
     {
-        if (!IsOwner)
-            return;
-        InputReader.OpenSabotageUIEvent -= OpenSabotageUI;
+        RemoteSabotageUI.SignalSabotageUIEvent -= OpenSabotageDevice;
     }
 
 }
