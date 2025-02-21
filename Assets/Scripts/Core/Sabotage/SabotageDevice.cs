@@ -3,6 +3,7 @@ using UnityEngine.Rendering;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using Unity.Netcode;
+using Unity.Services.Matchmaker.Models;
 
 public class SabotageDevice : NetworkBehaviour
 {
@@ -15,6 +16,14 @@ public class SabotageDevice : NetworkBehaviour
         RemoteSabotageUI.SignalSabotageUIEvent += OpenSabotageDevice;
         gameObject.SetActive(false);
     }
+
+    // public override void OnNetworkSpawn()
+    // {
+    //     Debug.Log("2");
+    //     gameObject.SetActive(true);
+    //     RemoteSabotageUI.SignalSabotageUIEvent += OpenSabotageDevice;
+    //     gameObject.SetActive(false);
+    // }
 
     private void OpenSabotageDevice()
     {

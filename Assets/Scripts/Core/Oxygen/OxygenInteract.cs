@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class OxygenInteract : MonoBehaviour, IInteractable
 {
-    [SerializeField] private GameObject oxygen;
+    [field: SerializeField] private GameObject oxygen; //Jui changed this to public
     private PlayerMovement playerMovement;
     public void Interact(InteractionData interactionData)
     {
@@ -10,7 +10,7 @@ public class OxygenInteract : MonoBehaviour, IInteractable
         {
             playerMovement = interactionData.Interactor.GetComponent<PlayerMovement>();
         }
-        if(playerMovement)
+        if (playerMovement)
         {
             playerMovement.EnablePlayerMovement(false);
         }
