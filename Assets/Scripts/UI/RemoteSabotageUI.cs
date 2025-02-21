@@ -20,6 +20,7 @@ public class RemoteSabotageUI : NetworkBehaviour
 
     public void SignalToOpenSabotageDevice()
     {
+        //Debug.Log("Send Signal");
         if (gameObject.GetComponent<Player>().Role.Value == PlayerRole.Imposter)
         {
             SignalSabotageUIEvent?.Invoke();

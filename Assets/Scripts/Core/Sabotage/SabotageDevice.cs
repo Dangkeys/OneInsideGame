@@ -11,12 +11,14 @@ public class SabotageDevice : NetworkBehaviour
 
     private void Start()
     {
+        gameObject.SetActive(true);
         RemoteSabotageUI.SignalSabotageUIEvent += OpenSabotageDevice;
         gameObject.SetActive(false);
     }
 
     private void OpenSabotageDevice()
     {
+        //Debug.Log("Received Signal");
         if (!isSabotaging)
         {
             isSabotaging = true;
