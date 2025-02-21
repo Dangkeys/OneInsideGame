@@ -11,13 +11,13 @@ public class SelfDestructSabotage : NetworkBehaviour
 
     public void StartCountdown()
     {
-        timer.enabled = true;
         StartCountdownServerRpc();
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void StartCountdownServerRpc()
     {
+        timer.enabled = true;
         StartCoroutine(Countdown(delay));
     }
 
@@ -32,7 +32,6 @@ public class SelfDestructSabotage : NetworkBehaviour
             timeleft--;
         }
         timer.enabled = false;
-
     }
 
     [ServerRpc]
