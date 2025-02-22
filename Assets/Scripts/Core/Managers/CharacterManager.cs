@@ -36,6 +36,8 @@ public class CharacterManager : NetworkBehaviour
 
     public static void ChangeChracter(GameObject targetPlayerVisual, CharacterSO characterSO, Animator animator = null)
     {
+        targetPlayerVisual.transform.localScale = characterSO.CharacterVisual.transform.localScale;
+
         GameObject currentPlayerSkin = GetCharacterSkin(targetPlayerVisual);
         GameObject targetPlayerSkin = characterSO.CharacterSkin;
         if (animator)
