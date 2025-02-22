@@ -130,7 +130,7 @@ public class PlayerManager : NetworkBehaviour
             GameObject player = Instantiate(playerPrefab.gameObject, Vector3.zero, Quaternion.identity);
             NetworkObject playerNetworkObject = player.GetComponent<NetworkObject>();
             playerNetworkObject.SpawnAsPlayerObject(clientId, true);
-
+            playerNetworkObject.TrySetParent(OneInsideLevelManager.Players, true);
         }
     }
     public void ClearAllPlayers()
