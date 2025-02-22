@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6656843111669724679}
   - component: {fileID: 4342073358215098503}
   - component: {fileID: -5371125518594905838}
+  - component: {fileID: 3288610763439175895}
   m_Layer: 7
   m_Name: PlayerDeadBody
   m_TagString: Player
@@ -95,6 +96,22 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!114 &3288610763439175895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 837731845563932383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ba0d9135e803d944ba08907b9604494, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  DeadBodyOwnerID:
+    m_InternalValue: 0
+  <DeadBodyPlayerVisual>k__BackingField: {fileID: 8896104640911753412}
 --- !u!1001 &8832534265727795769
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -660,6 +677,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3912931390291057966, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5537690564837362302}
+    - targetCorrespondingSourceObject: {fileID: 3912931390291057966, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8040056398674381816}
     - targetCorrespondingSourceObject: {fileID: 5238132662510041420, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4988185970896313984}
@@ -1305,6 +1325,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &8040056398674381816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5539129848958410519}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c0cc48d7ec523049a7eb34638916f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  <DeadBody>k__BackingField: {fileID: 837731845563932383}
 --- !u!4 &6595192579084696524 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2383991533042498037, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}

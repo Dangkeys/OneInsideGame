@@ -27,7 +27,7 @@ public class PlayerMovement : NetworkBehaviour
     [SerializeField] private float groundedGravity = -0.5f;
 
     [Header("Ground Check Settings")]
-    [SerializeField] private float groundCheckDistance = 0.05f;
+    [SerializeField] private float groundCheckDistance = 0.1f;
 
     //--------------------------------------
     // Private Variables
@@ -138,7 +138,7 @@ public class PlayerMovement : NetworkBehaviour
 
     bool CheckGrounded()
     {
-        return Physics.Raycast(transform.position, Vector3.down, groundCheckDistance, gameObject.layer)
+        return Physics.Raycast(transform.position, Vector3.down, groundCheckDistance)
             || CharacterController.isGrounded
             || math.abs(verticalVelocity) < 0.1f;
         ;

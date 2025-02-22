@@ -20,8 +20,8 @@ public class Player : NetworkBehaviour
     [field: SerializeField] public GameObject PlayerVisual { get; private set; }
 
     public NetworkVariable<bool> IsAlive = new NetworkVariable<bool>(true);
-
     public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>(PlayerRole.None);
+    public NetworkVariable<FixedString64Bytes> CharacterName = new NetworkVariable<FixedString64Bytes>(OneInside.Constants.Character.Default);
 
     //--------------------------------------
     // Private Variables
@@ -57,6 +57,7 @@ public class Player : NetworkBehaviour
         }
         else
         {
+            CharacterName.OnValueChanged += OnCharacterNameChanged;
             InputReader.AttackEvent += OnAttackLocal;
 
             playerState.SetAttacking(false);
@@ -80,11 +81,34 @@ public class Player : NetworkBehaviour
             return;
 
         InputReader.AttackEvent -= OnAttackLocal;
+        CharacterName.OnValueChanged -= OnCharacterNameChanged;
 
         if (!playerManager)
             return;
         playerManager.OnResetALlPlayerPosition -= ResetToSpawnPoint;
 
+    }
+
+    //--------------------------------------
+    // Character
+    //--------------------------------------
+
+    public void OnCharacterNameChanged(FixedString64Bytes previousValue, FixedString64Bytes newValue)
+    {
+        OneInsideGameManager.Instance.CharacterManager.ChangeCharacterServerRpc(newValue.ToString());
+    }
+
+    [ServerRpc]
+    public void SetCharacterNameServerRpc(FixedString64Bytes character)
+    {
+        SetCharacterNameClientRpc(character);
+    }
+
+    [ClientRpc]
+    public void SetCharacterNameClientRpc(FixedString64Bytes character)
+    {
+        Debug.Log(character);
+        CharacterName.Value = character;
     }
 
     //--------------------------------------
@@ -104,11 +128,11 @@ public class Player : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            OneInsideGameManager.Instance.CharacterManager.ChangeCharacterServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[0].name);
+            SetCharacterNameServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[0].name);
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            OneInsideGameManager.Instance.CharacterManager.ChangeCharacterServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[1].name);
+            SetCharacterNameServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[1].name);
         }
     }
     //--------------

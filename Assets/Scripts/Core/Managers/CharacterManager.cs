@@ -2,6 +2,7 @@ using System;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class CharacterManager : NetworkBehaviour
 {
@@ -28,30 +29,9 @@ public class CharacterManager : NetworkBehaviour
         return null;
     }
 
-    //--------------------------------------
-    // Change Character
-    //--------------------------------------
-
-    [ServerRpc]
-    public void ChangeCharacterServerRpc(string character, Character.SearchType searchType = Character.SearchType.Default, ServerRpcParams serverRpcParams = default)
+    static public CharacterSO GetCharacterSO(string character, Character.SearchType searchType = Character.SearchType.Default)
     {
-        Debug.Log(serverRpcParams.Receive.SenderClientId);
-        ChangeCharacterClientRpc(serverRpcParams.Receive.SenderClientId, character, searchType);
-    }
-
-    [ClientRpc]
-    public void ChangeCharacterClientRpc(ulong clientId, string character, Character.SearchType searchType)
-    {
-        Debug.Log(clientId);
-        Player targetPlayer = PlayerManager.GetPlayerByClientId(clientId);
-        CharacterSO characterSO = OneInsideGameManager.Instance.CharacterManager.CharactersCollection.GetCharacter(character, searchType);
-        if (characterSO == null)
-        {
-            Debug.LogError($"Character '{character}' not found");
-            return;
-        }
-        Animator animator = targetPlayer.GetComponent<Animator>();
-        ChangeChracter(targetPlayer.PlayerVisual, characterSO, animator);
+        return OneInsideGameManager.Instance.CharacterManager.CharactersCollection.GetCharacter(character, searchType);
     }
 
     public static void ChangeChracter(GameObject targetPlayerVisual, CharacterSO characterSO, Animator animator = null)
@@ -60,7 +40,21 @@ public class CharacterManager : NetworkBehaviour
         GameObject targetPlayerSkin = characterSO.CharacterSkin;
         if (animator)
         {
+            Dictionary<string, bool> savedAllParameters = new Dictionary<string, bool>();
+            foreach (AnimatorControllerParameter param in animator.parameters)
+            {
+                if (param.type == AnimatorControllerParameterType.Bool)
+                {
+                    bool value = animator.GetBool(param.name);
+                    savedAllParameters.Add(param.name, value);
+                }
+            }
             animator.avatar = characterSO.CharacterAvatar;
+
+            foreach (var item in savedAllParameters)
+            {
+                animator.SetBool(item.Key, item.Value);
+            }
         }
 
         SkinnedMeshRenderer currentPlayerSkinRenderer = currentPlayerSkin.GetComponent<SkinnedMeshRenderer>(),
@@ -68,5 +62,36 @@ public class CharacterManager : NetworkBehaviour
 
         currentPlayerSkinRenderer.sharedMesh = targetPlayerSkinRenderer.sharedMesh;
         currentPlayerSkinRenderer.sharedMaterials = targetPlayerSkinRenderer.sharedMaterials;
+    }
+
+    public static void ChangeChracter(GameObject targetPlayerVisual, string characterName, Animator animator = null)
+    {
+        CharacterSO characterSO = GetCharacterSO(characterName);
+        ChangeChracter(targetPlayerVisual, characterSO, animator);
+    }
+
+    //--------------------------------------
+    // Change Character
+    //--------------------------------------
+
+    [ServerRpc(RequireOwnership = false)]
+    public void ChangeCharacterServerRpc(string character, Character.SearchType searchType = Character.SearchType.Default, ServerRpcParams serverRpcParams = default)
+    {
+        ulong senderClientId = serverRpcParams.Receive.SenderClientId;
+        ChangeCharacterClientRpc(senderClientId, character, searchType);
+    }
+
+    [ClientRpc]
+    public void ChangeCharacterClientRpc(ulong clientId, string character, Character.SearchType searchType)
+    {
+        Player targetPlayer = PlayerManager.GetPlayerByClientId(clientId);
+        CharacterSO characterSO = GetCharacterSO(character, searchType);
+        if (characterSO == null)
+        {
+            Debug.LogError($"Character '{character}' not found");
+            return;
+        }
+        Animator animator = targetPlayer.GetComponent<Animator>();
+        ChangeChracter(targetPlayer.PlayerVisual, characterSO, animator);
     }
 }
