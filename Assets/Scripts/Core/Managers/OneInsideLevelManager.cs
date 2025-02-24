@@ -20,6 +20,8 @@ public class OneInsideLevelManager : NetworkBehaviour
     [field: SerializeField] public PlayerManager PlayerManager;
     [field: SerializeField] public VoteManager VoteManager;
     [field: SerializeField] public RoleManager RoleManager;
+
+    [field: SerializeField] public AbilityAssignment AbilityAssignment;
     // [field: SerializeField] public VivoxManager VivoxManager;
 
     [field: SerializeField] public GameObject PlayersContainer;
@@ -71,11 +73,8 @@ public class OneInsideLevelManager : NetworkBehaviour
                 {
                     if (OneInsideGameManager.Instance.LobbyManager.CurrentLobby != null)
                     {
-                        await OneInsideGameManager.Instance.LeaveMatchAsync();
-
-                        //TODO fix the stop game function
-                        // PlayerManager.ClearAllPlayers();
-                        // await OneInsideGameManager.Instance.StopGame();
+                        PlayerManager.ClearAllPlayers();
+                        await OneInsideGameManager.Instance.StopGame();
                     }
                     else
                     {

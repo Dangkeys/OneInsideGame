@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using Mono.Cecil.Cil;
 using UnityEngine;
-[CreateAssetMenu(fileName = "CharacterDatabase", menuName = "Scriptable Objects/CharacterDatabase")]
-public class CharacterDatabase : ScriptableObject
+[CreateAssetMenu(fileName = "CharacterDatabase", menuName = "Scriptable Objects/CharacterCollectionSO")]
+public class CharacterCollectionSO : ScriptableObject
 {
     [field: SerializeField]  public List<CharacterSO> Characters;
 

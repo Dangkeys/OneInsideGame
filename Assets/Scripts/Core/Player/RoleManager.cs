@@ -8,9 +8,12 @@ public class RoleManager : NetworkBehaviour
 {
 
     PlayerManager playerManager;
+
+    public event Action OnRolesAssignmentComplete;
+
     void Awake()
     {
-      playerManager = OneInsideLevelManager.Instance.PlayerManager;  
+        playerManager = OneInsideLevelManager.Instance.PlayerManager;
     }
     public override void OnNetworkSpawn()
     {
@@ -27,7 +30,9 @@ public class RoleManager : NetworkBehaviour
                 AssignRandomRoles(currentLobby.Data.TryGetValue(OneInside.Constants.Lobby.KEY_IMPOSTER_AMOUNT, out var imposters)
                     ? int.Parse(imposters.Value)
                     : OneInside.Constants.Player.MIN_IMPOSTERS);
-            }else{
+            }
+            else
+            {
                 //TODO add configuration
                 AssignRandomRoles(OneInsideLevelManager.Instance.ImposterAmount);
             }
@@ -48,7 +53,7 @@ public class RoleManager : NetworkBehaviour
 
         for (int i = 0; i < shuffledPlayers.Count; i++)
         {
-            var role = i < imposterCount ? PlayerRole.Imposter : PlayerRole.Crewmate;
+            var role = i < imposterCount ? PlayerRole.IMPOSTER : PlayerRole.CREWMATE;
             var clientId = shuffledPlayers[i];
 
             if (NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out var client))
@@ -58,8 +63,8 @@ public class RoleManager : NetworkBehaviour
                     player.Role.Value = role;
                 }
             }
-
         }
+        OnRolesAssignmentComplete?.Invoke();
     }
 
 }

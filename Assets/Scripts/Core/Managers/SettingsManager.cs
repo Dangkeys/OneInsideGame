@@ -1,16 +1,21 @@
+using System;
 using UnityEngine;
 
 public class SettingsManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private InputReader inputReader;
+
+    private bool isSettingsOpen = false;
+    public Action<bool> OnSettingsChanged;
+    void Awake()
     {
-        
+        inputReader = OneInsideGameManager.Instance.InputReader;
+        inputReader.EscapeEvent += ToggleSettings;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void ToggleSettings()
     {
-        
+        isSettingsOpen = !isSettingsOpen;
+        OnSettingsChanged?.Invoke(isSettingsOpen);
     }
 }

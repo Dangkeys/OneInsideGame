@@ -209,10 +209,8 @@ public class VoteManager : NetworkBehaviour
     }
     private string GetPlayerName(ulong clientId)
     {
-        //TODO Refactor this into a shared method in netcode manager
-        if (networkPlayerData != null &&
-            networkPlayerData.ClientIdToAuth.Value.TryGetValue(clientId, out FixedString32Bytes authId) &&
-            networkPlayerData.AuthIdToUserData.Value.TryGetValue(authId, out UserDataDto userData))
+        var userData = networkPlayerData.GetUserDataFromClientId(clientId);
+        if (userData != null)
         {
             if (clientId == NetworkManager.Singleton.LocalClientId)
             {
@@ -220,7 +218,6 @@ public class VoteManager : NetworkBehaviour
             }
             return userData.Name.ToString();
         }
-
         return clientId == NetworkManager.Singleton.LocalClientId ? "You" : $"Player {clientId}";
     }
 }

@@ -116,6 +116,15 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ActivateAbility"",
+                    ""type"": ""Button"",
+                    ""id"": ""26335575-a55b-4d5b-b0ab-5e6e47578b1d"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -534,6 +543,17 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Use"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ffa36fd3-3bdc-4859-8aae-c61e5660ad0c"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ActivateAbility"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1054,6 +1074,34 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Settings"",
+            ""id"": ""18c5fc2b-3fc6-4422-806e-fd54482d2b0c"",
+            ""actions"": [
+                {
+                    ""name"": ""Escape"",
+                    ""type"": ""Button"",
+                    ""id"": ""22f4a475-230f-4898-b176-296675948b09"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""5c8aa624-14aa-41a0-8ec5-1771b5fc6e0b"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Escape"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -1131,6 +1179,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         m_Player_Next = m_Player.FindAction("Next", throwIfNotFound: true);
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_Use = m_Player.FindAction("Use", throwIfNotFound: true);
+        m_Player_ActivateAbility = m_Player.FindAction("ActivateAbility", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1143,12 +1192,16 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         m_UI_ScrollWheel = m_UI.FindAction("ScrollWheel", throwIfNotFound: true);
         m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
         m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
+        // Settings
+        m_Settings = asset.FindActionMap("Settings", throwIfNotFound: true);
+        m_Settings_Escape = m_Settings.FindAction("Escape", throwIfNotFound: true);
     }
 
     ~@InputControls()
     {
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, InputControls.Player.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, InputControls.UI.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Settings.enabled, "This will cause a leak and performance issues, InputControls.Settings.Disable() has not been called.");
     }
 
     public void Dispose()
@@ -1220,6 +1273,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Next;
     private readonly InputAction m_Player_Sprint;
     private readonly InputAction m_Player_Use;
+    private readonly InputAction m_Player_ActivateAbility;
     public struct PlayerActions
     {
         private @InputControls m_Wrapper;
@@ -1234,6 +1288,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         public InputAction @Next => m_Wrapper.m_Player_Next;
         public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
         public InputAction @Use => m_Wrapper.m_Player_Use;
+        public InputAction @ActivateAbility => m_Wrapper.m_Player_ActivateAbility;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1273,6 +1328,9 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
             @Use.started += instance.OnUse;
             @Use.performed += instance.OnUse;
             @Use.canceled += instance.OnUse;
+            @ActivateAbility.started += instance.OnActivateAbility;
+            @ActivateAbility.performed += instance.OnActivateAbility;
+            @ActivateAbility.canceled += instance.OnActivateAbility;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1307,6 +1365,9 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
             @Use.started -= instance.OnUse;
             @Use.performed -= instance.OnUse;
             @Use.canceled -= instance.OnUse;
+            @ActivateAbility.started -= instance.OnActivateAbility;
+            @ActivateAbility.performed -= instance.OnActivateAbility;
+            @ActivateAbility.canceled -= instance.OnActivateAbility;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1442,6 +1503,52 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         }
     }
     public UIActions @UI => new UIActions(this);
+
+    // Settings
+    private readonly InputActionMap m_Settings;
+    private List<ISettingsActions> m_SettingsActionsCallbackInterfaces = new List<ISettingsActions>();
+    private readonly InputAction m_Settings_Escape;
+    public struct SettingsActions
+    {
+        private @InputControls m_Wrapper;
+        public SettingsActions(@InputControls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Escape => m_Wrapper.m_Settings_Escape;
+        public InputActionMap Get() { return m_Wrapper.m_Settings; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(SettingsActions set) { return set.Get(); }
+        public void AddCallbacks(ISettingsActions instance)
+        {
+            if (instance == null || m_Wrapper.m_SettingsActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_SettingsActionsCallbackInterfaces.Add(instance);
+            @Escape.started += instance.OnEscape;
+            @Escape.performed += instance.OnEscape;
+            @Escape.canceled += instance.OnEscape;
+        }
+
+        private void UnregisterCallbacks(ISettingsActions instance)
+        {
+            @Escape.started -= instance.OnEscape;
+            @Escape.performed -= instance.OnEscape;
+            @Escape.canceled -= instance.OnEscape;
+        }
+
+        public void RemoveCallbacks(ISettingsActions instance)
+        {
+            if (m_Wrapper.m_SettingsActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(ISettingsActions instance)
+        {
+            foreach (var item in m_Wrapper.m_SettingsActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_SettingsActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public SettingsActions @Settings => new SettingsActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     public InputControlScheme KeyboardMouseScheme
     {
@@ -1499,6 +1606,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         void OnNext(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
         void OnUse(InputAction.CallbackContext context);
+        void OnActivateAbility(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
@@ -1512,5 +1620,9 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         void OnScrollWheel(InputAction.CallbackContext context);
         void OnTrackedDevicePosition(InputAction.CallbackContext context);
         void OnTrackedDeviceOrientation(InputAction.CallbackContext context);
+    }
+    public interface ISettingsActions
+    {
+        void OnEscape(InputAction.CallbackContext context);
     }
 }

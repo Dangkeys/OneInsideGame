@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using Unity.Collections;
@@ -57,10 +58,8 @@ public class NetcodeManager : NetworkBehaviour
         string payload = Encoding.UTF8.GetString(request.Payload);
         UserDataDto userData = JsonUtility.FromJson<UserDataDto>(payload);
 
-        Debug.Log(NetworkPlayerData.ClientIdToAuth);
         NetworkPlayerData.ClientIdToAuth.Value[request.ClientNetworkId] = userData.AuthId;
         NetworkPlayerData.AuthIdToUserData.Value[userData.AuthId] = userData;
-        Debug.Log(NetworkPlayerData.AuthIdToUserData.Value[userData.AuthId]);
         response.Approved = true;
 
     }
@@ -221,5 +220,30 @@ public class NetcodeManager : NetworkBehaviour
         NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
 
     }
+
+    // public static void ClearAllNetworkObject()
+    // {
+    //     if (!NetworkManager.Singleton.IsServer)
+    //     {
+    //         Debug.LogWarning("Attempting to clear network objects from non-server!");
+    //         return;
+    //     }
+
+    //     var spawnObjects = NetworkManager.Singleton.SpawnManager.SpawnedObjectsList.ToArray();
+    //     foreach (var spawnObject in spawnObjects)
+    //     {
+    //         if (spawnObject != null)
+    //         {
+    //             // Change ownership to server before despawning
+    //             if (spawnObject.OwnerClientId != NetworkManager.Singleton.LocalClientId)
+    //             {
+    //                 spawnObject.ChangeOwnership(NetworkManager.Singleton.LocalClientId);
+    //             }
+
+    //             Debug.Log($"Despawning object: {spawnObject.name} (Previous Owner: {spawnObject.OwnerClientId})");
+    //             spawnObject.Despawn();
+    //         }
+    //     }
+    // }
 
 }

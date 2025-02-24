@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices.WindowsRuntime;
 using OneInside.Constants;
 using Unity.Cinemachine;
 using Unity.Collections;
@@ -21,7 +22,11 @@ public class Player : NetworkBehaviour
 
     public NetworkVariable<bool> IsAlive = new NetworkVariable<bool>(true);
 
-    public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>(PlayerRole.None);
+    public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>(PlayerRole.NONE);
+
+    public AbilityDataSO AbilityData { get; private set; }
+
+    public event Action OnAbilityDataChanged;
 
     //--------------------------------------
     // Private Variables
@@ -36,7 +41,7 @@ public class Player : NetworkBehaviour
 
     void Awake()
     {
-      playerManager = OneInsideLevelManager.Instance.PlayerManager;  
+        playerManager = OneInsideLevelManager.Instance.PlayerManager;
     }
 
     public override void OnNetworkSpawn()
@@ -57,7 +62,6 @@ public class Player : NetworkBehaviour
         }
         else
         {
-            InputReader.AttackEvent += OnAttackLocal;
 
             playerState.SetAttacking(false);
             playerState.SetStunning(false);
@@ -67,26 +71,29 @@ public class Player : NetworkBehaviour
 
             if (!playerManager)
                 return;
-            playerManager.OnResetALlPlayerPosition += ResetToSpawnPoint;
+            playerManager.OnResetAllPlayerPosition += ResetToSpawnPoint;
         }
+        InputReader.AttackEvent += OnAttackLocal;
     }
-
-    public override void OnNetworkDespawn()
+    public void UnSubscribeEvent()
     {
         Role.OnValueChanged -= OnRoleChanged;
         IsAlive.OnValueChanged -= OnAliveChanged;
+        InputReader.AttackEvent -= OnAttackLocal;
 
         if (!IsOwner)
             return;
 
-        InputReader.AttackEvent -= OnAttackLocal;
 
         if (!playerManager)
             return;
-        playerManager.OnResetALlPlayerPosition -= ResetToSpawnPoint;
+        playerManager.OnResetAllPlayerPosition -= ResetToSpawnPoint;
 
+        var baseAbility = GetComponentInChildren<BaseAbility>();
+        if (baseAbility != null)
+        baseAbility.UnSubScribeEvent();
+        
     }
-
     //--------------------------------------
     // Debug Methods
     //--------------------------------------
@@ -108,6 +115,8 @@ public class Player : NetworkBehaviour
 
     public async void OnAttackLocal()
     {
+        if (!IsOwner)
+            return;
         if (!playerState.IsCanMove())
             return;
 
@@ -236,5 +245,12 @@ public class Player : NetworkBehaviour
                 player.gameObject.SetActive(false);
             }
         }
+    }
+
+    [ClientRpc]
+    public void SetAbilityDataSOClientRpc(string abilityDataId, ClientRpcParams clientRpcParams)
+    {
+        AbilityData = OneInsideLevelManager.Instance.AbilityAssignment.AbilityCollection.GetAbilityById(abilityDataId);
+        OnAbilityDataChanged?.Invoke();
     }
 }

@@ -6,7 +6,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-[RequireComponent(typeof(InputReader), typeof(CharacterController))]
+[RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : NetworkBehaviour
 {
     [Header("References")]
@@ -45,12 +45,17 @@ public class PlayerMovement : NetworkBehaviour
 
     private PlayerState playerState;
 
-     private PlayerManager playerManager;
 
-     void Awake()
-     {
-          playerManager = OneInsideLevelManager.Instance.PlayerManager;
-     }
+    private PlayerManager playerManager;
+    private OneInsideGameManager oneInsideGameManager;
+
+    void Awake()
+    {
+        playerManager = OneInsideLevelManager.Instance.PlayerManager;
+        if (!oneInsideGameManager)
+            return;
+        InputReader = OneInsideGameManager.Instance.InputReader;
+    }
 
     public override void OnNetworkSpawn()
     {
@@ -64,7 +69,8 @@ public class PlayerMovement : NetworkBehaviour
         moveSpeed = WalkSpeed;
         InputReader.SprintEvent += Sprint;
         InputReader.JumpEvent += Jump;
-        if(!playerManager)
+
+        if (!playerManager)
             return;
         playerManager.OnEnableAllPlayersMovement += EnablePlayerMovement;
     }
@@ -73,8 +79,11 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (!IsOwner)
             return;
-
-        Vector3 moveInput = new Vector3(InputReader.MovementValue.x, 0f, InputReader.MovementValue.y);
+        Vector3 moveInput = Vector3.zero;
+        if (InputReader)
+        {
+            moveInput = new Vector3(InputReader.MovementValue.x, 0f, InputReader.MovementValue.y);
+        }
         UpdateMovementAnimation(moveInput);
         UpdateJumpAnimation();
         ApplyGravity();
@@ -169,7 +178,7 @@ public class PlayerMovement : NetworkBehaviour
             return;
         InputReader.SprintEvent -= Sprint;
         InputReader.JumpEvent -= Jump;
-        if(!playerManager)
+        if (!playerManager)
             return;
         playerManager.OnEnableAllPlayersMovement -= EnablePlayerMovement;
     }
@@ -186,4 +195,17 @@ public class PlayerMovement : NetworkBehaviour
         if (AxisController)
             AxisController.enabled = shouldMove;
     }
+
+
+    public void SetWalkSpeed(float speed)
+    {
+        WalkSpeed = speed;
+    }
+
+    public void SetRunSpeed(float speed)
+    {
+        RunSpeed = speed;
+    }
+
+
 }

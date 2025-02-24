@@ -54,20 +54,26 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
 
 
     public CharacterManager CharacterManager { get; private set; }
-    public PerkManager PerkManager { get; private set; }
+    public AbilityManager PerkManager { get; private set; }
     public AudioManager AudioManager { get; private set; }
     public LobbyManager LobbyManager { get; private set; }
     public VoiceChatManager VoiceChatManager { get; private set; }
     public NetcodeManager NetcodeManager { get; private set; }
+
+    public InputReader InputReader { get; private set; }
+
+    public SettingsManager SettingsManager { get; private set; }
     protected override void OnAwakeInitialization()
     {
         base.OnAwakeInitialization();
         CharacterManager = GetComponentInChildren<CharacterManager>(true); // true to include inactive objects
-        PerkManager = GetComponentInChildren<PerkManager>(true);
+        PerkManager = GetComponentInChildren<AbilityManager>(true);
         AudioManager = GetComponentInChildren<AudioManager>(true);
         VoiceChatManager = GetComponentInChildren<VoiceChatManager>(true);
         LobbyManager = GetComponentInChildren<LobbyManager>(true);
         NetcodeManager = GetComponentInChildren<NetcodeManager>(true);
+        InputReader = GetComponentInChildren<InputReader>(true);
+        SettingsManager = GetComponentInChildren<SettingsManager>(true);
 
         if (CharacterManager == null)
             Debug.LogError("CharacterManager not found!");
@@ -81,6 +87,11 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
             Debug.LogError("LobbyManager not found!");
         if (NetcodeManager == null)
             Debug.LogError("NetcodeManager not found!");
+        if (InputReader == null)
+            Debug.LogError("InputReader not found!");
+
+        if (SettingsManager == null)
+            Debug.LogError("SettingsManager not found!");
     }
 
     async void Start()

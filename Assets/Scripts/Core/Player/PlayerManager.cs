@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -12,7 +13,7 @@ public class PlayerManager : NetworkBehaviour
 
     public event Action OnAllPlayersSpawnInTheGame;
 
-    public event Action OnResetALlPlayerPosition;
+    public event Action OnResetAllPlayerPosition;
 
     public event Action<bool> OnEnableAllPlayersMovement;
     private OneInsideLevelManager oneInsideLevelManager;
@@ -86,7 +87,7 @@ public class PlayerManager : NetworkBehaviour
     [ClientRpc]
     private void ResetAllPlayerPositionClientRpc()
     {
-        OnResetALlPlayerPosition?.Invoke();
+        OnResetAllPlayerPosition?.Invoke();
     }
 
     [ClientRpc]
@@ -105,7 +106,7 @@ public class PlayerManager : NetworkBehaviour
                 break;
             case VoteState.Voting:
                 OnEnableAllPlayersMovement?.Invoke(false);
-                OnResetALlPlayerPosition?.Invoke();
+                OnResetAllPlayerPosition?.Invoke();
                 break;
             case VoteState.VoteOver:
                 OnEnableAllPlayersMovement?.Invoke(true);
@@ -129,28 +130,35 @@ public class PlayerManager : NetworkBehaviour
         {
             GameObject player = Instantiate(playerPrefab.gameObject, Vector3.zero, Quaternion.identity);
             NetworkObject playerNetworkObject = player.GetComponent<NetworkObject>();
-            playerNetworkObject.SpawnAsPlayerObject(clientId, true);
+            playerNetworkObject.SpawnAsPlayerObject(clientId);
 
         }
     }
     public void ClearAllPlayers()
     {
-        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        var players = GetAllPlayer(player => true);
+        var playerObjects = NetworkManager.Singleton.ConnectedClientsList.Select(client => client.PlayerObject).ToList();
+        foreach (var player in players)
         {
-            if (NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out var client))
-            {
-                Debug.Log(clientId);
-                if (client.PlayerObject && client.PlayerObject.TryGetComponent<Player>(out var player))
-                {
-                    // Use NetworkObject.Despawn() instead of Destroy
-                    client.PlayerObject.Despawn();
-                }
-            }
+            player.UnSubscribeEvent();
+        }
+        foreach (var playerObject in playerObjects)
+        {
+            if (!IsServer)
+                return;
+            playerObject.ChangeOwnership(NetworkManager.Singleton.LocalClientId);
+            playerObject.Despawn();
         }
     }
     public static NetworkObject GetLocalPlayer()
     {
-        return NetworkManager.Singleton.ConnectedClients[NetworkManager.Singleton.LocalClientId].PlayerObject;
+        return GetPlayerByClientId(NetworkManager.Singleton.LocalClientId);
+    }
+
+
+    public static Player GetPlayerScriptByClientId(ulong clientId)
+    {
+        return GetPlayerByClientId(clientId).GetComponent<Player>();
     }
 
     public static Player GetLocalPlayerScript()
@@ -158,9 +166,17 @@ public class PlayerManager : NetworkBehaviour
         return GetLocalPlayer().GetComponent<Player>();
     }
 
+    public static NetworkObject GetPlayerByClientId(ulong clientId)
+    {
+        if (NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out var client))
+        {
+            return client.PlayerObject;
+        }
+        return null;
+    }
     public static List<Player> GetAllPlayer(Func<Player, bool> filter)
     {
-        List<Player> playersObject = new List<Player>();
+        List<Player> players = new List<Player>();
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
             if (NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out var client))
@@ -169,16 +185,18 @@ public class PlayerManager : NetworkBehaviour
                 {
                     if (filter == null || filter(player))
                     {
-                        playersObject.Add(player);
+                        players.Add(player);
                     }
                 }
             }
         }
-        return playersObject;
+        return players;
     }
 
     public static List<Player> GetSpectatorPlayers(bool includeSelf = false)
     {
         return GetAllPlayer(player => !player.GetComponent<Player>().IsAlive.Value && (includeSelf || !player.IsOwner));
     }
+
+
 }

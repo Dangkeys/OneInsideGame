@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using static InputControls;
 
-public class InputReader : MonoBehaviour, IPlayerActions
+public class InputReader : MonoBehaviour, IPlayerActions, ISettingsActions, IUIActions
 {
     private InputControls controls;
     public Vector2 MovementValue { get; private set; }
@@ -14,6 +14,9 @@ public class InputReader : MonoBehaviour, IPlayerActions
 
     public Action<bool> JumpEvent;
 
+    public Action ActivateAbilityEvent;
+
+    public Action EscapeEvent;
 
     private void Start()
     {
@@ -104,7 +107,20 @@ public class InputReader : MonoBehaviour, IPlayerActions
     {
         //OPTIONAL
     }
-
+    public void OnEscape(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            EscapeEvent?.Invoke();
+        }
+    }
+    public void OnActivateAbility(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            ActivateAbilityEvent?.Invoke();
+        }
+    }
 
 
 
@@ -117,4 +133,49 @@ public class InputReader : MonoBehaviour, IPlayerActions
     {
         //OPTIONAL
     }
+
+
+    #region UI
+    public void OnNavigate(InputAction.CallbackContext context)
+    {
+        //optional
+    }
+    public void OnSubmit(InputAction.CallbackContext context)
+    {
+        //optional
+    }
+    public void OnCancel(InputAction.CallbackContext context)
+    {
+        //optional
+    }
+    public void OnPoint(InputAction.CallbackContext context)
+    {
+        //optional
+    }
+    public void OnClick(InputAction.CallbackContext context)
+    {
+        //optional
+    }
+    public void OnRightClick(InputAction.CallbackContext context)
+    {
+        //optional
+    }
+    public void OnMiddleClick(InputAction.CallbackContext context)
+    {
+        //optional
+    }
+    public void OnScrollWheel(InputAction.CallbackContext context)
+    {
+        //optional
+    }
+    public void OnTrackedDevicePosition(InputAction.CallbackContext context)
+    {
+        //optional
+    }
+    public void OnTrackedDeviceOrientation(InputAction.CallbackContext context)
+    {
+        //optional
+    }
+    #endregion
+
 }

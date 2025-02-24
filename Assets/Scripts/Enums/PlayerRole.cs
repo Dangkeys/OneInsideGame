@@ -1,6 +1,6 @@
 public enum PlayerRole
 {
-    None,
-    Crewmate,
-    Imposter
+    NONE,
+    CREWMATE,
+    IMPOSTER
 }
