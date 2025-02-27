@@ -18,30 +18,45 @@ public class DoorSabotage : NetworkBehaviour
 
     public void DisableDoor()
     {
-        StartDelayServerRpc();
+        DisableDoorServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void DisableDoorServerRpc()
+    {
+        for (int i = 0; i < doorList.Length; i++)
+        {
+            doorScript = doorList[i].GetComponentInChildren<SlideDoor>();
+            if (doorScript.DoorOpen)
+            {
+                doorScript.Interact(interactionData);
+            }
+            StartDelayServerRpc(doorList[i].GetComponent<NetworkObject>().NetworkObjectId);
+        }
     }
 
 
     [ServerRpc(RequireOwnership = false)]
-    private void StartDelayServerRpc()
+    private void StartDelayServerRpc(ulong doorID)
     {
         //Debug.Log("Start Delay");
-        StartCoroutine(DisableScript(5));
+        StartCoroutine(DisableScript(5, doorID));
     }
 
-    IEnumerator DisableScript(float delay)
+    IEnumerator DisableScript(float delay, ulong doorID)
     {
-            DisableScriptClientRpc(true);
+            DisableScriptClientRpc(doorID, true);
             //Debug.Log("Door Disabling");
             yield return new WaitForSeconds(delay);
             //Debug.Log("Door re-enabled");
-            DisableScriptClientRpc(false);
+            DisableScriptClientRpc(doorID, false);
 
     }
 
     [ClientRpc]
-    private void DisableScriptClientRpc(bool status){
-        OxygenInteract script = gameObject.GetComponent<OxygenInteract>();
+    private void DisableScriptClientRpc(ulong doorID, bool status){
+        NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(doorID, out NetworkObject netObj);
+        SlideDoor script = netObj.GetComponentInChildren<SlideDoor>();
         script.IsDisabled = status;
     }
 
