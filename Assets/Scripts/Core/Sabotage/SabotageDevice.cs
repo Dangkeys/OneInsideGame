@@ -31,8 +31,7 @@ public class SabotageDevice : NetworkBehaviour
         }
     }
 
-    public override void OnNetworkDespawn()
-    {
+    public override void OnDestroy(){
         RemoteSabotageUI.SignalSabotageUIEvent -= OpenSabotageDevice;
     }
 
