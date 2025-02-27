@@ -7,7 +7,7 @@ using TMPro;
 public class SelfDestructSabotage : NetworkBehaviour
 {
     [SerializeField] private int delay;
-    [SerializeField] private TextMeshProUGUI timer;
+    [SerializeField] private GameObject timer;
 
     public void StartCountdown()
     {
@@ -17,7 +17,7 @@ public class SelfDestructSabotage : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void StartCountdownServerRpc()
     {
-        timer.enabled = true;
+        EnableUIClientRpc(true);
         StartCoroutine(Countdown(delay));
     }
 
@@ -26,17 +26,23 @@ public class SelfDestructSabotage : NetworkBehaviour
         float timeleft = delay;
         while (timeleft > 0)
         {
-            SetTimerTextServerRpc(timeleft);
+            SetTimerTextClientRpc(timeleft);
             Debug.Log(timeleft);
             yield return new WaitForSeconds(1);
             timeleft--;
         }
-        timer.enabled = false;
+        EnableUIClientRpc(false);
     }
 
-    [ServerRpc]
-    private void SetTimerTextServerRpc(float delay)
+    [ClientRpc]
+    private void SetTimerTextClientRpc(float delay)
     {
-        timer.text = delay.ToString();
+        timer.GetComponent<TextMeshProUGUI>().text = delay.ToString();
+    }
+
+
+    [ClientRpc]
+    private void EnableUIClientRpc(bool status){
+        timer.SetActive(status);
     }
 }
