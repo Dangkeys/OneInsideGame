@@ -9,18 +9,59 @@ public class OxygenSabotage : NetworkBehaviour
     // {
     //     oxygenInteract = gameObject.GetComponent<OxygenInteract>();
     // }
-    public void DisableOxygen()
+    // public void DisableOxygen()
+    // {
+    //     DisableOxygenServerRpc();
+    // }
+
+    // [ServerRpc(RequireOwnership = false)]
+    // private void DisableOxygenServerRpc()
+    // {
+    //     //oxygenInteract.Oxygen.SetActive(false);
+    //     gameObject.GetComponent<OxygenInteract>().enabled = false;
+    //     StartDelayServerRpc();
+    // }
+
+
+    // [ServerRpc(RequireOwnership = false)]
+    // private void StartDelayServerRpc()
+    // {
+    //     //Debug.Log("Start Delay");
+    //     StartCoroutine(DisableScript(5));
+    // }
+
+    // IEnumerator DisableScript(float delay)
+    // {
+    //     DisableScriptClientRpc(true);
+    //     //Debug.Log("Quest Disabling");
+    //     yield return new WaitForSeconds(delay);
+    //     //Debug.Log("Quest re-enabled");
+    //     DisableScriptClientRpc(false);
+
+    // }
+
+    // [ClientRpc]
+    // private void DisableScriptClientRpc(bool status)
+    // {
+    //     //oxygenInteract.Oxygen.SetActive(status);
+    //     gameObject.GetComponent<OxygenInteract>().enabled = status;
+    // }
+
+
+
+    private OxygenInteract oxygenInteract;
+
+    void Start()
     {
-        DisableOxygenServerRpc();
+        oxygenInteract = gameObject.GetComponent<OxygenInteract>();
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void DisableOxygenServerRpc()
+
+    public void DisableOxygen()
     {
-        //oxygenInteract.Oxygen.SetActive(false);
-        gameObject.GetComponent<OxygenInteract>().enabled = false;
         StartDelayServerRpc();
     }
+
 
 
     [ServerRpc(RequireOwnership = false)]
@@ -32,18 +73,17 @@ public class OxygenSabotage : NetworkBehaviour
 
     IEnumerator DisableScript(float delay)
     {
-        DisableScriptClientRpc(true);
-        //Debug.Log("Quest Disabling");
-        yield return new WaitForSeconds(delay);
-        //Debug.Log("Quest re-enabled");
-        DisableScriptClientRpc(false);
+            DisableScriptClientRpc(true);
+            //Debug.Log("Door Disabling");
+            yield return new WaitForSeconds(delay);
+            //Debug.Log("Door re-enabled");
+            DisableScriptClientRpc(false);
 
     }
 
     [ClientRpc]
-    private void DisableScriptClientRpc(bool status)
-    {
-        //oxygenInteract.Oxygen.SetActive(status);
-        gameObject.GetComponent<OxygenInteract>().enabled = status;
+    private void DisableScriptClientRpc(bool status){
+        OxygenInteract script = gameObject.GetComponent<OxygenInteract>();
+        script.IsDisabled = status;
     }
 }
