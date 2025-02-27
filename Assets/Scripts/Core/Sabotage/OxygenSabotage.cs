@@ -38,7 +38,6 @@ public class OxygenSabotage : NetworkBehaviour
 
     [ClientRpc]
     private void DisableScriptClientRpc(bool status){
-        OxygenInteract script = gameObject.GetComponent<OxygenInteract>();
-        script.IsDisabled = status;
+        oxygenInteract.IsDisabled = status;
     }
 }
