@@ -5,183 +5,183 @@ using UnityEngine;
 
 public class PlayerState : NetworkBehaviour
 {
-    [Header("Player Identification")]
-    [field: SerializeField]
-    public NetworkVariable<ulong> PlayerID { get; private set; } = new NetworkVariable<ulong>(
-         default,
-         NetworkVariableReadPermission.Everyone,
-         NetworkVariableWritePermission.Server
-    );
-    [field: SerializeField]
-    public NetworkVariable<FixedString64Bytes> PlayerName { get; private set; } = new NetworkVariable<FixedString64Bytes>(
-         default,
-         NetworkVariableReadPermission.Everyone,
-         NetworkVariableWritePermission.Server
-    );
+     [Header("Player Identification")]
+     [field: SerializeField]
+     public NetworkVariable<ulong> PlayerID { get; private set; } = new NetworkVariable<ulong>(
+          default,
+          NetworkVariableReadPermission.Everyone,
+          NetworkVariableWritePermission.Server
+     );
+     [field: SerializeField]
+     public NetworkVariable<FixedString64Bytes> PlayerName { get; private set; } = new NetworkVariable<FixedString64Bytes>(
+          default,
+          NetworkVariableReadPermission.Everyone,
+          NetworkVariableWritePermission.Server
+     );
 
-    [Header("Player States")]
-    [field: SerializeField]
-    public NetworkVariable<bool> Attacking { get; private set; } = new NetworkVariable<bool>(
-         default,
-         NetworkVariableReadPermission.Everyone,
-         NetworkVariableWritePermission.Owner
-    );
-    [field: SerializeField]
-    public NetworkVariable<bool> Stunning { get; private set; } = new NetworkVariable<bool>(
-         default,
-         NetworkVariableReadPermission.Everyone,
-         NetworkVariableWritePermission.Server
-    );
-    [field: SerializeField]
-    public NetworkVariable<bool> Walking { get; private set; } = new NetworkVariable<bool>(
-         default,
-         NetworkVariableReadPermission.Everyone,
-         NetworkVariableWritePermission.Owner
-    );
-    [field: SerializeField]
-    public NetworkVariable<bool> Running { get; private set; } = new NetworkVariable<bool>(
-         default,
-         NetworkVariableReadPermission.Everyone,
-         NetworkVariableWritePermission.Owner
-    );
+     [Header("Player States")]
+     [field: SerializeField]
+     public NetworkVariable<bool> Attacking { get; private set; } = new NetworkVariable<bool>(
+          default,
+          NetworkVariableReadPermission.Everyone,
+          NetworkVariableWritePermission.Owner
+     );
+     [field: SerializeField]
+     public NetworkVariable<bool> Stunning { get; private set; } = new NetworkVariable<bool>(
+          default,
+          NetworkVariableReadPermission.Everyone,
+          NetworkVariableWritePermission.Server
+     );
+     [field: SerializeField]
+     public NetworkVariable<bool> Walking { get; private set; } = new NetworkVariable<bool>(
+          default,
+          NetworkVariableReadPermission.Everyone,
+          NetworkVariableWritePermission.Owner
+     );
+     [field: SerializeField]
+     public NetworkVariable<bool> Running { get; private set; } = new NetworkVariable<bool>(
+          default,
+          NetworkVariableReadPermission.Everyone,
+          NetworkVariableWritePermission.Owner
+     );
 
-    [Header("Health")]
-    [field: SerializeField]
-    public NetworkVariable<float> CurrentHealth { get; private set; } = new NetworkVariable<float>(
-         DefaultPlayerStatsConfig.Player.MAX_HEALTH,
-         NetworkVariableReadPermission.Everyone,
-         NetworkVariableWritePermission.Server
-    );
-    [field: SerializeField]
-    public NetworkVariable<float> MaxHealth { get; private set; } = new NetworkVariable<float>(
-         DefaultPlayerStatsConfig.Player.MAX_HEALTH,
-         NetworkVariableReadPermission.Everyone,
-         NetworkVariableWritePermission.Server
-    );
+     [Header("Health")]
+     [field: SerializeField]
+     public NetworkVariable<float> CurrentHealth { get; private set; } = new NetworkVariable<float>(
+          DefaultPlayerConfig.Player.MAX_HEALTH,
+          NetworkVariableReadPermission.Everyone,
+          NetworkVariableWritePermission.Server
+     );
+     [field: SerializeField]
+     public NetworkVariable<float> MaxHealth { get; private set; } = new NetworkVariable<float>(
+          DefaultPlayerConfig.Player.MAX_HEALTH,
+          NetworkVariableReadPermission.Everyone,
+          NetworkVariableWritePermission.Server
+     );
 
-    [Header("Dependencies")]
-    [field: SerializeField] public PlayerMovement PlayerMovement { get; private set; }
-    [field: SerializeField] public Player Player { get; private set; }
+     [Header("Dependencies")]
+     [field: SerializeField] public PlayerMovement PlayerMovement { get; private set; }
+     [field: SerializeField] public Player Player { get; private set; }
 
-    //--------------------------------------
-    // Network & Lifecycle Methods
-    //--------------------------------------
-    public override void OnNetworkSpawn()
-    {
-        if (IsServer)
-        {
-            PlayerName.Value = "Player " + NetworkObjectId;
-            PlayerID.Value = OwnerClientId;
-            CurrentHealth.Value = MaxHealth.Value;
-        }
+     //--------------------------------------
+     // Network & Lifecycle Methods
+     //--------------------------------------
+     public override void OnNetworkSpawn()
+     {
+          if (IsServer)
+          {
+               PlayerName.Value = "Player " + NetworkObjectId;
+               PlayerID.Value = OwnerClientId;
+               CurrentHealth.Value = MaxHealth.Value;
+          }
 
-        Attacking.OnValueChanged += UpdateCanMove;
-        Stunning.OnValueChanged += UpdateCanMove;
-        Player.IsAlive.OnValueChanged += UpdateCanMove;
-    }
+          Attacking.OnValueChanged += UpdateCanMove;
+          Stunning.OnValueChanged += UpdateCanMove;
+          Player.IsAlive.OnValueChanged += UpdateCanMove;
+     }
 
-    public override void OnNetworkDespawn()
-    {
-        Attacking.OnValueChanged -= UpdateCanMove;
-        Stunning.OnValueChanged -= UpdateCanMove;
-        Player.IsAlive.OnValueChanged -= UpdateCanMove;
-    }
+     public override void OnNetworkDespawn()
+     {
+          Attacking.OnValueChanged -= UpdateCanMove;
+          Stunning.OnValueChanged -= UpdateCanMove;
+          Player.IsAlive.OnValueChanged -= UpdateCanMove;
+     }
 
-    //--------------------------------------
-    // Health Management Methods
-    //--------------------------------------
+     //--------------------------------------
+     // Health Management Methods
+     //--------------------------------------
 
-    private void UpdateAlive()
-    {
-        SetAliveServerRpc(CurrentHealth.Value > 0);
-    }
+     private void UpdateAlive()
+     {
+          SetAliveServerRpc(CurrentHealth.Value > 0);
+     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void TakeDamageServerRpc(float damage)
-    {
-        if (IsServer && Player.IsAlive.Value)
-        {
-            CurrentHealth.Value = Mathf.Max(CurrentHealth.Value - damage, 0);
-            UpdateAlive();
-        }
-    }
+     [ServerRpc(RequireOwnership = false)]
+     public void TakeDamageServerRpc(float damage)
+     {
+          if (IsServer && Player.IsAlive.Value)
+          {
+               CurrentHealth.Value = Mathf.Max(CurrentHealth.Value - damage, 0);
+               UpdateAlive();
+          }
+     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void HealServerRpc(int healAmount)
-    {
-        if (IsServer)
-        {
-            CurrentHealth.Value = Mathf.Min(CurrentHealth.Value + healAmount, MaxHealth.Value);
-            UpdateAlive();
-        }
-    }
+     [ServerRpc(RequireOwnership = false)]
+     public void HealServerRpc(int healAmount)
+     {
+          if (IsServer)
+          {
+               CurrentHealth.Value = Mathf.Min(CurrentHealth.Value + healAmount, MaxHealth.Value);
+               UpdateAlive();
+          }
+     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void SetHealthServerRpc(float amount)
-    {
-        if (IsServer)
-        {
-            CurrentHealth.Value = Mathf.Max(Mathf.Min(amount, MaxHealth.Value), 0);
-            UpdateAlive();
-        }
-    }
+     [ServerRpc(RequireOwnership = false)]
+     public void SetHealthServerRpc(float amount)
+     {
+          if (IsServer)
+          {
+               CurrentHealth.Value = Mathf.Max(Mathf.Min(amount, MaxHealth.Value), 0);
+               UpdateAlive();
+          }
+     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void SetAliveServerRpc(bool value)
-    {
-        SetAlive(value);
-    }
+     [ServerRpc(RequireOwnership = false)]
+     public void SetAliveServerRpc(bool value)
+     {
+          SetAlive(value);
+     }
 
-    //--------------------------------------
-    // State Management Methods
-    //------------------------------
-    public void SetAttacking(bool value)
-    {
-        if (IsOwner)
-        { Attacking.Value = value; }
-    }
+     //--------------------------------------
+     // State Management Methods
+     //------------------------------
+     public void SetAttacking(bool value)
+     {
+          if (IsOwner)
+          { Attacking.Value = value; }
+     }
 
-    public void SetStunning(bool value)
-    {
-        if (IsServer)
-        { Stunning.Value = value; }
-    }
+     public void SetStunning(bool value)
+     {
+          if (IsServer)
+          { Stunning.Value = value; }
+     }
 
-    public void SetWalking(bool value)
-    {
-        if (IsOwner)
-        { Walking.Value = value; }
-    }
+     public void SetWalking(bool value)
+     {
+          if (IsOwner)
+          { Walking.Value = value; }
+     }
 
-    public void SetRunning(bool value)
-    {
-        if (IsOwner)
-        { Running.Value = value; }
-    }
+     public void SetRunning(bool value)
+     {
+          if (IsOwner)
+          { Running.Value = value; }
+     }
 
-    public void SetAlive(bool value)
-    {
-        if (IsServer)
-        {
-            Player.IsAlive.Value = value;
-        }
-    }
+     public void SetAlive(bool value)
+     {
+          if (IsServer)
+          {
+               Player.IsAlive.Value = value;
+          }
+     }
 
-    //--------------------------------------
-    // Movement Control Methods
-    //--------------------------------------
-    public bool IsCanMove()
-    {
-        return !(Stunning.Value || Attacking.Value);
-    }
+     //--------------------------------------
+     // Movement Control Methods
+     //--------------------------------------
+     public bool IsCanMove()
+     {
+          return !(Stunning.Value || Attacking.Value);
+     }
 
-    private void UpdateCanMove(bool previous, bool current)
-    {
-        PlayerMovement.enabled = IsCanMove();
-    }
+     private void UpdateCanMove(bool previous, bool current)
+     {
+          PlayerMovement.enabled = IsCanMove();
+     }
 
-    //--------------------------------------
-    // Utility Methods
-    //--------------------------------------
-    public float HealthPercentage => (float)CurrentHealth.Value / MaxHealth.Value;
+     //--------------------------------------
+     // Utility Methods
+     //--------------------------------------
+     public float HealthPercentage => (float)CurrentHealth.Value / MaxHealth.Value;
 }
