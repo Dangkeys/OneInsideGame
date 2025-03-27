@@ -9,16 +9,11 @@ public class AudioDeviceSettings : MonoBehaviour
 {
     public TMP_Dropdown InputDeviceDropdown;
     public TMP_Dropdown OutputDeviceDropdown;
-    public Button BackButton;
 
     private void Start()
     {
         VivoxService.Instance.AvailableInputDevicesChanged += RefreshInputDeviceList;
         VivoxService.Instance.AvailableOutputDevicesChanged += RefreshOutputDeviceList;
-        BackButton.onClick.AddListener(() =>
-        {
-            gameObject.SetActive(false);
-        });
 
         InputDeviceDropdown.onValueChanged.AddListener((i) =>
         {

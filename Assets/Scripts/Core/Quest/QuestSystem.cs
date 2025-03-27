@@ -54,7 +54,7 @@ public class QuestSystem : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         finishedQuest.OnValueChanged += HandleQuestFinished;
-        if(IsServer || IsHost)
+        if (IsServer || IsHost)
         {
             RandomQuest();
         }
@@ -94,7 +94,7 @@ public class QuestSystem : NetworkBehaviour
         {
             float percent = (float)finishedQuest.Value / maxQuest;
             scoreBar.size = percent;
-            if(percent >= 1)
+            if (percent >= 1)
             {
                 Debug.Log("Win");
             }
