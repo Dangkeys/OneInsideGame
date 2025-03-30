@@ -14,13 +14,12 @@ public class AbilityAssignment : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
 
-
-
         oneInsideLevelManager = OneInsideLevelManager.Instance;
         roleManager = oneInsideLevelManager.RoleManager;
         oneInsideGameManager = OneInsideGameManager.Instance;
         if (!oneInsideGameManager)
             return;
+        AbilityCollection = oneInsideGameManager.AbilityManager.AbilityCollection;
         networkPlayerData = oneInsideGameManager.NetcodeManager.NetworkPlayerData;
         if (IsServer)
         {

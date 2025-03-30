@@ -54,7 +54,7 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
 
 
     public CharacterManager CharacterManager { get; private set; }
-    public AbilityManager PerkManager { get; private set; }
+    public AbilityManager AbilityManager { get; private set; }
     public AudioManager AudioManager { get; private set; }
     public LobbyManager LobbyManager { get; private set; }
     public VoiceChatManager VoiceChatManager { get; private set; }
@@ -63,11 +63,14 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
     public InputReader InputReader { get; private set; }
 
     public SettingsManager SettingsManager { get; private set; }
+    
+
+
     protected override void OnAwakeInitialization()
     {
         base.OnAwakeInitialization();
         CharacterManager = GetComponentInChildren<CharacterManager>(true); // true to include inactive objects
-        PerkManager = GetComponentInChildren<AbilityManager>(true);
+        AbilityManager = GetComponentInChildren<AbilityManager>(true);
         AudioManager = GetComponentInChildren<AudioManager>(true);
         VoiceChatManager = GetComponentInChildren<VoiceChatManager>(true);
         LobbyManager = GetComponentInChildren<LobbyManager>(true);
@@ -77,7 +80,7 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
 
         if (CharacterManager == null)
             Debug.LogError("CharacterManager not found!");
-        if (PerkManager == null)
+        if (AbilityManager == null)
             Debug.LogError("PerkManager not found!");
         if (AudioManager == null)
             Debug.LogError("AudioManager not found!");
