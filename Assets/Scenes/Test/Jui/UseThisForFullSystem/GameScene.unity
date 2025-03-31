@@ -2295,7 +2295,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InputDeviceDropdown: {fileID: 2069227461}
   OutputDeviceDropdown: {fileID: 1799261608}
-  BackButton: {fileID: 489942018}
 --- !u!114 &584315129
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6976,6 +6975,10 @@ PrefabInstance:
     - target: {fileID: 66856326431436162, guid: e3cffca8405639e46addd3151d790838, type: 3}
       propertyPath: m_Name
       value: OneInsideLevelManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 358564990952665468, guid: e3cffca8405639e46addd3151d790838, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 2919621708
       objectReference: {fileID: 0}
     - target: {fileID: 1107707292627979345, guid: e3cffca8405639e46addd3151d790838, type: 3}
       propertyPath: GlobalObjectIdHash
