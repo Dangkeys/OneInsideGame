@@ -6,13 +6,14 @@ using UnityEngine.UI;
 
 public class QuestSystem : NetworkBehaviour
 {
-
     private Scrollbar scoreBar;
     [SerializeField] private Quest[] quests;
     private NetworkVariable<int> finishedQuest = new NetworkVariable<int>(0);
     [SerializeField] private int maxQuest;
     private List<GameObject> questList = new List<GameObject>();
-    private NetworkVariable<List<int>> questDisable = new NetworkVariable<List<int>>(new List<int>());
+    private NetworkVariable<List<int>> questEnable = new NetworkVariable<List<int>>(new List<int>());
+    [SerializeField] private List<QuestLocation> questLocation;
+    private NetworkVariable<List<int>> questChooseLocation = new NetworkVariable<List<int>>(new List<int>());
 
     private void Awake()
     {
@@ -25,6 +26,7 @@ public class QuestSystem : NetworkBehaviour
                 GameObject foundQuest = GameObject.Find(quest.GetGameObjectName());
                 questList.Add(foundQuest);
                 quest.ChangeQuestInfo(foundQuest.GetComponent<QuestInfo>());
+                foundQuest.SetActive(false);
             }
         }
     }
@@ -107,19 +109,27 @@ public class QuestSystem : NetworkBehaviour
 
     private void RandomQuest()
     {
-        if (questDisable.Value.Count > 0)
+        if (questEnable.Value.Count > 0)
         {
-            questDisable.Value.Clear();
+            questEnable.Value.Clear();
         }
 
-        int amount = questList.Count - maxQuest;
-        List<int> possibleIndex = Enumerable.Range(0, questList.Count).ToList();
-
-        for (int i = 0; i < amount; i++)
+        if(questChooseLocation.Value.Count > 0)
         {
-            int index = Random.Range(0, possibleIndex.Count);
-            questDisable.Value.Add(possibleIndex[index]);
-            possibleIndex.RemoveAt(index);
+            questChooseLocation.Value.Clear();
+        }
+
+        List<int> questIndex = Enumerable.Range(0, questList.Count).ToList();
+        List<int> locationIndex = Enumerable.Range(0, questLocation.Count).ToList();
+
+        for (int i = 0; i < maxQuest; i++)
+        {
+            int newQuestIndex = Random.Range(0, questIndex.Count);
+            questEnable.Value.Add(questIndex[newQuestIndex]);
+            questIndex.RemoveAt(newQuestIndex);
+            int newLocationIndex = Random.Range(0, locationIndex.Count);
+            questChooseLocation.Value.Add(locationIndex[newLocationIndex]);
+            locationIndex.RemoveAt(newLocationIndex);
         }
     }
 
@@ -128,22 +138,24 @@ public class QuestSystem : NetworkBehaviour
     {
         if (!IsHost)
         {
-            DisableQuest();
+            UpdateQuest();
         }
-        DisableQuestClientRpc();
+        UpdateQuestClientRpc();
     }
 
     [ClientRpc]
-    private void DisableQuestClientRpc()
+    private void UpdateQuestClientRpc()
     {
-        DisableQuest();
+        UpdateQuest();
     }
 
-    private void DisableQuest()
+    private void UpdateQuest()
     {
-        foreach (int index in questDisable.Value)
+        int amount = questList.Count - maxQuest;
+        for (int i = 0;i < amount; i++)
         {
-            questList[index].SetActive(false);
+            questList[questEnable.Value[i]].SetActive(true);
+            questList[questEnable.Value[i]].transform.position = questLocation[questChooseLocation.Value[i]].GetLocation();
         }
     }
 }

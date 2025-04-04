@@ -103,6 +103,10 @@ public class PlayerAnimation : NetworkBehaviour
 
         currentDeadbody = Instantiate(DeadbodyPrefab, transform.position, transform.rotation);
         NetworkObject deadbodyNetworkObject = currentDeadbody.GetComponent<NetworkObject>();
+
+        DeadBody deadBodyInteract = currentDeadbody.GetComponent<DeadBody>();
+        deadBodyInteract.DeadBodyOwnerID.Value = PlayerScript.OwnerClientId;
+
         deadbodyNetworkObject.Spawn();
 
         if (OneInsideLevelManager.Instance)
