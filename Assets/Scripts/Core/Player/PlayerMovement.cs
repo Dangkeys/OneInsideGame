@@ -40,9 +40,6 @@ public class PlayerMovement : NetworkBehaviour
     private float verticalVelocity;
 
     private Animator playerAnimator;
-
-
-    private bool isJumping = false;
     private bool isGrounded;
 
     private PlayerState playerState;
@@ -163,8 +160,6 @@ public class PlayerMovement : NetworkBehaviour
 
         Vector3 verticalMovement = new Vector3(0f, verticalVelocity, 0f);
         CharacterController.Move(verticalMovement * Time.deltaTime);
-
-        isJumping = false;
     }
 
     public override void OnNetworkDespawn()
