@@ -62,10 +62,6 @@ public class PlayerMovement : NetworkBehaviour
         verticalVelocity = CharacterController.velocity.y;
     }
 
-    void OnEnable()
-    {
-        verticalVelocity = CharacterController.velocity.y;
-    }
 
     public override void OnNetworkSpawn()
     {

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 public class CharacterManager : NetworkBehaviour
 {
-    [SerializeField] public CharacterDatabase CharactersCollection;
+    [SerializeField] public CharacterCollectionSO CharactersCollection;
 
     private void Awake()
     {
@@ -86,7 +86,7 @@ public class CharacterManager : NetworkBehaviour
     [ClientRpc]
     public void ChangeCharacterClientRpc(ulong clientId, string character, Character.SearchType searchType)
     {
-        Player targetPlayer = PlayerManager.GetPlayerByClientId(clientId);
+        Player targetPlayer = PlayerManager.GetPlayerScriptByClientId(clientId);
         CharacterSO characterSO = GetCharacterSO(character, searchType);
         if (characterSO == null)
         {

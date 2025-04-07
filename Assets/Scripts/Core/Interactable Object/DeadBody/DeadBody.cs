@@ -9,7 +9,7 @@ public class DeadBody : NetworkBehaviour
     public void OnInteract(InteractionData interactionData)
     {
         if (gameObject.TryGetComponent<NetworkObject>(out NetworkObject deadBodyNetworkObject)
-            && interactionData.Interactor.TryGetComponent<NetworkObject>(out NetworkObject interactorNetworkObject))
+            && interactionData.InteractorGameObject.TryGetComponent<NetworkObject>(out NetworkObject interactorNetworkObject))
         {
             ulong interactorID = interactorNetworkObject.OwnerClientId;
 
@@ -23,7 +23,7 @@ public class DeadBody : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         Debug.Log(PlayerManager.GetPlayerByClientId(DeadBodyOwnerID.Value).OwnerClientId);
-        Debug.Log(PlayerManager.GetPlayerByClientId(DeadBodyOwnerID.Value).CharacterName.Value.ToString());
-        CharacterManager.ChangeChracter(DeadBodyPlayerVisual, PlayerManager.GetPlayerByClientId(DeadBodyOwnerID.Value).CharacterName.Value.ToString());
+        Debug.Log(PlayerManager.GetPlayerScriptByClientId(DeadBodyOwnerID.Value).CharacterName.Value.ToString());
+        CharacterManager.ChangeChracter(DeadBodyPlayerVisual, PlayerManager.GetPlayerScriptByClientId(DeadBodyOwnerID.Value).CharacterName.Value.ToString());
     }
 }

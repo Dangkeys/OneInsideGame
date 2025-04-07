@@ -130,7 +130,7 @@ public class PlayerManager : NetworkBehaviour
         {
             GameObject player = Instantiate(playerPrefab.gameObject, Vector3.zero, Quaternion.identity);
             NetworkObject playerNetworkObject = player.GetComponent<NetworkObject>();
-            playerNetworkObject.SpawnAsPlayerObject(clientId);
+            playerNetworkObject.SpawnAsPlayerObject(clientId, true);
 
         }
     }
@@ -196,15 +196,5 @@ public class PlayerManager : NetworkBehaviour
     public static List<Player> GetSpectatorPlayers(bool includeSelf = false)
     {
         return GetAllPlayer(player => !player.GetComponent<Player>().IsAlive.Value && (includeSelf || !player.IsOwner));
-    }
-
-    public static Player GetPlayerByClientId(ulong clientId)
-    {
-        return GetAllPlayer((player) => player.OwnerClientId == clientId)[0];
-    }
-
-    public static GameObject GetPlayerVisual(Player player)
-    {
-        return player.PlayerVisual;
     }
 }
