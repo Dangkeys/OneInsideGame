@@ -182,7 +182,7 @@ public class Player : NetworkBehaviour
     private void TakeDamageServerRpc(float damage = DefaultPlayerConfig.Imposter.DAMAGE, ServerRpcParams serverRpcParams = default)
     {
         if (
-        PlayerManager.GetPlayerByClientId(serverRpcParams.Receive.SenderClientId).Role.Value == PlayerRole.Imposter
+        PlayerManager.GetPlayerRoleByClientId(serverRpcParams.Receive.SenderClientId) == PlayerRole.Imposter
         && IsAlive.Value
         )
             TakeDamage(damage);
