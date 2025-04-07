@@ -198,5 +198,13 @@ public class PlayerManager : NetworkBehaviour
         return GetAllPlayer(player => !player.GetComponent<Player>().IsAlive.Value && (includeSelf || !player.IsOwner));
     }
 
+    public static Player GetPlayerByClientId(ulong clientId)
+    {
+        return GetAllPlayer((player) => player.OwnerClientId == clientId)[0];
+    }
 
+    public static GameObject GetPlayerVisual(Player player)
+    {
+        return player.PlayerVisual;
+    }
 }

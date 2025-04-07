@@ -27,7 +27,7 @@ public class PlayerMovement : NetworkBehaviour
     [SerializeField] private float groundedGravity = -0.5f;
 
     [Header("Ground Check Settings")]
-    [SerializeField] private float groundCheckDistance = 0.05f;
+    [SerializeField] private float groundCheckDistance = 0.1f;
 
     //--------------------------------------
     // Private Variables
@@ -57,6 +57,16 @@ public class PlayerMovement : NetworkBehaviour
         InputReader = OneInsideGameManager.Instance.InputReader;
     }
 
+    void OnEnable()
+    {
+        verticalVelocity = CharacterController.velocity.y;
+    }
+
+    void OnEnable()
+    {
+        verticalVelocity = CharacterController.velocity.y;
+    }
+
     public override void OnNetworkSpawn()
     {
         if (!IsOwner)
@@ -69,7 +79,6 @@ public class PlayerMovement : NetworkBehaviour
         moveSpeed = WalkSpeed;
         InputReader.SprintEvent += Sprint;
         InputReader.JumpEvent += Jump;
-
         if (!playerManager)
             return;
         playerManager.OnEnableAllPlayersMovement += EnablePlayerMovement;
@@ -79,13 +88,12 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (!IsOwner)
             return;
-        Vector3 moveInput = Vector3.zero;
-        if (InputReader)
-        {
-            moveInput = new Vector3(InputReader.MovementValue.x, 0f, InputReader.MovementValue.y);
-        }
+
+        isGrounded = CheckGrounded();
+        playerAnimator.SetBool("Floating", !isGrounded);
+
+        Vector3 moveInput = new Vector3(InputReader.MovementValue.x, 0f, InputReader.MovementValue.y);
         UpdateMovementAnimation(moveInput);
-        UpdateJumpAnimation();
         ApplyGravity();
     }
 
@@ -112,22 +120,6 @@ public class PlayerMovement : NetworkBehaviour
         }
     }
 
-    private void UpdateJumpAnimation()
-    {
-        isGrounded = CheckGrounded();
-        playerAnimator.SetBool("Floating", !isGrounded);
-
-        if (isGrounded && verticalVelocity < 0f)
-        {
-            verticalVelocity = 0f;
-            if (isJumping)
-            {
-                verticalVelocity = JumpHeight;
-                playerAnimator.SetTrigger("Jump");
-            }
-        }
-    }
-
     private void Sprint(bool sprint)
     {
         if (!IsOwner)
@@ -143,7 +135,12 @@ public class PlayerMovement : NetworkBehaviour
         if (!IsOwner)
             return;
 
-        isJumping = true;
+
+        if (isGrounded)
+        {
+            verticalVelocity = JumpHeight;
+            playerAnimator.SetTrigger("Jump");
+        }
 
         playerState.SetWalking(false);
         playerState.SetRunning(false);
@@ -151,7 +148,10 @@ public class PlayerMovement : NetworkBehaviour
 
     bool CheckGrounded()
     {
-        return Physics.Raycast(transform.position, Vector3.down, groundCheckDistance) || CharacterController.isGrounded || math.abs(verticalVelocity) < 0.1f;
+        return Physics.Raycast(transform.position, Vector3.down, groundCheckDistance)
+            || CharacterController.isGrounded
+            || math.abs(verticalVelocity) < 0.1f;
+        ;
     }
 
     private void ApplyGravity()
@@ -182,6 +182,7 @@ public class PlayerMovement : NetworkBehaviour
             return;
         playerManager.OnEnableAllPlayersMovement -= EnablePlayerMovement;
     }
+
     public void EnablePlayerMovement(bool shouldMove)
     {
         if (!shouldMove)
@@ -194,6 +195,17 @@ public class PlayerMovement : NetworkBehaviour
         }
         if (AxisController)
             AxisController.enabled = shouldMove;
+    }
+
+    private void OnDrawGizmos()
+    {
+        DrawCheckGround();
+    }
+
+    private void DrawCheckGround()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawRay(transform.position, Vector3.down * groundCheckDistance);
     }
 
 

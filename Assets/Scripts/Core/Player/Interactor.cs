@@ -93,6 +93,7 @@ public class Interactor : NetworkBehaviour
         Gizmos.color = Color.blue;
         Gizmos.DrawRay(transform.position, transform.forward * InteractionRadius);
     }
+
     public override void OnNetworkDespawn()
     {
         if (!IsOwner)

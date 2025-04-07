@@ -18,15 +18,15 @@ public class Player : NetworkBehaviour
 
     [Header("Spectator")]
     [field: SerializeField] public Material SpectatorMaterial { get; private set; }
-    [field: SerializeField] public GameObject CurrentPlayerVisual { get; private set; }
+    [field: SerializeField] public GameObject PlayerVisual { get; private set; }
 
     public NetworkVariable<bool> IsAlive = new NetworkVariable<bool>(true);
-
     public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>(PlayerRole.NONE);
 
     public AbilityDataSO AbilityData { get; private set; }
 
     public event Action OnAbilityDataChanged;
+    public NetworkVariable<FixedString64Bytes> CharacterName = new NetworkVariable<FixedString64Bytes>(OneInside.Constants.Character.Default);
 
     //--------------------------------------
     // Private Variables
@@ -49,7 +49,7 @@ public class Player : NetworkBehaviour
         hitBoxes = Hitbox.GetComponents<BoxCollider>();
         playerState = GetComponent<PlayerState>();
 
-        playerRenderer = CurrentPlayerVisual.GetComponent<Renderer>();
+        playerRenderer = CharacterManager.GetCharacterSkin(PlayerVisual).GetComponent<Renderer>();
         defaultPlayerMaterial = playerRenderer.material;
 
         Role.OnValueChanged += OnRoleChanged;
@@ -62,6 +62,8 @@ public class Player : NetworkBehaviour
         }
         else
         {
+            CharacterName.OnValueChanged += OnCharacterNameChanged;
+            InputReader.AttackEvent += OnAttackLocal;
 
             playerState.SetAttacking(false);
             playerState.SetStunning(false);
@@ -84,6 +86,8 @@ public class Player : NetworkBehaviour
         if (!IsOwner)
             return;
 
+        InputReader.AttackEvent -= OnAttackLocal;
+        CharacterName.OnValueChanged -= OnCharacterNameChanged;
 
         if (!playerManager)
             return;
@@ -93,6 +97,28 @@ public class Player : NetworkBehaviour
         if (baseAbility != null)
         baseAbility.UnSubScribeEvent();
         
+    }
+
+    //--------------------------------------
+    // Character
+    //--------------------------------------
+
+    public void OnCharacterNameChanged(FixedString64Bytes previousValue, FixedString64Bytes newValue)
+    {
+        OneInsideGameManager.Instance.CharacterManager.ChangeCharacterServerRpc(newValue.ToString());
+    }
+
+    [ServerRpc]
+    public void SetCharacterNameServerRpc(FixedString64Bytes character)
+    {
+        SetCharacterNameClientRpc(character);
+    }
+
+    [ClientRpc]
+    public void SetCharacterNameClientRpc(FixedString64Bytes character)
+    {
+        Debug.Log(character);
+        CharacterName.Value = character;
     }
     //--------------------------------------
     // Debug Methods
@@ -108,8 +134,17 @@ public class Player : NetworkBehaviour
             playerState.SetAliveServerRpc(true);
             playerState.SetHealthServerRpc(playerState.MaxHealth.Value);
         }
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            SetCharacterNameServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[0].name);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            SetCharacterNameServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[1].name);
+        }
     }
-    //--------------------------------------
+    //--------------
     // Attack Methods
     //--------------------------------------
 
