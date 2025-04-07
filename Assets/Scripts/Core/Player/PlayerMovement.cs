@@ -131,7 +131,7 @@ public class PlayerMovement : NetworkBehaviour
 
     private void Jump(bool value)
     {
-        if (!IsOwner || !isGrounded || !playerState.IsCanMove())
+        if (!IsOwner || !isGrounded || !playerState.IsCanMove() || value == false)
             return;
 
         verticalVelocity = JumpHeight;

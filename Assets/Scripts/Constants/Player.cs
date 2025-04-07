@@ -11,9 +11,13 @@ namespace OneInside.Constants
 
     public static class DefaultPlayerConfig
     {
-        public static class Crewmate
+        public static class Player
         {
             public const float MAX_HEALTH = 3.0f;
+        }
+
+        public static class Crewmate
+        {
             public const float STUN_DURATION = 2.0f;
         }
 
