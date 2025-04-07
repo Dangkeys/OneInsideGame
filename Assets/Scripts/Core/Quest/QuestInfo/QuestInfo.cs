@@ -50,7 +50,7 @@ public abstract class QuestInfo : NetworkBehaviour
     {
         if (!playerMovement && interactionData != null)
         {
-            playerMovement = interactionData.Interactor.gameObject.GetComponent<PlayerMovement>();
+            playerMovement = interactionData.InteractorGameObject.gameObject.GetComponent<PlayerMovement>();
         }
         if (playerMovement)
         {

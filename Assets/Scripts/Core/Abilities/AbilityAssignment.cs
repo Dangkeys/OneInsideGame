@@ -19,7 +19,6 @@ public class AbilityAssignment : NetworkBehaviour
         oneInsideGameManager = OneInsideGameManager.Instance;
         if (!oneInsideGameManager)
             return;
-        AbilityCollection = oneInsideGameManager.AbilityManager.AbilityCollection;
         networkPlayerData = oneInsideGameManager.NetcodeManager.NetworkPlayerData;
         if (IsServer)
         {

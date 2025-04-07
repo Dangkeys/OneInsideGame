@@ -7,7 +7,7 @@ public class PickupObj : NetworkBehaviour, IInteractable
     private bool hasObj;
     public void Interact(InteractionData interactionData)
     {
-        if (interactionData.Interactor.TryGetComponent<Player>(out Player player))
+        if (interactionData.InteractorGameObject.TryGetComponent<Player>(out Player player))
         {
             if (player.TryGetComponent<NetworkObject>(out NetworkObject networkObject))
             {

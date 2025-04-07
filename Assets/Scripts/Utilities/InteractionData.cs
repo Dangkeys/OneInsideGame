@@ -1,8 +1,10 @@
+using UnityEngine;
+
 public class InteractionData
 {
-    public Interactor Interactor;
-    public InteractionData(Interactor interactor)
+    public GameObject InteractorGameObject;
+    public InteractionData(GameObject interactor)
     {
-        Interactor = interactor;
+        InteractorGameObject = interactor;
     }
 }

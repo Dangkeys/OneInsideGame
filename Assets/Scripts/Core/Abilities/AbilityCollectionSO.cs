@@ -1,15 +1,46 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "AbilityCollectionSO", menuName = "Scriptable Objects/Ability/AbilityCollectionSO", order = 0)]
 public class AbilityCollectionSO : ScriptableObject
 {
     [field: SerializeField] public List<AbilityDataSO> Abilities;
-
-    public AbilityDataSO GetAbilityById(string id)
+    public List<AbilityDataSO> GetAllAbilties()
     {
-        return Abilities.Find(ability => ability.Id == id);
+        return Abilities;
     }
+
+    public List<AbilityDataSO> GetAbilitiesByType(AbilityType type)
+    {
+        return Abilities.Where(ability => ability.Type == type).ToList();
+    }
+
+    public AbilityDataSO GetAbilityById(string abilityId)
+    {
+        return Abilities.FirstOrDefault(ability => ability.Id == abilityId);
+    }
+
+    public AbilityDataSO GetAbilityByName(string abilityName)
+    {
+        return Abilities.FirstOrDefault(ability => ability.Name == abilityName);
+    }
+
+    public List<AbilityDataSO> GetAbilitiesByKeyword(string keyword)
+    {
+        keyword = keyword.ToLower();
+        return Abilities.Where(ability =>
+            ability.Name.ToLower().Contains(keyword) ||
+            ability.Description.ToLower().Contains(keyword)
+        ).ToList();
+    }
+
+    public List<AbilityDataSO> QueryAbilities(Func<AbilityDataSO, bool> predicate)
+    {
+        return Abilities.Where(predicate).ToList();
+    }
+
 
     public AbilityDataSO GetRandomAbility(AbilityType type)
     {
@@ -20,17 +51,18 @@ public class AbilityCollectionSO : ScriptableObject
             return null;
         }
 
-        return filteredAbilities[Random.Range(0, filteredAbilities.Count)];
+        return filteredAbilities[UnityEngine.Random.Range(0, filteredAbilities.Count)];
     }
 
     public AbilityDataSO GetRandomAbilityWithNeutral(AbilityType type)
     {
-        if (Random.value < 0.7f)
+        if (UnityEngine.Random.value < 0.7f)
         {
             var ability = GetRandomAbility(type);
-            if (ability != null) return ability;
+            if (ability != null)
+                return ability;
         }
-        
+
         return GetRandomAbility(AbilityType.NEUTRAL);
     }
 

@@ -30,6 +30,7 @@ public static class CloudSaveWrapper
     }
     public static async Task ForceSaveSingleData(string key, string value)
     {
+        Debug.Log($"Saving {key}:{value}");
         try
         {
             Dictionary<string, object> oneElement = new Dictionary<string, object>();
@@ -84,6 +85,7 @@ public static class CloudSaveWrapper
             else
             {
                 Debug.Log($"There is no such key as {key}!");
+                return default;
             }
         }
         catch (CloudSaveValidationException e)

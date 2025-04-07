@@ -32,7 +32,7 @@ public class VentInteract : NetworkBehaviour, IInteractable
             ventID = Array.IndexOf(gameObject.GetComponentInParent<VentSystem>().VentsList, gameObject.transform);
             gameObject.GetComponentInParent<VentSystem>().CurrentVentIndex = ventID;
 
-            if (interactionData.Interactor.TryGetComponent<Player>(out Player interactor))
+            if (interactionData.InteractorGameObject.TryGetComponent<Player>(out Player interactor))
             {
                 if (interactor.TryGetComponent<NetworkObject>(out NetworkObject networkObject))
                 {
@@ -41,7 +41,7 @@ public class VentInteract : NetworkBehaviour, IInteractable
             }
         }
 
-        if (interactionData.Interactor.TryGetComponent<Player>(out Player player))
+        if (interactionData.InteractorGameObject.TryGetComponent<Player>(out Player player))
         {
             CharacterController cc = player.GetComponent<CharacterController>();
             if (!InVent)

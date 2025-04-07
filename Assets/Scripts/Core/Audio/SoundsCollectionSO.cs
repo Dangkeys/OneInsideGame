@@ -6,8 +6,8 @@ using UnityEngine;
 public class SoundsCollectionSO : ScriptableObject
 {
     [Header("Music")]
-    public SoundSO[] MainMenuMusic;
+    [field: SerializeField] public SoundSO[] MainMenuMusic { get; private set; }
 
     [Header("SFX")]
-    public SoundSO[] Jump;
+    [field: SerializeField] public SoundSO[] Jump {get; private set; }
 }

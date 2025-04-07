@@ -8,7 +8,7 @@ public class DeadBodyInteract : NetworkBehaviour, IInteractable
     public void Interact(InteractionData interactionData)
     {
         if (deadBody.TryGetComponent<NetworkObject>(out NetworkObject deadBodyNetworkObject)
-            && interactionData.Interactor.TryGetComponent<NetworkObject>(out NetworkObject interactorNetworkObject))
+            && interactionData.InteractorGameObject.TryGetComponent<NetworkObject>(out NetworkObject interactorNetworkObject))
         {
             ulong deadBodyOwnerID = deadBodyNetworkObject.OwnerClientId;
             ulong interactorID = interactorNetworkObject.OwnerClientId;
@@ -21,7 +21,7 @@ public class DeadBodyInteract : NetworkBehaviour, IInteractable
 
     public bool CanInteract(InteractionData interactionData)
     {
-        if (interactionData.Interactor.TryGetComponent<Player>(out Player player))
+        if (interactionData.InteractorGameObject.TryGetComponent<Player>(out Player player))
         {
             return player.IsAlive.Value;
         }

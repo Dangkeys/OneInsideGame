@@ -25,7 +25,7 @@ public class Interactor : NetworkBehaviour
         IInteractable nearestInteractable = FindNearestInteractable();
         if (nearestInteractable != null)
         {
-            nearestInteractable.Interact(new InteractionData(this));
+            nearestInteractable.Interact(new InteractionData(this.gameObject));
         }
     }
 
@@ -47,7 +47,7 @@ public class Interactor : NetworkBehaviour
         {
             if (collider.TryGetComponent(out IInteractable interactable))
             {
-                if (interactable.CanInteract(new InteractionData(this)))
+                if (interactable.CanInteract(new InteractionData(this.gameObject)))
                 {
                     interactables.Add(interactable);
                 }

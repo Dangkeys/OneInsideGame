@@ -8,7 +8,7 @@ public class OxygenInteract : MonoBehaviour, IInteractable
     {
         if (!playerMovement)
         {
-            playerMovement = interactionData.Interactor.GetComponent<PlayerMovement>();
+            playerMovement = interactionData.InteractorGameObject.GetComponent<PlayerMovement>();
         }
         if(playerMovement)
         {
