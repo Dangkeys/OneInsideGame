@@ -191,4 +191,9 @@ public class PlayerManager : NetworkBehaviour
     {
         return player.PlayerVisual;
     }
+
+    public static PlayerRole GetPlayerRoleByClientId(ulong clientId)
+    {
+        return GetPlayerByClientId(clientId).Role.Value;
+    }
 }

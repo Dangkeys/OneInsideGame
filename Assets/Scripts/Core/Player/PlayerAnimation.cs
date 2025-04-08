@@ -83,6 +83,23 @@ public class PlayerAnimation : NetworkBehaviour
     }
 
     //--------------------------------------
+    // Public Methods
+    //--------------------------------------
+
+    public void ResetAnimation()
+    {
+        foreach (var parameter in playerAnimator.parameters)
+        {
+            switch (parameter.type)
+            {
+                case AnimatorControllerParameterType.Bool:
+                    playerAnimator.SetBool(parameter.name, false);
+                    break;
+            }
+        }
+    }
+
+    //--------------------------------------
     // Ragdoll Methods
     //--------------------------------------
 
