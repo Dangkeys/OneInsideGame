@@ -1,3 +1,4 @@
+using OneInside.Constants;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -46,14 +47,14 @@ public class PlayerState : NetworkBehaviour
 
     [Header("Health")]
     [field: SerializeField]
-    public NetworkVariable<int> CurrentHealth { get; private set; } = new NetworkVariable<int>(
-         3,
+    public NetworkVariable<float> CurrentHealth { get; private set; } = new NetworkVariable<float>(
+         DefaultPlayerConfig.Player.MAX_HEALTH,
          NetworkVariableReadPermission.Everyone,
          NetworkVariableWritePermission.Server
     );
     [field: SerializeField]
-    public NetworkVariable<int> MaxHealth { get; private set; } = new NetworkVariable<int>(
-         3,
+    public NetworkVariable<float> MaxHealth { get; private set; } = new NetworkVariable<float>(
+         DefaultPlayerConfig.Player.MAX_HEALTH,
          NetworkVariableReadPermission.Everyone,
          NetworkVariableWritePermission.Server
     );
@@ -96,7 +97,7 @@ public class PlayerState : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void TakeDamageServerRpc(int damage)
+    public void TakeDamageServerRpc(float damage)
     {
         if (IsServer && Player.IsAlive.Value)
         {
@@ -116,7 +117,7 @@ public class PlayerState : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void SetHealthServerRpc(int amount)
+    public void SetHealthServerRpc(float amount)
     {
         if (IsServer)
         {
