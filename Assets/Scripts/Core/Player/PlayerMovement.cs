@@ -1,4 +1,5 @@
 using System;
+using OneInside.Constants;
 using QFSW.QC;
 using Unity.Cinemachine;
 using Unity.Mathematics;
@@ -14,20 +15,22 @@ public class PlayerMovement : NetworkBehaviour
     [field: SerializeField] public CharacterController CharacterController { get; private set; }
     [field: SerializeField] public Transform MainCameraTransform { get; private set; }
     [field: SerializeField] public CinemachineInputAxisController AxisController { get; private set; }
+    [field: SerializeField] public PlayerAnimation PlayerAnimation { get; private set; }
 
     [Header("Movement Settings")]
-    [field: SerializeField] public float WalkSpeed { get; private set; } = 6f;
-    [field: SerializeField] public float RunSpeed { get; private set; } = 12f;
-    [field: SerializeField] public float RotationSpeed { get; private set; } = 15f;
-    [field: SerializeField] public float TurnSmoothTime { get; private set; } = .1f;
-    [field: SerializeField] public float JumpHeight { get; private set; } = 6f;
+    [field: SerializeField] public float WalkSpeed { get; private set; } = DefaultPlayerConfig.Movement.WALK_SPEED;
+    [field: SerializeField] public float RunSpeed { get; private set; } = DefaultPlayerConfig.Movement.RUN_SPEED;
+    [field: SerializeField] public float RotationSpeed { get; private set; } = DefaultPlayerConfig.Movement.ROTATION_SPEED;
+    [field: SerializeField] public float TurnSmoothTime { get; private set; } = DefaultPlayerConfig.Movement.TURN_SMOOTH_TIME;
+    [field: SerializeField] public float JumpHeight { get; private set; } = DefaultPlayerConfig.Movement.JUMP_HEIGHT;
 
     [Header("Gravity Settings")]
-    [SerializeField] private float gravityMultiplier = 1f;
-    [SerializeField] private float groundedGravity = -0.5f;
+    [SerializeField] private float gravityMultiplier = DefaultPlayerConfig.Movement.GRAVITY;
+    [SerializeField] private float groundedGravity = DefaultPlayerConfig.Movement.GROUNDED_GRAVITY;
+    [SerializeField] private float maxDownSpeed = DefaultPlayerConfig.Movement.MAX_DOWN_SPEED;
 
     [Header("Ground Check Settings")]
-    [SerializeField] private float groundCheckDistance = 0.1f;
+    [SerializeField] private float groundCheckDistance = DefaultPlayerConfig.Movement.GROUND_CHECK_DISTANCE;
 
     //--------------------------------------
     // Private Variables
@@ -35,12 +38,8 @@ public class PlayerMovement : NetworkBehaviour
     private float moveSpeed;
     private float turnSmoothVelocity;
     private float verticalVelocity;
-    private readonly float terminalVelocity = -53f;
 
     private Animator playerAnimator;
-
-
-    private bool isJumping = false;
     private bool isGrounded;
 
     private PlayerState playerState;
@@ -78,6 +77,13 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (!IsOwner)
             return;
+
+        if (!playerState.IsCanMove())
+        {
+            PlayerAnimation.ResetAnimation();
+            return;
+        }
+
 
         isGrounded = CheckGrounded();
         playerAnimator.SetBool("Floating", !isGrounded);
@@ -122,15 +128,11 @@ public class PlayerMovement : NetworkBehaviour
 
     private void Jump(bool value)
     {
-        if (!IsOwner)
+        if (!IsOwner || !isGrounded || !playerState.IsCanMove() || value == false)
             return;
 
-
-        if (isGrounded)
-        {
-            verticalVelocity = JumpHeight;
-            playerAnimator.SetTrigger("Jump");
-        }
+        verticalVelocity = JumpHeight;
+        playerAnimator.SetTrigger("Jump");
 
         playerState.SetWalking(false);
         playerState.SetRunning(false);
@@ -153,13 +155,11 @@ public class PlayerMovement : NetworkBehaviour
         else
         {
             verticalVelocity += Physics.gravity.y * gravityMultiplier * Time.deltaTime;
-            verticalVelocity = Mathf.Max(verticalVelocity, terminalVelocity);
+            verticalVelocity = Mathf.Max(verticalVelocity, maxDownSpeed);
         }
 
         Vector3 verticalMovement = new Vector3(0f, verticalVelocity, 0f);
         CharacterController.Move(verticalMovement * Time.deltaTime);
-
-        isJumping = false;
     }
 
     public override void OnNetworkDespawn()

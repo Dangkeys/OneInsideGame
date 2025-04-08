@@ -19,6 +19,7 @@ public class Player : NetworkBehaviour
     [field: SerializeField] public Material SpectatorMaterial { get; private set; }
     [field: SerializeField] public GameObject PlayerVisual { get; private set; }
 
+    [Header("Status")]
     public NetworkVariable<bool> IsAlive = new NetworkVariable<bool>(true);
     public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>(PlayerRole.None);
     public NetworkVariable<FixedString64Bytes> CharacterName = new NetworkVariable<FixedString64Bytes>(OneInside.Constants.Character.Default);
@@ -141,6 +142,9 @@ public class Player : NetworkBehaviour
 
     public async void OnAttackLocal()
     {
+        if (Role.Value != PlayerRole.Imposter)
+            return;
+
         if (!playerState.IsCanMove())
             return;
 
@@ -165,7 +169,7 @@ public class Player : NetworkBehaviour
             }
         }
 
-        await Awaitable.WaitForSecondsAsync(1);
+        await Awaitable.WaitForSecondsAsync(DefaultPlayerConfig.Imposter.ATTACK_COOLDOWN);
 
         playerState.SetAttacking(false);
     }
@@ -175,12 +179,16 @@ public class Player : NetworkBehaviour
     //--------------------------------------
 
     [ServerRpc(RequireOwnership = false)]
-    private void TakeDamageServerRpc(int damage = 1)
+    private void TakeDamageServerRpc(float damage = DefaultPlayerConfig.Imposter.DAMAGE, ServerRpcParams serverRpcParams = default)
     {
-        TakeDamage(damage);
+        if (
+        PlayerManager.GetPlayerRoleByClientId(serverRpcParams.Receive.SenderClientId) == PlayerRole.Imposter
+        && IsAlive.Value
+        )
+            TakeDamage(damage);
     }
 
-    private async void TakeDamage(int damage = 1)
+    private async void TakeDamage(float damage)
     {
         if (playerState.Stunning.Value || !IsAlive.Value)
             return;
@@ -189,7 +197,7 @@ public class Player : NetworkBehaviour
 
         playerState.TakeDamageServerRpc(damage);
 
-        await Awaitable.WaitForSecondsAsync(2.0f);
+        await Awaitable.WaitForSecondsAsync(DefaultPlayerConfig.Crewmate.STUN_DURATION);
 
         playerState.SetStunning(false);
     }
