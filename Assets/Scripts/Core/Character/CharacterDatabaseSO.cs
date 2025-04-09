@@ -19,7 +19,7 @@ public class CharacterDatabase : ScriptableObject
     {
         if (searchType == Character.SearchType.Default)
         {
-            searchType = Character.SearchType.Name;
+            searchType = Character.SearchType.ID;
         }
 
         CharacterSO characterSO = null;

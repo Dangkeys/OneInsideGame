@@ -7,6 +7,8 @@ using System.Collections.Generic;
 public class CharacterManager : NetworkBehaviour
 {
     [SerializeField] public CharacterDatabase CharactersCollection;
+    [SerializeField] public CharacterSO DefaultCrewmateCharacter;
+    [SerializeField] public CharacterSO DefaultImposterCharacter;
 
     private void Awake()
     {

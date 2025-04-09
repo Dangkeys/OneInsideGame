@@ -16,6 +16,21 @@ public class CharacterSO : ScriptableObject
 
     public void Initialize()
     {
+        if (CharacterName == null)
+        {
+            CharacterName = name;
+        }
+
+        if (ID == null)
+        {
+            ID = CharacterName;
+        }
+
+        if (CharacterBIO == null)
+        {
+            CharacterBIO = "Hi, I'm " + CharacterName;
+        }
+
         if (CharacterVisual != null)
         {
             CharacterVisual.name = CharacterName;

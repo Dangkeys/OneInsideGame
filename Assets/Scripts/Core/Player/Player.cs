@@ -22,7 +22,11 @@ public class Player : NetworkBehaviour
     [Header("Status")]
     public NetworkVariable<bool> IsAlive = new NetworkVariable<bool>(true);
     public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>(PlayerRole.None);
-    public NetworkVariable<FixedString64Bytes> CharacterName = new NetworkVariable<FixedString64Bytes>(OneInside.Constants.Character.Default);
+
+    public NetworkVariable<FixedString64Bytes> CrewmateCharacterID = new NetworkVariable<FixedString64Bytes>(OneInsideGameManager.Instance.CharacterManager.DefaultCrewmateCharacter.ID);
+    public NetworkVariable<FixedString64Bytes> ImposterCharacterID = new NetworkVariable<FixedString64Bytes>(OneInsideGameManager.Instance.CharacterManager.DefaultImposterCharacter.ID);
+
+    public NetworkVariable<FixedString64Bytes> CurrentCharacterID = new NetworkVariable<FixedString64Bytes>(OneInsideGameManager.Instance.CharacterManager.DefaultCrewmateCharacter.ID);
 
     //--------------------------------------
     // Private Variables
@@ -52,15 +56,7 @@ public class Player : NetworkBehaviour
         Role.OnValueChanged += OnRoleChanged;
         IsAlive.OnValueChanged += OnAliveChanged;
 
-        if (IsServer)
-        {
-            if (Role.Value == PlayerRole.Imposter)
-            {
-                // Add and Initialize Imposter
-                imposter = gameObject.AddComponent<Imposter>();
-                imposter.Initialize(this);
-            }
-        }
+
 
         if (!IsOwner)
         {
@@ -71,9 +67,7 @@ public class Player : NetworkBehaviour
         {
             // Owner Player
 
-            CharacterName.OnValueChanged += OnCharacterNameChanged;
-
-            imposter?.Initialize(this);
+            CurrentCharacterID.OnValueChanged += OnCharacterNameChanged;
 
             playerState.SetAttacking(false);
             playerState.SetStunning(false);
@@ -96,7 +90,7 @@ public class Player : NetworkBehaviour
         if (!IsOwner)
             return;
 
-        CharacterName.OnValueChanged -= OnCharacterNameChanged;
+        CurrentCharacterID.OnValueChanged -= OnCharacterNameChanged;
 
         imposter?.Cleanup();
 
@@ -125,7 +119,7 @@ public class Player : NetworkBehaviour
     public void SetCharacterNameClientRpc(FixedString64Bytes character)
     {
         Debug.Log(character);
-        CharacterName.Value = character;
+        CurrentCharacterID.Value = character;
     }
 
 
@@ -145,14 +139,14 @@ public class Player : NetworkBehaviour
             playerState.SetHealthServerRpc(playerState.MaxHealth.Value);
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            SetCharacterNameServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[0].name);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            SetCharacterNameServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[1].name);
-        }
+        // if (Input.GetKeyDown(KeyCode.Alpha1))
+        // {
+        //     SetCharacterNameServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[0].name);
+        // }
+        // if (Input.GetKeyDown(KeyCode.Alpha2))
+        // {
+        //     SetCharacterNameServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[1].name);
+        // }
     }
 
     //--------------------------------------
@@ -192,6 +186,20 @@ public class Player : NetworkBehaviour
         if (IsOwner)
         {
             OneInsideGameManager.Instance.ShowMessage($"YOUR ROLE IS {newValue.ToString().ToUpper()}");
+
+            if (Role.Value == PlayerRole.Imposter)
+            {
+                // Add and Initialize Imposter
+                imposter = gameObject.AddComponent<Imposter>();
+                imposter.Initialize(this);
+            }
+            else if (imposter != null)
+            {
+                // Remove and Cleanup Imposter
+                imposter.Cleanup();
+                Destroy(imposter);
+                imposter = null;
+            }
         }
     }
 

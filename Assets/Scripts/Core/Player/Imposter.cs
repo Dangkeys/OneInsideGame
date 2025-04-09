@@ -25,7 +25,8 @@ public class Imposter : MonoBehaviour
 
         if (player.IsOwner)
         {
-            player.InputReader.AttackEvent += OnAttackLocal;
+            player.InputReader.AttackEvent += Attack;
+            player.InputReader.TranformationEvent += ToggleTransformation;
         }
     }
 
@@ -33,15 +34,16 @@ public class Imposter : MonoBehaviour
     {
         if (player != null && player.IsOwner && player.InputReader != null)
         {
-            player.InputReader.AttackEvent -= OnAttackLocal;
+            player.InputReader.AttackEvent -= Attack;
+            player.InputReader.TranformationEvent -= ToggleTransformation;
         }
     }
 
     //--------------------------------------
-    // Imposter Attack Methods
+    // Imposter Methods
     //--------------------------------------
 
-    private async void OnAttackLocal()
+    private async void Attack()
     {
         if (player.Role.Value != PlayerRole.Imposter)
             return;
@@ -72,5 +74,31 @@ public class Imposter : MonoBehaviour
         await Awaitable.WaitForSecondsAsync(DefaultPlayerConfig.Imposter.ATTACK_COOLDOWN);
 
         playerState.SetAttacking(false);
+    }
+
+    //--------------------------------------
+    // Transformation Methods
+    //--------------------------------------
+
+    private void ToggleTransformation()
+    {
+        if (player.Role.Value == PlayerRole.Imposter)
+        {
+            EnableTransformation();
+        }
+        else
+        {
+            DisableTransformation();
+        }
+    }
+
+    private void EnableTransformation()
+    {
+        player.SetCharacterNameServerRpc(player.ImposterCharacterID.Value);
+    }
+
+    private void DisableTransformation()
+    {
+        player.SetCharacterNameServerRpc(player.ImposterCharacterID.Value);
     }
 }
