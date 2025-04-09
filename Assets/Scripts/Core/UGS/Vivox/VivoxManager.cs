@@ -16,7 +16,7 @@ public class VivoxManager : Singleton<VivoxManager>
 
     private void Start()
     {
-        if(muteInputToggle == null || muteOutputToggle == null)
+        if (muteInputToggle == null || muteOutputToggle == null)
         {
             Debug.Log("Mute input or output toggle is not assigned");
             return;
@@ -43,11 +43,14 @@ public class VivoxManager : Singleton<VivoxManager>
                 VivoxService.Instance.UnmuteOutputDevice();
             }
         });
-        
+
     }
     private async void OnDestroy()
     {
-        await VivoxService.Instance.LeaveAllChannelsAsync();
+        if (VivoxService.Instance.ActiveChannels.Count != 0)
+        {
+            await VivoxService.Instance.LeaveAllChannelsAsync();
+        }
         await VivoxService.Instance.LogoutAsync();
     }
 }
