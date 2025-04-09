@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AzNormal : MonoBehaviour
+public class GameUtilities : MonoBehaviour
 {
     /// <summary>
     /// Returns the closest target to the given source position.
@@ -26,4 +26,6 @@ public class AzNormal : MonoBehaviour
 
         return closestTarget;
     }
+
+    
 }

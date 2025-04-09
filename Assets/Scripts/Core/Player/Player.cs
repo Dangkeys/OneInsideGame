@@ -27,13 +27,15 @@ public class Player : NetworkBehaviour
     //--------------------------------------
     // Private Variables
     //--------------------------------------
-
-    private BoxCollider[] hitBoxes;
     private PlayerState playerState;
     private Renderer playerRenderer;
     private Material defaultPlayerMaterial;
-
     private PlayerManager playerManager;
+    private Imposter imposter;
+
+    //--------------------------------------
+    // Unity Lifecycle Methods
+    //--------------------------------------
 
     void Awake()
     {
@@ -42,7 +44,6 @@ public class Player : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        hitBoxes = Hitbox.GetComponents<BoxCollider>();
         playerState = GetComponent<PlayerState>();
 
         playerRenderer = CharacterManager.GetCharacterSkin(PlayerVisual).GetComponent<Renderer>();
@@ -51,6 +52,16 @@ public class Player : NetworkBehaviour
         Role.OnValueChanged += OnRoleChanged;
         IsAlive.OnValueChanged += OnAliveChanged;
 
+        if (IsServer)
+        {
+            if (Role.Value == PlayerRole.Imposter)
+            {
+                // Add and Initialize Imposter
+                imposter = gameObject.AddComponent<Imposter>();
+                imposter.Initialize(this);
+            }
+        }
+
         if (!IsOwner)
         {
             // Other Player
@@ -58,8 +69,11 @@ public class Player : NetworkBehaviour
         }
         else
         {
+            // Owner Player
+
             CharacterName.OnValueChanged += OnCharacterNameChanged;
-            InputReader.AttackEvent += OnAttackLocal;
+
+            imposter?.Initialize(this);
 
             playerState.SetAttacking(false);
             playerState.SetStunning(false);
@@ -67,9 +81,10 @@ public class Player : NetworkBehaviour
             playerState.SetRunning(false);
             playerState.SetAlive(true);
 
-            if (!playerManager)
-                return;
-            playerManager.OnResetALlPlayerPosition += ResetToSpawnPoint;
+            if (playerManager != null)
+            {
+                playerManager.OnResetALlPlayerPosition += ResetToSpawnPoint;
+            }
         }
     }
 
@@ -81,17 +96,18 @@ public class Player : NetworkBehaviour
         if (!IsOwner)
             return;
 
-        InputReader.AttackEvent -= OnAttackLocal;
         CharacterName.OnValueChanged -= OnCharacterNameChanged;
 
-        if (!playerManager)
-            return;
-        playerManager.OnResetALlPlayerPosition -= ResetToSpawnPoint;
+        imposter?.Cleanup();
 
+        if (playerManager != null)
+        {
+            playerManager.OnResetALlPlayerPosition -= ResetToSpawnPoint;
+        }
     }
 
     //--------------------------------------
-    // Character
+    // Character Management
     //--------------------------------------
 
     public void OnCharacterNameChanged(FixedString64Bytes previousValue, FixedString64Bytes newValue)
@@ -111,6 +127,8 @@ public class Player : NetworkBehaviour
         Debug.Log(character);
         CharacterName.Value = character;
     }
+
+
 
     //--------------------------------------
     // Debug Methods
@@ -136,56 +154,19 @@ public class Player : NetworkBehaviour
             SetCharacterNameServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[1].name);
         }
     }
-    //--------------
-    // Attack Methods
-    //--------------------------------------
-
-    public async void OnAttackLocal()
-    {
-        if (Role.Value != PlayerRole.Imposter)
-            return;
-
-        if (!playerState.IsCanMove())
-            return;
-
-        playerState.SetAttacking(true);
-
-        // get closest character
-        var AllHitCharacters = AzHitbox.GetTouchingObjects(new AzHitbox.HitboxParams
-        {
-            Hitboxs = hitBoxes,
-            Type = AzHitbox.ColliderType.CharacterController,
-            Exclude = new Collider[] { CharacterController }
-        });
-
-        GameObject closestCharacter = AzNormal.GetClosetTarget(transform.position, AllHitCharacters);
-
-        if (closestCharacter != null)
-        {
-            Player targetPlayerScript = closestCharacter.GetComponent<Player>();
-            if (targetPlayerScript && targetPlayerScript.IsAlive.Value && PlayerManager.GetLocalPlayerScript().IsAlive.Value)
-            {
-                targetPlayerScript.TakeDamageServerRpc();
-            }
-        }
-
-        await Awaitable.WaitForSecondsAsync(DefaultPlayerConfig.Imposter.ATTACK_COOLDOWN);
-
-        playerState.SetAttacking(false);
-    }
 
     //--------------------------------------
     // Damage & Health Methods
     //--------------------------------------
 
     [ServerRpc(RequireOwnership = false)]
-    private void TakeDamageServerRpc(float damage = DefaultPlayerConfig.Imposter.DAMAGE, ServerRpcParams serverRpcParams = default)
+    public void TakeDamageServerRpc(float damage = DefaultPlayerConfig.Imposter.DAMAGE, ServerRpcParams serverRpcParams = default)
     {
-        if (
-        PlayerManager.GetPlayerRoleByClientId(serverRpcParams.Receive.SenderClientId) == PlayerRole.Imposter
-        && IsAlive.Value
-        )
+        // Check if the sender is an Imposter and the target (this player) is alive
+        if (PlayerManager.GetPlayerRoleByClientId(serverRpcParams.Receive.SenderClientId) == PlayerRole.Imposter && IsAlive.Value)
+        {
             TakeDamage(damage);
+        }
     }
 
     private async void TakeDamage(float damage)
@@ -194,7 +175,6 @@ public class Player : NetworkBehaviour
             return;
 
         playerState.SetStunning(true);
-
         playerState.TakeDamageServerRpc(damage);
 
         await Awaitable.WaitForSecondsAsync(DefaultPlayerConfig.Crewmate.STUN_DURATION);
@@ -204,9 +184,8 @@ public class Player : NetworkBehaviour
 
 
     //--------------------------------------
-    // Network & Lifecycle Methods
+    // Role Change Handling
     //--------------------------------------
-
 
     private void OnRoleChanged(PlayerRole previousValue, PlayerRole newValue)
     {
@@ -229,7 +208,7 @@ public class Player : NetworkBehaviour
     }
 
     //--------------------------------------
-    // Spectator
+    // Spectator Mode Handling
     //--------------------------------------
 
     private void OnAliveChanged(bool oldValue, bool newValue)
@@ -246,6 +225,9 @@ public class Player : NetworkBehaviour
 
     private void EnableSpectator()
     {
+        if (playerRenderer == null || SpectatorMaterial == null)
+            return;
+
         gameObject.layer = LayerMask.NameToLayer(OneInsideLayers.SPECTATOR);
         playerRenderer.material = SpectatorMaterial;
 
@@ -253,7 +235,8 @@ public class Player : NetworkBehaviour
         {
             foreach (Player player in PlayerManager.GetSpectatorPlayers(false))
             {
-                player.gameObject.SetActive(true);
+                if (player != this)
+                    player.gameObject.SetActive(true);
             }
         }
         else
@@ -265,6 +248,9 @@ public class Player : NetworkBehaviour
 
     private void DisableSpectator()
     {
+        if (playerRenderer == null || defaultPlayerMaterial == null)
+            return;
+
         gameObject.layer = LayerMask.NameToLayer(OneInsideLayers.PLAYER);
         playerRenderer.material = defaultPlayerMaterial;
 
@@ -274,7 +260,8 @@ public class Player : NetworkBehaviour
         {
             foreach (Player player in PlayerManager.GetSpectatorPlayers(false))
             {
-                player.gameObject.SetActive(false);
+                if (player != this)
+                    player.gameObject.SetActive(false);
             }
         }
     }
