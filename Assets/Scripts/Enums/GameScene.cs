@@ -4,5 +4,5 @@ public enum GameScene
     LoadingScene,
     LobbyScene,
     MainMenuScene,
-    TajdangScene,
+    MainScene,
 }
