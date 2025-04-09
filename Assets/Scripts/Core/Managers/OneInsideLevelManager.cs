@@ -120,8 +120,6 @@ public class OneInsideLevelManager : NetworkBehaviour
 
     private void OnSceneLoadComplete(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
     {
-        if (sceneName != GameScene.TajdangScene.ToString())
-            return;
         State.Value = GameState.GamePlaying;
     }
     public override void OnNetworkDespawn()

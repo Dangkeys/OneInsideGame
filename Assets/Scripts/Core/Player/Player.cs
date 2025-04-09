@@ -17,11 +17,12 @@ public class Player : NetworkBehaviour
 
     [Header("Spectator")]
     [field: SerializeField] public Material SpectatorMaterial { get; private set; }
-    [field: SerializeField] public GameObject CurrentPlayerVisual { get; private set; }
+    [field: SerializeField] public GameObject PlayerVisual { get; private set; }
 
+    [Header("Status")]
     public NetworkVariable<bool> IsAlive = new NetworkVariable<bool>(true);
-
     public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>(PlayerRole.None);
+    public NetworkVariable<FixedString64Bytes> CharacterName = new NetworkVariable<FixedString64Bytes>(OneInside.Constants.Character.Default);
 
     //--------------------------------------
     // Private Variables
@@ -36,7 +37,7 @@ public class Player : NetworkBehaviour
 
     void Awake()
     {
-      playerManager = OneInsideLevelManager.Instance.PlayerManager;  
+        playerManager = OneInsideLevelManager.Instance.PlayerManager;
     }
 
     public override void OnNetworkSpawn()
@@ -44,7 +45,7 @@ public class Player : NetworkBehaviour
         hitBoxes = Hitbox.GetComponents<BoxCollider>();
         playerState = GetComponent<PlayerState>();
 
-        playerRenderer = CurrentPlayerVisual.GetComponent<Renderer>();
+        playerRenderer = CharacterManager.GetCharacterSkin(PlayerVisual).GetComponent<Renderer>();
         defaultPlayerMaterial = playerRenderer.material;
 
         Role.OnValueChanged += OnRoleChanged;
@@ -57,6 +58,7 @@ public class Player : NetworkBehaviour
         }
         else
         {
+            CharacterName.OnValueChanged += OnCharacterNameChanged;
             InputReader.AttackEvent += OnAttackLocal;
 
             playerState.SetAttacking(false);
@@ -80,11 +82,34 @@ public class Player : NetworkBehaviour
             return;
 
         InputReader.AttackEvent -= OnAttackLocal;
+        CharacterName.OnValueChanged -= OnCharacterNameChanged;
 
         if (!playerManager)
             return;
         playerManager.OnResetALlPlayerPosition -= ResetToSpawnPoint;
 
+    }
+
+    //--------------------------------------
+    // Character
+    //--------------------------------------
+
+    public void OnCharacterNameChanged(FixedString64Bytes previousValue, FixedString64Bytes newValue)
+    {
+        OneInsideGameManager.Instance.CharacterManager.ChangeCharacterServerRpc(newValue.ToString());
+    }
+
+    [ServerRpc]
+    public void SetCharacterNameServerRpc(FixedString64Bytes character)
+    {
+        SetCharacterNameClientRpc(character);
+    }
+
+    [ClientRpc]
+    public void SetCharacterNameClientRpc(FixedString64Bytes character)
+    {
+        Debug.Log(character);
+        CharacterName.Value = character;
     }
 
     //--------------------------------------
@@ -101,13 +126,25 @@ public class Player : NetworkBehaviour
             playerState.SetAliveServerRpc(true);
             playerState.SetHealthServerRpc(playerState.MaxHealth.Value);
         }
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            SetCharacterNameServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[0].name);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            SetCharacterNameServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[1].name);
+        }
     }
-    //--------------------------------------
+    //--------------
     // Attack Methods
     //--------------------------------------
 
     public async void OnAttackLocal()
     {
+        if (Role.Value != PlayerRole.Imposter)
+            return;
+
         if (!playerState.IsCanMove())
             return;
 
@@ -132,7 +169,7 @@ public class Player : NetworkBehaviour
             }
         }
 
-        await Awaitable.WaitForSecondsAsync(1);
+        await Awaitable.WaitForSecondsAsync(DefaultPlayerConfig.Imposter.ATTACK_COOLDOWN);
 
         playerState.SetAttacking(false);
     }
@@ -142,12 +179,16 @@ public class Player : NetworkBehaviour
     //--------------------------------------
 
     [ServerRpc(RequireOwnership = false)]
-    private void TakeDamageServerRpc(int damage = 1)
+    private void TakeDamageServerRpc(float damage = DefaultPlayerConfig.Imposter.DAMAGE, ServerRpcParams serverRpcParams = default)
     {
-        TakeDamage(damage);
+        if (
+        PlayerManager.GetPlayerRoleByClientId(serverRpcParams.Receive.SenderClientId) == PlayerRole.Imposter
+        && IsAlive.Value
+        )
+            TakeDamage(damage);
     }
 
-    private async void TakeDamage(int damage = 1)
+    private async void TakeDamage(float damage)
     {
         if (playerState.Stunning.Value || !IsAlive.Value)
             return;
@@ -156,7 +197,7 @@ public class Player : NetworkBehaviour
 
         playerState.TakeDamageServerRpc(damage);
 
-        await Awaitable.WaitForSecondsAsync(2.0f);
+        await Awaitable.WaitForSecondsAsync(DefaultPlayerConfig.Crewmate.STUN_DURATION);
 
         playerState.SetStunning(false);
     }
