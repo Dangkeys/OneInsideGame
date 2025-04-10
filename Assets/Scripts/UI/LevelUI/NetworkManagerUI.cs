@@ -22,12 +22,8 @@ public class NetworkManagerUI : NetworkBehaviour
 
     private void OnSceneLoadComplete(Scene arg0, LoadSceneMode arg1)
     {
-        if (arg0.name == GameScene.LobbyScene.ToString())
-        {
-            SceneManager.sceneLoaded -= OnSceneLoadComplete;
-            Debug.Log("OnSceneLoadComplete - Disabling NetworkManagerUI");
-            gameObject.SetActive(false);
-        }
+        SceneManager.sceneLoaded -= OnSceneLoadComplete;
+        gameObject.SetActive(false);
     }
 
     void Start()
