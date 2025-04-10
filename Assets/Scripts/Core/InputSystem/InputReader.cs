@@ -9,6 +9,8 @@ public class InputReader : MonoBehaviour, IPlayerActions
     public Vector2 MovementValue { get; private set; }
     public Action InteractEvent;
     public Action AttackEvent;
+    public Action TranformationEvent;
+
     public Action<bool> UseEvent;
     public Action<bool> SprintEvent;
 
@@ -40,15 +42,25 @@ public class InputReader : MonoBehaviour, IPlayerActions
     {
         controls?.Player.Disable();
     }
+
     public void OnMove(InputAction.CallbackContext context)
     {
         MovementValue = context.ReadValue<Vector2>();
     }
+
     public void OnAttack(InputAction.CallbackContext context)
     {
         if (context.started)
         {
             AttackEvent?.Invoke();
+        }
+    }
+
+    public void OnTransformation(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            TranformationEvent?.Invoke();
         }
     }
 

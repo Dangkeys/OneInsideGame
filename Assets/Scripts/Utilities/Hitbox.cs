@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AzHitbox : MonoBehaviour
+public class HitboxUtilities : MonoBehaviour
 {
     public enum ColliderType
     {
