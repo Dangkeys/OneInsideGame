@@ -15,7 +15,7 @@ public class CharacterManager : NetworkBehaviour
 
     private void Awake()
     {
-        // CharacterDatabase
+        AllCharactersDatabase.Initialize();
     }
 
     //--------------------------------------
@@ -65,7 +65,7 @@ public class CharacterManager : NetworkBehaviour
         }
 
         SkinnedMeshRenderer currentPlayerSkinRenderer = currentPlayerSkin.GetComponent<SkinnedMeshRenderer>(),
-         targetPlayerSkinRenderer = targetPlayerSkin.GetComponent<SkinnedMeshRenderer>();
+            targetPlayerSkinRenderer = targetPlayerSkin.GetComponent<SkinnedMeshRenderer>();
 
         currentPlayerSkinRenderer.sharedMesh = targetPlayerSkinRenderer.sharedMesh;
         currentPlayerSkinRenderer.sharedMaterials = targetPlayerSkinRenderer.sharedMaterials;

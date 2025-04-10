@@ -644,8 +644,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  CanTransformed:
+    m_InternalValue: 1
   Transformed:
     m_InternalValue: 0
+  TransformationActiveTime:
+    m_InternalValue: 10
+  TransformationCooldownTime:
+    m_InternalValue: 20
+  TransformationTime:
+    m_InternalValue: 0.5
 --- !u!1 &3435790326839173604
 GameObject:
   m_ObjectHideFlags: 0

@@ -10,12 +10,19 @@ public class CharactersDatabase : ScriptableObject
     {
         foreach (CharactersCollection charactersCollection in CharactersCollections)
         {
+            if (charactersCollection == null)
+            {
+                Debug.LogWarning("CharactersCollection is null, skipping...");
+                continue;
+            }
+
             CharacterSO characterSO = charactersCollection.GetCharacter(search, searchType);
             if (characterSO != null)
             {
                 return characterSO;
             }
         }
+        Debug.Log("Can't find character : " + search);
         return null;
     }
 
