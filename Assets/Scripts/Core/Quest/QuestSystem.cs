@@ -60,7 +60,7 @@ public class QuestSystem : NetworkBehaviour
         {
             RandomQuest();
         }
-        DisableQuestServerRpc();
+        UpdateQuestServerRpc();
     }
 
     public override void OnNetworkDespawn()
@@ -134,7 +134,7 @@ public class QuestSystem : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void DisableQuestServerRpc()
+    private void UpdateQuestServerRpc()
     {
         if (!IsHost)
         {
@@ -151,8 +151,7 @@ public class QuestSystem : NetworkBehaviour
 
     private void UpdateQuest()
     {
-        int amount = questList.Count - maxQuest;
-        for (int i = 0;i < amount; i++)
+        for (int i = 0;i < maxQuest; i++)
         {
             questList[questEnable.Value[i]].SetActive(true);
             questList[questEnable.Value[i]].transform.position = questLocation[questChooseLocation.Value[i]].GetLocation();

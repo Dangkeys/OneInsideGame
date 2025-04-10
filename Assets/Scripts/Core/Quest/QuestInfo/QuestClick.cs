@@ -16,6 +16,7 @@ public class QuestClick : QuestInfo, IInteractable
             string buttonName = pathSegments[pathSegments.Length - 1];
             questClickManager.AddWordList(buttonName);
         }
+        NetworkObject.Spawn();
     }
 
     private void OnEnable()

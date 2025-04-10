@@ -6,6 +6,11 @@ public class QuestDodge : QuestInfo, IInteractable
     [SerializeField] private QuestDodgeManager questDodgeManager;
     [SerializeField] private GameObject questDodgeUI;
 
+    private void Start()
+    {
+        NetworkObject.Spawn();
+    }
+
     private void OnEnable()
     {
         questDodgeManager.OnFinishedQuest += Finished;

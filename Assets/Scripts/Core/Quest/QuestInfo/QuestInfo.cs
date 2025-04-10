@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Unity.Netcode;
 
 public abstract class QuestInfo : NetworkBehaviour
@@ -25,9 +26,7 @@ public abstract class QuestInfo : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void UpdateQuestStatusServerRpc(bool status)
     {
-        
         questInfoStatus?.Invoke(status);
-
         if (!IsHost)
         {
             UpdateQuestStatus(status);
