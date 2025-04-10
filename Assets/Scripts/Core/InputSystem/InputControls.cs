@@ -189,6 +189,15 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Open Sabotage Window"",
+                    ""type"": ""Button"",
+                    ""id"": ""a7b4eea7-809d-4431-a6a1-cc7977e2ad36"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -618,6 +627,17 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Transformation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""85b44873-7c13-463c-8aa2-d6c238b3b3ce"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Open Sabotage Window"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1216,6 +1236,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_Use = m_Player.FindAction("Use", throwIfNotFound: true);
         m_Player_Transformation = m_Player.FindAction("Transformation", throwIfNotFound: true);
+        m_Player_OpenSabotageWindow = m_Player.FindAction("Open Sabotage Window", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1320,6 +1341,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Sprint;
     private readonly InputAction m_Player_Use;
     private readonly InputAction m_Player_Transformation;
+    private readonly InputAction m_Player_OpenSabotageWindow;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1375,6 +1397,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Transformation".
         /// </summary>
         public InputAction @Transformation => m_Wrapper.m_Player_Transformation;
+        public InputAction @OpenSabotageWindow => m_Wrapper.m_Player_OpenSabotageWindow;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1434,6 +1457,9 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
             @Transformation.started += instance.OnTransformation;
             @Transformation.performed += instance.OnTransformation;
             @Transformation.canceled += instance.OnTransformation;
+            @OpenSabotageWindow.started += instance.OnOpenSabotageWindow;
+            @OpenSabotageWindow.performed += instance.OnOpenSabotageWindow;
+            @OpenSabotageWindow.canceled += instance.OnOpenSabotageWindow;
         }
 
         /// <summary>
@@ -1478,6 +1504,9 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
             @Transformation.started -= instance.OnTransformation;
             @Transformation.performed -= instance.OnTransformation;
             @Transformation.canceled -= instance.OnTransformation;
+            @OpenSabotageWindow.started -= instance.OnOpenSabotageWindow;
+            @OpenSabotageWindow.performed -= instance.OnOpenSabotageWindow;
+            @OpenSabotageWindow.canceled -= instance.OnOpenSabotageWindow;
         }
 
         /// <summary>
@@ -1855,6 +1884,7 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnTransformation(InputAction.CallbackContext context);
+        void OnOpenSabotageWindow(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
