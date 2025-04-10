@@ -146,21 +146,12 @@ public class Player : NetworkBehaviour
 
         // if (Input.GetKeyDown(KeyCode.Alpha1))
         // {
-        //     SetCharacterIDServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[0].name);
+        //     SetCharacterIDServerRpc("Psycho");
         // }
         // if (Input.GetKeyDown(KeyCode.Alpha2))
         // {
-        //     SetCharacterIDServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[1].name);
+        //     SetCharacterIDServerRpc("Warewolf");
         // }
-
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            SetCharacterIDServerRpc("Psycho");
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            SetCharacterIDServerRpc("Warewolf");
-        }
     }
 
     //--------------------------------------
