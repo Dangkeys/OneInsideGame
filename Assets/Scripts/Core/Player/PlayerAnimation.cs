@@ -83,6 +83,23 @@ public class PlayerAnimation : NetworkBehaviour
     }
 
     //--------------------------------------
+    // Public Methods
+    //--------------------------------------
+
+    public void ResetAnimation()
+    {
+        foreach (var parameter in playerAnimator.parameters)
+        {
+            switch (parameter.type)
+            {
+                case AnimatorControllerParameterType.Bool:
+                    playerAnimator.SetBool(parameter.name, false);
+                    break;
+            }
+        }
+    }
+
+    //--------------------------------------
     // Ragdoll Methods
     //--------------------------------------
 
@@ -103,6 +120,10 @@ public class PlayerAnimation : NetworkBehaviour
 
         currentDeadbody = Instantiate(DeadbodyPrefab, transform.position, transform.rotation);
         NetworkObject deadbodyNetworkObject = currentDeadbody.GetComponent<NetworkObject>();
+
+        DeadBody deadBodyInteract = currentDeadbody.GetComponent<DeadBody>();
+        deadBodyInteract.DeadBodyOwnerID.Value = PlayerScript.OwnerClientId;
+
         deadbodyNetworkObject.Spawn();
 
         if (OneInsideLevelManager.Instance)
