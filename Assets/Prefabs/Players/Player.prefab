@@ -1165,9 +1165,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Weight: 0
   m_Data:
-    m_Root: {fileID: 8796665577533287724}
-    m_Mid: {fileID: 2060535893811270862}
-    m_Tip: {fileID: 1182159642001609998}
+    m_Root: {fileID: 0}
+    m_Mid: {fileID: 0}
+    m_Tip: {fileID: 0}
     m_Target: {fileID: 2637663768192571668}
     m_Hint: {fileID: 1898975816779677655}
     m_TargetPositionWeight: 1
@@ -1740,31 +1740,18 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 7632886072231803295, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
+    - {fileID: 6099214735926142133, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 2383991533042498037, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7458658114006377002}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
---- !u!4 &1182159642001609998 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7706970613069698871, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
-  m_PrefabInstance: {fileID: 8832534265727795769}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &2060535893811270862 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7352981142833452791, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
-  m_PrefabInstance: {fileID: 8832534265727795769}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6595192579084696524 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2383991533042498037, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
-  m_PrefabInstance: {fileID: 8832534265727795769}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &8796665577533287724 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 38139456756969237, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
   m_PrefabInstance: {fileID: 8832534265727795769}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &8896104640911753412 stripped

@@ -34,6 +34,18 @@ public class CharacterManager : NetworkBehaviour
         return null;
     }
 
+    static public GameObject GetCharacterRoot(GameObject targetCharacter)
+    {
+        foreach (Transform child in targetCharacter.transform)
+        {
+            if (child.name == "Root")
+            {
+                return child.gameObject;
+            }
+        }
+        return null;
+    }
+
     static public CharacterSO GetCharacterSO(string character, Character.SearchType searchType = Character.SearchType.Default)
     {
         return OneInsideGameManager.Instance.CharacterManager.AllCharactersDatabase.GetCharacter(character, searchType);
@@ -44,7 +56,14 @@ public class CharacterManager : NetworkBehaviour
         targetPlayerVisual.transform.localScale = characterSO.CharacterVisual.transform.localScale;
 
         GameObject currentPlayerSkin = GetCharacterSkin(targetPlayerVisual);
+        GameObject currentPlayerRoot = GetCharacterRoot(targetPlayerVisual);
+
         GameObject targetPlayerSkin = characterSO.CharacterSkin;
+        GameObject targetRoot = characterSO.CharacterRoot;
+
+        string currentSkinName = currentPlayerSkin.name;
+        string currentRootName = currentPlayerRoot.name;
+
         if (animator)
         {
             Dictionary<string, bool> savedAllParameters = new Dictionary<string, bool>();
@@ -64,11 +83,19 @@ public class CharacterManager : NetworkBehaviour
             }
         }
 
-        SkinnedMeshRenderer currentPlayerSkinRenderer = currentPlayerSkin.GetComponent<SkinnedMeshRenderer>(),
-            targetPlayerSkinRenderer = targetPlayerSkin.GetComponent<SkinnedMeshRenderer>();
+        if (currentPlayerSkin != null)
+        {
+            GameObject.Destroy(currentPlayerSkin);
+        }
+        GameObject newSkin = GameObject.Instantiate(targetPlayerSkin, targetPlayerVisual.transform);
+        newSkin.name = currentSkinName;
 
-        currentPlayerSkinRenderer.sharedMesh = targetPlayerSkinRenderer.sharedMesh;
-        currentPlayerSkinRenderer.sharedMaterials = targetPlayerSkinRenderer.sharedMaterials;
+        if (currentPlayerRoot != null)
+        {
+            GameObject.Destroy(currentPlayerRoot);
+        }
+        GameObject newRoot = GameObject.Instantiate(targetRoot, targetPlayerVisual.transform);
+        newRoot.name = currentRootName;
     }
 
     public static void ChangeChracter(GameObject targetPlayerVisual, string characterName, Animator animator = null)

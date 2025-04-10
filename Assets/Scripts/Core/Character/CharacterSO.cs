@@ -12,6 +12,7 @@ public class CharacterSO : ScriptableObject
     [field: SerializeField] public GameObject CharacterVisual { get; private set; }
 
     public GameObject CharacterSkin { get; private set; }
+    public GameObject CharacterRoot { get; private set; }
     public Avatar CharacterAvatar { get; private set; }
 
     public void Initialize()
@@ -37,6 +38,7 @@ public class CharacterSO : ScriptableObject
 
             // Setup character skin
             CharacterSkin = CharacterManager.GetCharacterSkin(CharacterVisual);
+            CharacterRoot = CharacterManager.GetCharacterRoot(CharacterVisual);
             CharacterAvatar = CharacterVisual.GetComponent<Animator>()?.avatar;
         }
     }
