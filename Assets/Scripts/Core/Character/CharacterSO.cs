@@ -1,10 +1,12 @@
 
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [CreateAssetMenu(fileName = "CharacterSO", menuName = "Scriptable Objects/CharacterSO")]
 public class CharacterSO : ScriptableObject
 {
-    [field: SerializeField] public string ID { get; private set; }
     [field: SerializeField] public string CharacterName { get; private set; }
     [field: SerializeField] public string CharacterBIO { get; private set; }
     [field: SerializeField] public Sprite CharacterSprite { get; private set; }
@@ -15,16 +17,24 @@ public class CharacterSO : ScriptableObject
     public GameObject CharacterRoot { get; private set; }
     public Avatar CharacterAvatar { get; private set; }
 
+    private string privateId;
+    public string ID
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(privateId))
+            {
+                privateId = GameUtilities.GenerateID("Character", CharacterName);
+            }
+            return privateId;
+        }
+    }
+
     public void Initialize()
     {
         if (CharacterName == null || CharacterName == "")
         {
             CharacterName = name;
-        }
-
-        if (ID == null || ID == "")
-        {
-            ID = CharacterName;
         }
 
         if (CharacterBIO == null || CharacterBIO == "")
