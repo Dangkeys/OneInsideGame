@@ -1,41 +1,64 @@
+using System.Threading.Tasks;
 using OneInside.Constants;
 using Unity.Netcode;
 using UnityEngine;
 
-public class Imposter : MonoBehaviour
+public class Imposter : NetworkBehaviour
 {
+    //--------------------------------------
+    // Public Variables
+    //--------------------------------------
+    public NetworkVariable<bool> CanTransformed = new NetworkVariable<bool>(true);
+    public NetworkVariable<bool> Transformed = new NetworkVariable<bool>(false);
+
+    public NetworkVariable<float> TransformationActiveTime = new NetworkVariable<float>(DefaultPlayerConfig.Imposter.TRANSFORMATION_ACTIVE_TIME);
+    public NetworkVariable<float> TransformationCooldownTime = new NetworkVariable<float>(DefaultPlayerConfig.Imposter.TRANSFORMATION_COOLDOWN_TIME);
+    public NetworkVariable<float> TransformationTime = new NetworkVariable<float>(DefaultPlayerConfig.Imposter.TRANSFORMATION_TIME);
+
     //--------------------------------------
     // Private Variables
     //--------------------------------------
     private Player player;
     private PlayerState playerState;
+    private PlayerMovement playerMovement;
     private BoxCollider[] hitBoxes;
     private CharacterController characterController;
+
+    private Timer localTransformationCooldownTimer;
+    private Timer localTransformationActiveTimer;
+
+    private Timer serverTransformationCooldownTimer;
+    private Timer serverTransformationActiveTimer;
 
     //--------------------------------------
     // Initialization & Cleanup
     //--------------------------------------
 
-    public void Initialize(Player ownerPlayer)
+    public override void OnNetworkSpawn()
     {
-        player = ownerPlayer;
+        player = gameObject.GetComponent<Player>();
         playerState = player.GetComponent<PlayerState>();
+        playerMovement = player.GetComponent<PlayerMovement>();
+
         hitBoxes = player.Hitbox.GetComponents<BoxCollider>();
         characterController = player.CharacterController;
 
-        if (player.IsOwner)
+        if (IsOwner)
         {
             player.InputReader.AttackEvent += Attack;
-            player.InputReader.TranformationEvent += ToggleTransformation;
+            player.InputReader.TranformationEvent += RequestToggleTransformation;
+            Transformed.OnValueChanged += OnTransformedUpdate;
         }
     }
 
     public void Cleanup()
     {
-        if (player != null && player.IsOwner && player.InputReader != null)
+        if (IsOwner)
         {
             player.InputReader.AttackEvent -= Attack;
-            player.InputReader.TranformationEvent -= ToggleTransformation;
+            player.InputReader.TranformationEvent -= RequestToggleTransformation;
+            Transformed.OnValueChanged -= OnTransformedUpdate;
+
         }
     }
 
@@ -45,11 +68,13 @@ public class Imposter : MonoBehaviour
 
     private async void Attack()
     {
-        if (player.Role.Value != PlayerRole.Imposter)
+        if (
+            player.Role.Value != PlayerRole.Imposter
+            || !Transformed.Value
+            || !playerState.IsCanMove()
+        )
             return;
 
-        if (!playerState.IsCanMove())
-            return;
 
         playerState.SetAttacking(true);
 
@@ -80,25 +105,108 @@ public class Imposter : MonoBehaviour
     // Transformation Methods
     //--------------------------------------
 
-    private void ToggleTransformation()
+    private void RequestToggleTransformation()
     {
-        if (player.Role.Value == PlayerRole.Imposter)
+        ToggleTransformationServerRpc();
+    }
+
+
+
+    [ServerRpc]
+    private void ToggleTransformationServerRpc(ServerRpcParams rpcParams = default)
+    {
+        if (player.Role.Value != PlayerRole.Imposter || !player.GetComponent<PlayerState>().IsCanMove())
+            return;
+
+        void EnableTransformed()
         {
-            EnableTransformation();
+            Transformed.Value = true;
+            player.ServerSetCharacterID(player.ImposterCharacterID.Value);
+        }
+
+        void DisableTransformed()
+        {
+            Transformed.Value = false;
+            player.ServerSetCharacterID(player.CrewmateCharacterID.Value);
+        }
+
+        if (!Transformed.Value)
+        {
+            if (!CanTransformed.Value)
+                return;
+
+            EnableTransformed();
+            CanTransformed.Value = false;
+
+            serverTransformationCooldownTimer?.Cancel();
+            serverTransformationActiveTimer?.Cancel();
+
+            serverTransformationCooldownTimer = Timer.Create(TransformationCooldownTime.Value, null, () =>
+                    {
+                        CanTransformed.Value = true;
+                        serverTransformationCooldownTimer = null;
+                    });
+            serverTransformationActiveTimer = Timer.Create(TransformationActiveTime.Value, null, () =>
+            {
+                DisableTransformed();
+                serverTransformationActiveTimer = null;
+            });
         }
         else
         {
-            DisableTransformation();
+            DisableTransformed();
+
+            if (serverTransformationActiveTimer != null)
+            {
+                serverTransformationActiveTimer.Cancel();
+                serverTransformationActiveTimer = null;
+            }
         }
     }
 
-    private void EnableTransformation()
-    {
-        player.SetCharacterNameServerRpc(player.ImposterCharacterID.Value);
-    }
+    //--------------------------------------
+    // On Local Transformation Update
+    //--------------------------------------
 
-    private void DisableTransformation()
+    private async void OnTransformedUpdate(bool oldValue, bool newValue)
     {
-        player.SetCharacterNameServerRpc(player.ImposterCharacterID.Value);
+        if (!IsOwner || newValue == oldValue)
+            return;
+
+        if (newValue)
+        {
+            localTransformationCooldownTimer?.Cancel();
+            localTransformationActiveTimer?.Cancel();
+
+            localTransformationCooldownTimer = Timer.Create(TransformationCooldownTime.Value, (remainingTime) =>
+            {
+                Debug.Log("Transformation Cooldown TimeLeft: " + remainingTime);
+            }, () =>
+            {
+                Debug.Log("Transformation Cooldown Finished!");
+                localTransformationCooldownTimer = null;
+            });
+
+            localTransformationActiveTimer = Timer.Create(TransformationActiveTime.Value, (remainingTime) =>
+            {
+                Debug.Log("Transformation Active TimeLeft: " + remainingTime);
+            }, () =>
+            {
+                Debug.Log("Transformation Active Finished!");
+                localTransformationActiveTimer = null;
+            });
+        }
+        else
+        {
+            if (localTransformationActiveTimer != null)
+            {
+                localTransformationActiveTimer.Cancel();
+                localTransformationActiveTimer = null;
+            }
+        }
+
+        playerMovement.EnablePlayerMovement(false);
+        await Awaitable.WaitForSecondsAsync(TransformationTime.Value);
+        playerMovement.EnablePlayerMovement(true);
     }
 }

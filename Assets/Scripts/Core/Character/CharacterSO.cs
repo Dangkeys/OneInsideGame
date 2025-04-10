@@ -16,17 +16,17 @@ public class CharacterSO : ScriptableObject
 
     public void Initialize()
     {
-        if (CharacterName == null)
+        if (CharacterName == null || CharacterName == "")
         {
             CharacterName = name;
         }
 
-        if (ID == null)
+        if (ID == null || ID == "")
         {
             ID = CharacterName;
         }
 
-        if (CharacterBIO == null)
+        if (CharacterBIO == null || CharacterBIO == "")
         {
             CharacterBIO = "Hi, I'm " + CharacterName;
         }

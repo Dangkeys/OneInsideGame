@@ -23,14 +23,16 @@ public class Player : NetworkBehaviour
     public NetworkVariable<bool> IsAlive = new NetworkVariable<bool>(true);
     public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>(PlayerRole.None);
 
-    public NetworkVariable<FixedString64Bytes> CrewmateCharacterID = new NetworkVariable<FixedString64Bytes>(OneInsideGameManager.Instance.CharacterManager.DefaultCrewmateCharacter.ID);
-    public NetworkVariable<FixedString64Bytes> ImposterCharacterID = new NetworkVariable<FixedString64Bytes>(OneInsideGameManager.Instance.CharacterManager.DefaultImposterCharacter.ID);
+    [Header("Characters")]
+    public NetworkVariable<FixedString64Bytes> CrewmateCharacterID = new NetworkVariable<FixedString64Bytes>();
+    public NetworkVariable<FixedString64Bytes> ImposterCharacterID = new NetworkVariable<FixedString64Bytes>();
 
-    public NetworkVariable<FixedString64Bytes> CurrentCharacterID = new NetworkVariable<FixedString64Bytes>(OneInsideGameManager.Instance.CharacterManager.DefaultCrewmateCharacter.ID);
+    public NetworkVariable<FixedString64Bytes> CurrentCharacterID = new NetworkVariable<FixedString64Bytes>();
 
     //--------------------------------------
     // Private Variables
     //--------------------------------------
+
     private PlayerState playerState;
     private Renderer playerRenderer;
     private Material defaultPlayerMaterial;
@@ -44,11 +46,17 @@ public class Player : NetworkBehaviour
     void Awake()
     {
         playerManager = OneInsideLevelManager.Instance.PlayerManager;
+
+        CrewmateCharacterID.Value = OneInsideGameManager.Instance.CharacterManager.DefaultCrewmateCharacter.ID;
+        ImposterCharacterID.Value = OneInsideGameManager.Instance.CharacterManager.DefaultImposterCharacter.ID;
+
+        CurrentCharacterID.Value = CrewmateCharacterID.Value;
     }
 
     public override void OnNetworkSpawn()
     {
         playerState = GetComponent<PlayerState>();
+        imposter = GetComponent<Imposter>();
 
         playerRenderer = CharacterManager.GetCharacterSkin(PlayerVisual).GetComponent<Renderer>();
         defaultPlayerMaterial = playerRenderer.material;
@@ -67,7 +75,7 @@ public class Player : NetworkBehaviour
         {
             // Owner Player
 
-            CurrentCharacterID.OnValueChanged += OnCharacterNameChanged;
+            CurrentCharacterID.OnValueChanged += OnCharacterIDChanged;
 
             playerState.SetAttacking(false);
             playerState.SetStunning(false);
@@ -90,7 +98,7 @@ public class Player : NetworkBehaviour
         if (!IsOwner)
             return;
 
-        CurrentCharacterID.OnValueChanged -= OnCharacterNameChanged;
+        CurrentCharacterID.OnValueChanged -= OnCharacterIDChanged;
 
         imposter?.Cleanup();
 
@@ -104,24 +112,21 @@ public class Player : NetworkBehaviour
     // Character Management
     //--------------------------------------
 
-    public void OnCharacterNameChanged(FixedString64Bytes previousValue, FixedString64Bytes newValue)
+    public void OnCharacterIDChanged(FixedString64Bytes previousValue, FixedString64Bytes newValue)
     {
         OneInsideGameManager.Instance.CharacterManager.ChangeCharacterServerRpc(newValue.ToString());
     }
 
     [ServerRpc]
-    public void SetCharacterNameServerRpc(FixedString64Bytes character)
+    public void SetCharacterIDServerRpc(FixedString64Bytes character)
     {
-        SetCharacterNameClientRpc(character);
-    }
-
-    [ClientRpc]
-    public void SetCharacterNameClientRpc(FixedString64Bytes character)
-    {
-        Debug.Log(character);
         CurrentCharacterID.Value = character;
     }
 
+    public void ServerSetCharacterID(FixedString64Bytes newValue)
+    {
+        OneInsideGameManager.Instance.CharacterManager.ChangeCharacterClientRpc(OwnerClientId, newValue.ToString(), Character.SearchType.Default);
+    }
 
 
     //--------------------------------------
@@ -141,11 +146,11 @@ public class Player : NetworkBehaviour
 
         // if (Input.GetKeyDown(KeyCode.Alpha1))
         // {
-        //     SetCharacterNameServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[0].name);
+        //     SetCharacterIDServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[0].name);
         // }
         // if (Input.GetKeyDown(KeyCode.Alpha2))
         // {
-        //     SetCharacterNameServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[1].name);
+        //     SetCharacterIDServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[1].name);
         // }
     }
 
@@ -183,23 +188,19 @@ public class Player : NetworkBehaviour
 
     private void OnRoleChanged(PlayerRole previousValue, PlayerRole newValue)
     {
+
+        if (Role.Value == PlayerRole.Imposter)
+        {
+            imposter.enabled = true;
+        }
+        else
+        {
+            imposter.enabled = false;
+        }
+
         if (IsOwner)
         {
             OneInsideGameManager.Instance.ShowMessage($"YOUR ROLE IS {newValue.ToString().ToUpper()}");
-
-            if (Role.Value == PlayerRole.Imposter)
-            {
-                // Add and Initialize Imposter
-                imposter = gameObject.AddComponent<Imposter>();
-                imposter.Initialize(this);
-            }
-            else if (imposter != null)
-            {
-                // Remove and Cleanup Imposter
-                imposter.Cleanup();
-                Destroy(imposter);
-                imposter = null;
-            }
         }
     }
 

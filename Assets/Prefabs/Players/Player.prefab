@@ -52,6 +52,7 @@ GameObject:
   - component: {fileID: 3937043524520739152}
   - component: {fileID: 3378184907274422936}
   - component: {fileID: 2130162687114717125}
+  - component: {fileID: 7815416263655673313}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -234,6 +235,7 @@ MonoBehaviour:
   <CharacterController>k__BackingField: {fileID: 4450134948998468091}
   <MainCameraTransform>k__BackingField: {fileID: 0}
   <AxisController>k__BackingField: {fileID: 2089346930791355492}
+  <PlayerAnimation>k__BackingField: {fileID: 0}
   <WalkSpeed>k__BackingField: 4
   <RunSpeed>k__BackingField: 6
   <RotationSpeed>k__BackingField: 15
@@ -241,6 +243,7 @@ MonoBehaviour:
   <JumpHeight>k__BackingField: 10
   gravityMultiplier: 1.5
   groundedGravity: -0.5
+  maxDownSpeed: -53
   groundCheckDistance: 0.05
 --- !u!114 &7687890313118411661
 MonoBehaviour:
@@ -364,17 +367,155 @@ MonoBehaviour:
     m_InternalValue: 1
   Role:
     m_InternalValue: 0
-  CharacterName:
+  CrewmateCharacterID:
     m_InternalValue:
-      utf8LengthInBytes: 6
+      utf8LengthInBytes: 0
       bytes:
         offset0000:
-          byte0000: 80
-          byte0001: 115
-          byte0002: 121
-          byte0003: 99
-          byte0004: 104
-          byte0005: 111
+          byte0000: 0
+          byte0001: 0
+          byte0002: 0
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
+          byte0006: 0
+          byte0007: 0
+          byte0008: 0
+          byte0009: 0
+          byte0010: 0
+          byte0011: 0
+          byte0012: 0
+          byte0013: 0
+          byte0014: 0
+          byte0015: 0
+        offset0016:
+          byte0000: 0
+          byte0001: 0
+          byte0002: 0
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
+          byte0006: 0
+          byte0007: 0
+          byte0008: 0
+          byte0009: 0
+          byte0010: 0
+          byte0011: 0
+          byte0012: 0
+          byte0013: 0
+          byte0014: 0
+          byte0015: 0
+        offset0032:
+          byte0000: 0
+          byte0001: 0
+          byte0002: 0
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
+          byte0006: 0
+          byte0007: 0
+          byte0008: 0
+          byte0009: 0
+          byte0010: 0
+          byte0011: 0
+          byte0012: 0
+          byte0013: 0
+          byte0014: 0
+          byte0015: 0
+        byte0048: 0
+        byte0049: 0
+        byte0050: 0
+        byte0051: 0
+        byte0052: 0
+        byte0053: 0
+        byte0054: 0
+        byte0055: 0
+        byte0056: 0
+        byte0057: 0
+        byte0058: 0
+        byte0059: 0
+        byte0060: 0
+        byte0061: 0
+  ImposterCharacterID:
+    m_InternalValue:
+      utf8LengthInBytes: 0
+      bytes:
+        offset0000:
+          byte0000: 0
+          byte0001: 0
+          byte0002: 0
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
+          byte0006: 0
+          byte0007: 0
+          byte0008: 0
+          byte0009: 0
+          byte0010: 0
+          byte0011: 0
+          byte0012: 0
+          byte0013: 0
+          byte0014: 0
+          byte0015: 0
+        offset0016:
+          byte0000: 0
+          byte0001: 0
+          byte0002: 0
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
+          byte0006: 0
+          byte0007: 0
+          byte0008: 0
+          byte0009: 0
+          byte0010: 0
+          byte0011: 0
+          byte0012: 0
+          byte0013: 0
+          byte0014: 0
+          byte0015: 0
+        offset0032:
+          byte0000: 0
+          byte0001: 0
+          byte0002: 0
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
+          byte0006: 0
+          byte0007: 0
+          byte0008: 0
+          byte0009: 0
+          byte0010: 0
+          byte0011: 0
+          byte0012: 0
+          byte0013: 0
+          byte0014: 0
+          byte0015: 0
+        byte0048: 0
+        byte0049: 0
+        byte0050: 0
+        byte0051: 0
+        byte0052: 0
+        byte0053: 0
+        byte0054: 0
+        byte0055: 0
+        byte0056: 0
+        byte0057: 0
+        byte0058: 0
+        byte0059: 0
+        byte0060: 0
+        byte0061: 0
+  CurrentCharacterID:
+    m_InternalValue:
+      utf8LengthInBytes: 0
+      bytes:
+        offset0000:
+          byte0000: 0
+          byte0001: 0
+          byte0002: 0
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
           byte0006: 0
           byte0007: 0
           byte0008: 0
@@ -490,6 +631,21 @@ MonoBehaviour:
   m_DefaultActionMap: Keyboard
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &7815416263655673313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 837731845563932383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b06616ba937561347a8c04a22b0cd303, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  Transformed:
+    m_InternalValue: 0
 --- !u!1 &3435790326839173604
 GameObject:
   m_ObjectHideFlags: 0
