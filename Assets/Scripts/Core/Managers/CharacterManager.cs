@@ -3,16 +3,19 @@ using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine.WSA;
 
 public class CharacterManager : NetworkBehaviour
 {
-    [SerializeField] public CharacterDatabase CharactersCollection;
+    [SerializeField] public CharactersDatabase AllCharactersDatabase;
     [SerializeField] public CharacterSO DefaultCrewmateCharacter;
     [SerializeField] public CharacterSO DefaultImposterCharacter;
 
+
     private void Awake()
     {
-        CharactersCollection.Initialize();
+        // CharacterDatabase
     }
 
     //--------------------------------------
@@ -33,7 +36,7 @@ public class CharacterManager : NetworkBehaviour
 
     static public CharacterSO GetCharacterSO(string character, Character.SearchType searchType = Character.SearchType.Default)
     {
-        return OneInsideGameManager.Instance.CharacterManager.CharactersCollection.GetCharacter(character, searchType);
+        return OneInsideGameManager.Instance.CharacterManager.AllCharactersDatabase.GetCharacter(character, searchType);
     }
 
     public static void ChangeChracter(GameObject targetPlayerVisual, CharacterSO characterSO, Animator animator = null)
