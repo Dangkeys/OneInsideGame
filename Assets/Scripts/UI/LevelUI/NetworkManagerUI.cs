@@ -23,7 +23,7 @@ public class NetworkManagerUI : NetworkBehaviour
 
     private void OnSceneLoadComplete(Scene arg0, LoadSceneMode arg1)
     {
-        Lobby currentLobby = oneInsideGameManager.LobbyManager.CurrentLobby;
+        Lobby currentLobby = LobbyManager.Instance.CurrentLobby;
         Debug.Log("OnSceneLoadComplete: " + currentLobby);
         if (currentLobby != null)
         {
@@ -52,7 +52,7 @@ public class NetworkManagerUI : NetworkBehaviour
 
             startGameButton.onClick.AddListener(() =>
             {
-                OneInsideLevelManager.Instance.SetGameState(GameState.GamePlaying);
+                OneInsideLevelSystem.Instance.SetGameState(GameState.GamePlaying);
                 startGameButton.gameObject.SetActive(false);
             });
 
@@ -78,7 +78,7 @@ public class NetworkManagerUI : NetworkBehaviour
     private async void StartHost()
     {
         await oneInsideGameManager.InitializeGameAsync(shouldLoadScene: false);
-        NetcodeManager.TransmitUserData();
+        ConnectionManager.TransmitUserData();
         NetworkManager.Singleton.StartHost();
     }
 
@@ -86,7 +86,7 @@ public class NetworkManagerUI : NetworkBehaviour
     private async void StartClient()
     {
         await oneInsideGameManager.InitializeGameAsync(shouldLoadScene: false);
-        NetcodeManager.TransmitUserData();
+        ConnectionManager.TransmitUserData();
         NetworkManager.Singleton.StartClient();
     }
 

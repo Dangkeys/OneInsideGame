@@ -4,7 +4,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class PlayerManager : NetworkBehaviour
+public class PlayerSystem : NetworkBehaviour
 {
 
     [SerializeField] private Transform playerPrefab;
@@ -15,13 +15,13 @@ public class PlayerManager : NetworkBehaviour
     public event Action OnResetALlPlayerPosition;
 
     public event Action<bool> OnEnableAllPlayersMovement;
-    private OneInsideLevelManager oneInsideLevelManager;
+    private OneInsideLevelSystem oneInsideLevelManager;
 
-    private VoteManager voteManager;
+    private VoteSystem voteManager;
 
     void Awake()
     {
-        oneInsideLevelManager = OneInsideLevelManager.Instance;
+        oneInsideLevelManager = OneInsideLevelSystem.Instance;
         voteManager = oneInsideLevelManager.VoteManager;
     }
 
@@ -71,7 +71,7 @@ public class PlayerManager : NetworkBehaviour
             {
                 if (client.PlayerObject && client.PlayerObject.TryGetComponent<Player>(out var player))
                 {
-                    player.GetComponent<NetworkObject>().TrySetParent(OneInsideLevelManager.Players, true);
+                    player.GetComponent<NetworkObject>().TrySetParent(OneInsideLevelSystem.Players, true);
                 }
             }
         }
@@ -121,7 +121,7 @@ public class PlayerManager : NetworkBehaviour
         {
             oneInsideLevelManager.State.OnValueChanged -= HandleGameStateChanged;
         }
-        OneInsideLevelManager.Instance.VoteManager.OnStateChanged -= OnVoteStateChangedServerRpc;
+        OneInsideLevelSystem.Instance.VoteManager.OnStateChanged -= OnVoteStateChangedServerRpc;
     }
     private void SpawnAllPlayers()
     {
@@ -130,7 +130,7 @@ public class PlayerManager : NetworkBehaviour
             GameObject player = Instantiate(playerPrefab.gameObject, Vector3.zero, Quaternion.identity);
             NetworkObject playerNetworkObject = player.GetComponent<NetworkObject>();
             playerNetworkObject.SpawnAsPlayerObject(clientId, true);
-            playerNetworkObject.TrySetParent(OneInsideLevelManager.Players, true);
+            playerNetworkObject.TrySetParent(OneInsideLevelSystem.Players, true);
         }
     }
     public void ClearAllPlayers()

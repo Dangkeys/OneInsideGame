@@ -9,12 +9,12 @@ public class GamePlayingTimerUI : NetworkBehaviour
 
     private void Start()
     {
-        if (OneInsideLevelManager.Instance == null)
+        if (OneInsideLevelSystem.Instance == null)
         {
             Debug.LogError(OneInside.Constants.OneInsideError.NULL);
             return;
         }
-        OneInsideLevelManager.Instance.GamePlayTimer.OnValueChanged += UpdateTimer;
+        OneInsideLevelSystem.Instance.GamePlayTimer.OnValueChanged += UpdateTimer;
         gameObject.SetActive(false);   
     }
 

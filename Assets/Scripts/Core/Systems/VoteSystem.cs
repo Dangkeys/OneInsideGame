@@ -5,7 +5,7 @@ using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
-public class VoteManager : NetworkBehaviour
+public class VoteSystem : NetworkBehaviour
 {
 
     public event Action<VoteState> OnStateChanged;
@@ -28,7 +28,7 @@ public class VoteManager : NetworkBehaviour
             Debug.LogWarning("OneInsideGameManager.Instance is null");
             return;
         }
-        networkPlayerData = OneInsideGameManager.Instance.NetcodeManager.NetworkPlayerData;
+        networkPlayerData = ConnectionManager.Instance.NetworkPlayerData;
     }
 
     public override void OnNetworkSpawn()
@@ -163,14 +163,14 @@ public class VoteManager : NetworkBehaviour
         switch (mostVotedPlayers.Count)
         {
             case 0:
-                OneInsideGameManager.Instance.ShowMessage("No votes were cast");
+                UIManager.Instance.ShowMessage("No votes were cast");
                 break;
             case 1:
-                OneInsideGameManager.Instance.ShowMessage($"{GetPlayerName(mostVotedPlayers[0])} has been voted to be the impostor by {highestVoteCount} players");
+                UIManager.Instance.ShowMessage($"{GetPlayerName(mostVotedPlayers[0])} has been voted to be the impostor by {highestVoteCount} players");
                 break;
             default:
                 string tiedPlayers = string.Join(", ", mostVotedPlayers.Select(GetPlayerName));
-                OneInsideGameManager.Instance.ShowMessage($"Tie vote! Players {tiedPlayers} each received {highestVoteCount} votes");
+                UIManager.Instance.ShowMessage($"Tie vote! Players {tiedPlayers} each received {highestVoteCount} votes");
                 break;
         }
     }
@@ -178,7 +178,7 @@ public class VoteManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void RaiseVoteStartServerRpc()
     {
-        if (OneInsideLevelManager.Instance.State.Value != GameState.GamePlaying)
+        if (OneInsideLevelSystem.Instance.State.Value != GameState.GamePlaying)
         {
             Debug.LogWarning("Attempted to start a vote while not in game");
             return;

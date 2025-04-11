@@ -6,7 +6,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class ReadyManager : NetworkBehaviour
+public class ReadySystem : NetworkBehaviour
 {
     public event Action<Dictionary<ulong, bool>> OnReadyStateChanged;
 
@@ -83,7 +83,7 @@ public class ReadyManager : NetworkBehaviour
             previousAllPlayersReady = allPlayersReady;
             if (allPlayersReady)
             {
-                if (IsServer && NetworkManager.ConnectedClients.Count == oneInsideGameManager.LobbyManager.CurrentLobby.MaxPlayers)
+                if (IsServer && NetworkManager.ConnectedClients.Count == LobbyManager.Instance.CurrentLobby.MaxPlayers)
                     await oneInsideGameManager.StartGame();
             }
         }
