@@ -20,6 +20,7 @@ public class QuestClick : QuestInfo, IInteractable
 
     private void OnEnable()
     {
+        inputActionReference.action.Enable();
         inputActionReference.action.started += HandleClick;
         questClickManager.onChangedWord += HandleWord;
         questClickManager.OnFinishedQuest += Finished;
@@ -27,6 +28,7 @@ public class QuestClick : QuestInfo, IInteractable
 
     private void OnDisable()
     {
+        inputActionReference.action.Disable();
         inputActionReference.action.started -= HandleClick;
         questClickManager.onChangedWord -= HandleWord;
         questClickManager.OnFinishedQuest -= Finished;
