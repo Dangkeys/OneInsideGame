@@ -23,7 +23,7 @@ public class NetworkManagerUI : NetworkBehaviour
 
     private void OnSceneLoadComplete(Scene arg0, LoadSceneMode arg1)
     {
-        Lobby currentLobby = oneInsideGameManager.LobbyManager.CurrentLobby;
+        Lobby currentLobby = LobbyManager.Instance.CurrentLobby;
         Debug.Log("OnSceneLoadComplete: " + currentLobby);
         if (currentLobby != null)
         {
