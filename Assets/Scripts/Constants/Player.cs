@@ -25,6 +25,10 @@ namespace OneInside.Constants
         {
             public const float ATTACK_COOLDOWN = 1.0f;
             public const float DAMAGE = 1.0f;
+
+            public const float TRANSFORMATION_ACTIVE_TIME = 10.0f;
+            public const float TRANSFORMATION_TIME = 0.5f;
+            public const float TRANSFORMATION_COOLDOWN_TIME = 20.0f;
         }
 
 
@@ -42,7 +46,6 @@ namespace OneInside.Constants
 
             public const float MAX_DOWN_SPEED = -53f;
         }
-
 
     }
 }

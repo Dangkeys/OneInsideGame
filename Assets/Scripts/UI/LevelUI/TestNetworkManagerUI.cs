@@ -26,8 +26,12 @@ public class TestNetworkManagerUI : MonoBehaviour
 
     private void OnSceneLoadComplete(Scene arg0, LoadSceneMode arg1)
     {
-        SceneManager.sceneLoaded -= OnSceneLoadComplete;
-        gameObject.SetActive(false);
+        if (arg0.name == GameScene.LobbyScene.ToString())
+        {
+            SceneManager.sceneLoaded -= OnSceneLoadComplete;
+            Debug.Log("OnSceneLoadComplete - Disabling NetworkManagerUI");
+            gameObject.SetActive(false);
+        }
     }
 
     private void Start()
