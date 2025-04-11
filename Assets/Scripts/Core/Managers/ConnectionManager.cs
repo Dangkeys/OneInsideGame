@@ -10,13 +10,14 @@ using Unity.Services.Relay.Models;
 using UnityEngine;
 using UnityEngine.SocialPlatforms;
 
-public class NetcodeManager : NetworkBehaviour
+public class ConnectionManager : SingletonNetwork<ConnectionManager>
 {
     public NetworkPlayerData NetworkPlayerData { get; private set; }
     private OneInsideGameManager gameManager;
 
-    void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         NetworkPlayerData = GetComponent<NetworkPlayerData>();
     }
     void Start()
@@ -32,10 +33,10 @@ public class NetcodeManager : NetworkBehaviour
 
     private void NetworkManger_ConnectionApprovalCallback(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
     {
-        var currentLobby = OneInsideGameManager.Instance.LobbyManager.CurrentLobby;
+        var currentLobby = LobbyManager.Instance.CurrentLobby;
         if (currentLobby == null)
         {
-            var levelManager = OneInsideLevelManager.Instance;
+            var levelManager = OneInsideLevelSystem.Instance;
             if (levelManager == null)
             {
                 response.Approved = false;
@@ -80,7 +81,7 @@ public class NetcodeManager : NetworkBehaviour
                     }
                     else
                     {
-                        OneInsideGameManager.Instance.UIManager.ShowProgressChanged(1f, "Connected to server");
+                        UIManager.Instance.ShowProgressChanged(1f, "Connected to server");
                         Debug.Log($"Connected to server! Our ID: {data.ClientId}");
                         if (data.PeerClientIds.IsCreated)
                         {
@@ -104,23 +105,23 @@ public class NetcodeManager : NetworkBehaviour
                     if (NetworkManager.Singleton.IsServer)
                     {
                         Debug.Log("You stopped hosting the server!");
-                        if (OneInsideGameManager.Instance.LobbyManager.CurrentLobby != null)
+                        if (LobbyManager.Instance.CurrentLobby != null)
                             Loader.Load(GameScene.MainMenuScene);
-                        OneInsideGameManager.Instance.UIManager.ShowProgressChanged(1f, "Match Left");
-                        gameManager.UIManager.ShowMessage("You stopped hosting the server!");
+                        UIManager.Instance.ShowProgressChanged(1f, "Match Left");
+                        UIManager.Instance.ShowMessage("You stopped hosting the server!");
                     }
                     else
                     {
-                        if (OneInsideGameManager.Instance.LobbyManager.CurrentLobby != null)
+                        if (LobbyManager.Instance.CurrentLobby != null)
                             Loader.Load(GameScene.MainMenuScene);
-                        OneInsideGameManager.Instance.UIManager.ShowProgressChanged(1f, "Match Left");
+                        UIManager.Instance.ShowProgressChanged(1f, "Match Left");
                         if (manager.DisconnectReason != "")
                         {
-                            gameManager.UIManager.ShowMessage(manager.DisconnectReason);
+                            UIManager.Instance.ShowMessage(manager.DisconnectReason);
                         }
                         else
                         {
-                            gameManager.UIManager.ShowMessage("Disconnected from server");
+                            UIManager.Instance.ShowMessage("Disconnected from server");
                         }
                     }
                 }

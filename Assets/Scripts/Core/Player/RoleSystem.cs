@@ -4,13 +4,13 @@ using Mono.CSharp;
 using Unity.Netcode;
 using UnityEngine;
 
-public class RoleManager : NetworkBehaviour
+public class RoleSystem : NetworkBehaviour
 {
 
-    PlayerManager playerManager;
+    PlayerSystem playerManager;
     void Awake()
     {
-      playerManager = OneInsideLevelManager.Instance.PlayerManager;  
+      playerManager = OneInsideLevelSystem.Instance.PlayerManager;  
     }
     public override void OnNetworkSpawn()
     {
@@ -21,7 +21,7 @@ public class RoleManager : NetworkBehaviour
     {
         if (IsServer)
         {
-            var currentLobby = OneInsideGameManager.Instance.LobbyManager.CurrentLobby;
+            var currentLobby = LobbyManager.Instance.CurrentLobby;
             if (currentLobby != null)
             {
                 AssignRandomRoles(currentLobby.Data.TryGetValue(OneInside.Constants.Lobby.KEY_IMPOSTER_AMOUNT, out var imposters)
@@ -29,7 +29,7 @@ public class RoleManager : NetworkBehaviour
                     : OneInside.Constants.Player.MIN_IMPOSTERS);
             }else{
                 //TODO add configuration
-                AssignRandomRoles(OneInsideLevelManager.Instance.ImposterAmount);
+                AssignRandomRoles(OneInsideLevelSystem.Instance.ImposterAmount);
             }
         }
     }

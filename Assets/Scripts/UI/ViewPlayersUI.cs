@@ -10,7 +10,7 @@ public class ViewPlayersUI : MonoBehaviour
 {
     [SerializeField] private Button startGameButton;
     [SerializeField] private Button readyButton;
-    [SerializeField] private ReadyManager readyManager;
+    [SerializeField] private ReadySystem readyManager;
     [SerializeField] private Transform playerContainer;
     [SerializeField] private PlayerListItemUI playerPrefab;
     private OneInsideGameManager oneInsideGameManager;
@@ -22,7 +22,7 @@ public class ViewPlayersUI : MonoBehaviour
     void Awake()
     {
         oneInsideGameManager = OneInsideGameManager.Instance;
-        networkPlayerData = oneInsideGameManager.NetcodeManager.NetworkPlayerData;
+        networkPlayerData = ConnectionManager.Instance.NetworkPlayerData;
     }
 
     void Start()
@@ -44,11 +44,11 @@ public class ViewPlayersUI : MonoBehaviour
 
             startGameButton.onClick.AddListener(() =>
             {
-                oneInsideGameManager.UIManager.ShowConfirmation("Are you sure you want to start the game?", async () =>
+                UIManager.Instance.ShowConfirmation("Are you sure you want to start the game?", async () =>
                     {
-                        oneInsideGameManager.UIManager.ShowProgressChanged(.5f, "Starting Game...");
+                        UIManager.Instance.ShowProgressChanged(.5f, "Starting Game...");
                         if (NetworkManager.Singleton.ConnectedClients.Count >=
-                        (oneInsideGameManager.LobbyManager.CurrentLobby.Data.TryGetValue(
+                        (LobbyManager.Instance.CurrentLobby.Data.TryGetValue(
                             OneInside.Constants.Lobby.KEY_IMPOSTER_AMOUNT, out var imposterAmount) ?
                         int.Parse(imposterAmount.Value) : OneInside.Constants.Player.MIN_IMPOSTERS))
                         {
@@ -57,8 +57,8 @@ public class ViewPlayersUI : MonoBehaviour
                         }
                         else
                         {
-                            oneInsideGameManager.UIManager.ShowProgressChanged(1f, "Cannot start game, not enough players");
-                            oneInsideGameManager.UIManager.ShowMessage("Cannot start game, not enough players");
+                            UIManager.Instance.ShowProgressChanged(1f, "Cannot start game, not enough players");
+                            UIManager.Instance.ShowMessage("Cannot start game, not enough players");
                         }
                     }, null);
             });

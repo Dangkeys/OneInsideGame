@@ -45,7 +45,7 @@ public class NetworkManagerUI : NetworkBehaviour
 
             startGameButton.onClick.AddListener(() =>
             {
-                OneInsideLevelManager.Instance.SetGameState(GameState.GamePlaying);
+                OneInsideLevelSystem.Instance.SetGameState(GameState.GamePlaying);
                 startGameButton.gameObject.SetActive(false);
             });
 
@@ -71,7 +71,7 @@ public class NetworkManagerUI : NetworkBehaviour
     private async void StartHost()
     {
         await oneInsideGameManager.InitializeGameAsync(shouldLoadScene: false);
-        NetcodeManager.TransmitUserData();
+        ConnectionManager.TransmitUserData();
         NetworkManager.Singleton.StartHost();
     }
 
@@ -79,7 +79,7 @@ public class NetworkManagerUI : NetworkBehaviour
     private async void StartClient()
     {
         await oneInsideGameManager.InitializeGameAsync(shouldLoadScene: false);
-        NetcodeManager.TransmitUserData();
+        ConnectionManager.TransmitUserData();
         NetworkManager.Singleton.StartClient();
     }
 

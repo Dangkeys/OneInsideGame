@@ -17,13 +17,13 @@ public class LobbyUI : MonoBehaviour
 
         leaveMatchButton.onClick.AddListener(() =>
         {
-            OneInsideGameManager.Instance.UIManager.ShowConfirmation("Are you sure you want to leave the match?", async () => 
+            UIManager.Instance.ShowConfirmation("Are you sure you want to leave the match?", async () => 
             {
-                OneInsideGameManager.Instance.UIManager.ShowProgressChanged(.5f, "Leaving Match");
+                UIManager.Instance.ShowProgressChanged(.5f, "Leaving Match");
                 await OneInsideGameManager.Instance.LeaveMatchAsync();
             }, null);
         });
-        joinCodeText.text= $"Join Code: {OneInsideGameManager.Instance.LobbyManager.CurrentLobby.LobbyCode}";
+        joinCodeText.text= $"Join Code: {LobbyManager.Instance.CurrentLobby.LobbyCode}";
     }
     // Update is called once per frame
     void Update()

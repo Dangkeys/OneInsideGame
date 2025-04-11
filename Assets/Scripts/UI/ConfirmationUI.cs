@@ -8,21 +8,24 @@ public class ConfirmationUI : MonoBehaviour
     [SerializeField] private Button confirmButton;
     [SerializeField] private Button cancelButton;
     [SerializeField] private TextMeshProUGUI messageText;
-    private OneInsideGameManager gameManager;
+
 
     private Action onConfirm;
     private Action onCancel;
 
+
+    UIManager uiManager;
+
     void Awake()
     {
+        uiManager = UIManager.Instance;
+
         confirmButton.onClick.AddListener(OnConfirmClick);
         cancelButton.onClick.AddListener(OnCancelClick);
 
-        gameManager = OneInsideGameManager.Instance;
-        if (gameManager != null)
-        {
-            gameManager.UIManager.OnConfirmationRequired += ShowConfirmation;
-        }
+
+        uiManager.OnConfirmationRequired += ShowConfirmation;
+
         gameObject.SetActive(false);
     }
 
@@ -56,10 +59,9 @@ public class ConfirmationUI : MonoBehaviour
 
     void OnDestroy()
     {
-        if (gameManager != null)
-        {
-            gameManager.UIManager.OnConfirmationRequired -= ShowConfirmation;
-        }
+
+        uiManager.OnConfirmationRequired -= ShowConfirmation;
+
 
         confirmButton.onClick.RemoveListener(OnConfirmClick);
         cancelButton.onClick.RemoveListener(OnCancelClick);

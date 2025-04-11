@@ -51,7 +51,7 @@ public class FindMatchUI : MonoBehaviour
     {
         if (string.IsNullOrWhiteSpace(joinCodeInputField.text))
         {
-            OneInsideGameManager.Instance.UIManager.ShowMessage("Please enter a valid join code");
+            UIManager.Instance.ShowMessage("Please enter a valid join code");
             return;
         }
 
@@ -62,7 +62,7 @@ public class FindMatchUI : MonoBehaviour
         }
         catch (Exception e)
         {
-            OneInsideGameManager.Instance.UIManager.ShowMessage($"Failed to join lobby by code: {e.Message}");
+            UIManager.Instance.ShowMessage($"Failed to join lobby by code: {e.Message}");
             Debug.LogWarning($"Failed to join lobby by code: {e.Message}");
         }
         finally
@@ -96,7 +96,7 @@ public class FindMatchUI : MonoBehaviour
             var query = filteringUI.LobbyQueryDto;
             query.ContinuationToken = continuationToken;
 
-            var result = await OneInsideGameManager.Instance.LobbyManager.GetAllLobbyAsync(query);
+            var result = await LobbyManager.Instance.GetAllLobbyAsync(query);
             if (result != null)
             {
                 foreach (var lobby in result.Items)
@@ -110,7 +110,7 @@ public class FindMatchUI : MonoBehaviour
         }
         catch (Exception e)
         {
-            OneInsideGameManager.Instance.UIManager.ShowMessage($"Failed to load lobbies: {e.Message}");
+            UIManager.Instance.ShowMessage($"Failed to load lobbies: {e.Message}");
             Debug.LogWarning($"Failed to load lobbies: {e.Message}");
         }
         finally

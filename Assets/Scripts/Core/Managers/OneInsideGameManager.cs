@@ -12,73 +12,11 @@ using Unity.Services.Vivox;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
+public class OneInsideGameManager : Singleton<OneInsideGameManager>
 {
-    // Simple events for game state changes
     public event Action<GameEvent, string> OnGameStateChanged;
-
-    // Game events that can trigger UI updates
-    public enum GameEvent
-    {
-        // Game initialization events
-        InitializingServices,
-        AuthenticatingUser,
-        GeneratingPlayerName,
-        InitializingVivox,
-        LoggingIntoVivox,
-        LoadingMainMenu,
-        GameInitialized,
-        
-        // Host match events
-        CreatingLobby,
-        LoadingLobbyScene,
-        LobbySceneLoaded,
-        
-        // Join match events
-        JoiningLobby,
-        
-        // General events
-        OperationFailed,
-        StartingGame,
-        GameStarted,
-        StoppingGame,
-        GameStopped
-    }
-
-    public CharacterManager CharacterManager { get; private set; }
-    public PerkManager PerkManager { get; private set; }
-    public AudioManager AudioManager { get; private set; }
-    public LobbyManager LobbyManager { get; private set; }
-    public VoiceChatManager VoiceChatManager { get; private set; }
-    public NetcodeManager NetcodeManager { get; private set; }
-    public UIManager UIManager { get; set; }
     
-    protected override void OnAwakeInitialization()
-    {
-        base.OnAwakeInitialization();
-        CharacterManager = GetComponentInChildren<CharacterManager>(true);
-        PerkManager = GetComponentInChildren<PerkManager>(true);
-        AudioManager = GetComponentInChildren<AudioManager>(true);
-        VoiceChatManager = GetComponentInChildren<VoiceChatManager>(true);
-        LobbyManager = GetComponentInChildren<LobbyManager>(true);
-        NetcodeManager = GetComponentInChildren<NetcodeManager>(true);
-        UIManager = GetComponentInChildren<UIManager>(true);
 
-        if (CharacterManager == null)
-            Debug.LogError("CharacterManager not found!");
-        if (PerkManager == null)
-            Debug.LogError("PerkManager not found!");
-        if (AudioManager == null)
-            Debug.LogError("AudioManager not found!");
-        if (VoiceChatManager == null)
-            Debug.LogError("VoiceChatManager not found!");
-        if (LobbyManager == null)
-            Debug.LogError("LobbyManager not found!");
-        if (NetcodeManager == null)
-            Debug.LogError("NetcodeManager not found!");
-        if (UIManager == null)
-            Debug.LogError("UIManager not found!");
-    }
 
     async void Start()
     {
@@ -91,36 +29,35 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
     [Command]
     public async Task LeaveMatchAsync()
     {
-        NetcodeManager.LeaveMatch();
-        await LobbyManager.LeaveLobbyAsync();
+        ConnectionManager.Instance.LeaveMatch();
+        await LobbyManager.Instance.LeaveLobbyAsync();
     }
 
     public async Task KickPlayerAsync(ulong clientId)
     {
-        NetcodeManager.KickPlayer(clientId);
-        await LobbyManager.KickPlayerAsync(clientId.ToString());
+        ConnectionManager.Instance.KickPlayer(clientId);
+        await LobbyManager.Instance.KickPlayerAsync(clientId.ToString());
     }
 
     public async Task HostMatch(CreateLobbyDto createLobbyDto)
     {
-        // Notify about creating lobby
+
         NotifyGameStateChanged(GameEvent.CreatingLobby);
         
-        CreateLobbyAllocationResponseDto responseDto = await LobbyManager.CreateLobbyAsync(createLobbyDto);
+        CreateLobbyAllocationResponseDto responseDto = await LobbyManager.Instance.CreateLobbyAsync(createLobbyDto);
         if (responseDto == null)
         {
             NotifyGameStateChanged(GameEvent.OperationFailed, "Failed to create lobby");
             return;
         }
 
-        NetcodeManager.InitializeHostRelayTransport(responseDto);
+        ConnectionManager.InitializeHostRelayTransport(responseDto);
 
-        // Notify about loading lobby scene
+
         NotifyGameStateChanged(GameEvent.LoadingLobbyScene);
         
         await Loader.LoadNetwork(GameScene.LobbyScene);
-        
-        // Notify about lobby scene loaded
+
         NotifyGameStateChanged(GameEvent.LobbySceneLoaded);
     }
 
@@ -128,7 +65,7 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
     {
         NotifyGameStateChanged(GameEvent.JoiningLobby);
         
-        JoinLobbyAllocationResponseDto responseDto = await LobbyManager.QuickJoinAsync();
+        JoinLobbyAllocationResponseDto responseDto = await LobbyManager.Instance.QuickJoinAsync();
 
         if (responseDto == null)
         {
@@ -136,14 +73,12 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
             return;
         }
 
-        NetcodeManager.InitializeClientRelayTransport(responseDto);
-        
-        // Notify about loading lobby scene
+        ConnectionManager.InitializeClientRelayTransport(responseDto);
+
         NotifyGameStateChanged(GameEvent.LoadingLobbyScene);
         
         await Loader.LoadNetwork(GameScene.LobbyScene);
-        
-        // Notify about lobby scene loaded
+
         NotifyGameStateChanged(GameEvent.LobbySceneLoaded);
     }
 
@@ -151,7 +86,7 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
     {
         NotifyGameStateChanged(GameEvent.JoiningLobby);
         
-        JoinLobbyAllocationResponseDto responseDto = await LobbyManager.JoinLobbyByCodeAsync(joinCode);
+        JoinLobbyAllocationResponseDto responseDto = await LobbyManager.Instance.JoinLobbyByCodeAsync(joinCode);
 
         if (responseDto == null)
         {
@@ -159,14 +94,12 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
             return;
         }
 
-        NetcodeManager.InitializeClientRelayTransport(responseDto);
-        
-        // Notify about loading lobby scene
+        ConnectionManager.InitializeClientRelayTransport(responseDto);
+
         NotifyGameStateChanged(GameEvent.LoadingLobbyScene);
         
         await Loader.LoadNetwork(GameScene.LobbyScene);
-        
-        // Notify about lobby scene loaded
+
         NotifyGameStateChanged(GameEvent.LobbySceneLoaded);
     }
 
@@ -174,34 +107,32 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
     {
         NotifyGameStateChanged(GameEvent.JoiningLobby);
         
-        JoinLobbyAllocationResponseDto responseDto = await LobbyManager.JoinLobbyByIdAsync(lobbyId);
+        JoinLobbyAllocationResponseDto responseDto = await LobbyManager.Instance.JoinLobbyByIdAsync(lobbyId);
         if (responseDto == null)
         {
             NotifyGameStateChanged(GameEvent.OperationFailed, "Failed to join lobby");
             return;
         }
         
-        NetcodeManager.InitializeClientRelayTransport(responseDto);
-        
-        // Notify about loading lobby scene
+        ConnectionManager.InitializeClientRelayTransport(responseDto);
+
         NotifyGameStateChanged(GameEvent.LoadingLobbyScene);
         
         await Loader.LoadNetwork(GameScene.LobbyScene);
-        
-        // Notify about lobby scene loaded
+
         NotifyGameStateChanged(GameEvent.LobbySceneLoaded);
     }
 
     public async Task StartGame()
     {
-        var currentLobby = LobbyManager.CurrentLobby;
+        var currentLobby = LobbyManager.Instance.CurrentLobby;
         if (currentLobby == null)
         {
             NotifyGameStateChanged(GameEvent.OperationFailed, "Failed to start game, no lobby found");
             return;
         }
 
-        await LobbyManager.UpdateCurrentLobbyAsync(new UpdateLobbyDto(isLocked: true));
+        await LobbyManager.Instance.UpdateCurrentLobbyAsync(new UpdateLobbyDto(isLocked: true));
         
         NotifyGameStateChanged(GameEvent.StartingGame);
         
@@ -213,14 +144,14 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
     [Command]
     public async Task StopGame()
     {
-        var currentLobby = LobbyManager.CurrentLobby;
+        var currentLobby = LobbyManager.Instance.CurrentLobby;
         if (currentLobby == null)
         {
             NotifyGameStateChanged(GameEvent.OperationFailed, "Failed to stop game, no lobby found");
             return;
         }
 
-        await LobbyManager.UpdateCurrentLobbyAsync(new UpdateLobbyDto(isLocked: false));
+        await LobbyManager.Instance.UpdateCurrentLobbyAsync(new UpdateLobbyDto(isLocked: false));
         
         NotifyGameStateChanged(GameEvent.StoppingGame);
         
@@ -260,7 +191,6 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
         catch (RequestFailedException e)
         {
             Debug.LogWarning(e);
-            // Continue despite Vivox errors
         }
 
         if (shouldLoadScene)
@@ -274,7 +204,6 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
 
     private void NotifyGameStateChanged(GameEvent gameEvent, string message = null)
     {
-        // If no custom message provided, use the event name as the message
         if (string.IsNullOrEmpty(message))
         {
             message = gameEvent.ToString();

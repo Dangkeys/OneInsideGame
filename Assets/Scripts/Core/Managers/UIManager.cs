@@ -9,9 +9,9 @@ public class UIManager : SingletonPersistent<UIManager>
     public event Action<string, Action, Action> OnConfirmationRequired;
     public event Action<string> OnShowMessageRequired;
 
-    private readonly Dictionary<OneInsideGameManager.GameEvent, float> gameEventProgressMapping;
+    private readonly Dictionary<GameEvent, float> gameEventProgressMapping;
 
-    private readonly Dictionary<string, List<OneInsideGameManager.GameEvent>> progressSequences;
+    private readonly Dictionary<string, List<GameEvent>> progressSequences;
     
 
     private string currentSequence;
@@ -22,56 +22,54 @@ public class UIManager : SingletonPersistent<UIManager>
     public UIManager()
     {
         // Initialize progress mapping for game events
-        gameEventProgressMapping = new Dictionary<OneInsideGameManager.GameEvent, float>
+        gameEventProgressMapping = new Dictionary<GameEvent, float>
         {
 
-            { OneInsideGameManager.GameEvent.InitializingServices, 0f },
-            { OneInsideGameManager.GameEvent.AuthenticatingUser, 0.16f },
-            { OneInsideGameManager.GameEvent.GeneratingPlayerName, 0.33f },
-            { OneInsideGameManager.GameEvent.InitializingVivox, 0.5f },
-            { OneInsideGameManager.GameEvent.LoggingIntoVivox, 0.66f }, 
-            { OneInsideGameManager.GameEvent.LoadingMainMenu, 0.83f },
-            { OneInsideGameManager.GameEvent.GameInitialized, 1f },
-            
-            // Host/Join match sequence - 3 steps
-            { OneInsideGameManager.GameEvent.CreatingLobby, 0f },
-            { OneInsideGameManager.GameEvent.JoiningLobby, 0f },
-            { OneInsideGameManager.GameEvent.LoadingLobbyScene, 0.5f },
-            { OneInsideGameManager.GameEvent.LobbySceneLoaded, 1f },
-            
-            // Game start/stop sequence - special cases
-            { OneInsideGameManager.GameEvent.StartingGame, 0.5f },
-            { OneInsideGameManager.GameEvent.GameStarted, 1f },
-            { OneInsideGameManager.GameEvent.StoppingGame, 0.5f },
-            { OneInsideGameManager.GameEvent.GameStopped, 1f }
+            { GameEvent.InitializingServices, 0f },
+            { GameEvent.AuthenticatingUser, 0.16f },
+            { GameEvent.GeneratingPlayerName, 0.33f },
+            { GameEvent.InitializingVivox, 0.5f },
+            { GameEvent.LoggingIntoVivox, 0.66f }, 
+            { GameEvent.LoadingMainMenu, 0.83f },
+            { GameEvent.GameInitialized, 1f },
+
+            { GameEvent.CreatingLobby, 0f },
+            { GameEvent.JoiningLobby, 0f },
+            { GameEvent.LoadingLobbyScene, 0.5f },
+            { GameEvent.LobbySceneLoaded, 1f },
+
+            { GameEvent.StartingGame, 0.5f },
+            { GameEvent.GameStarted, 1f },
+            { GameEvent.StoppingGame, 0.5f },
+            { GameEvent.GameStopped, 1f }
         };
         
 
-        progressSequences = new Dictionary<string, List<OneInsideGameManager.GameEvent>>
+        progressSequences = new Dictionary<string, List<GameEvent>>
         {
-            { "GameInitialization", new List<OneInsideGameManager.GameEvent> 
+            { "GameInitialization", new List<GameEvent> 
                 { 
-                    OneInsideGameManager.GameEvent.InitializingServices,
-                    OneInsideGameManager.GameEvent.AuthenticatingUser,
-                    OneInsideGameManager.GameEvent.GeneratingPlayerName,
-                    OneInsideGameManager.GameEvent.InitializingVivox,
-                    OneInsideGameManager.GameEvent.LoggingIntoVivox,
-                    OneInsideGameManager.GameEvent.LoadingMainMenu,
-                    OneInsideGameManager.GameEvent.GameInitialized
+                    GameEvent.InitializingServices,
+                    GameEvent.AuthenticatingUser,
+                    GameEvent.GeneratingPlayerName,
+                    GameEvent.InitializingVivox,
+                    GameEvent.LoggingIntoVivox,
+                    GameEvent.LoadingMainMenu,
+                    GameEvent.GameInitialized
                 }
             },
-            { "HostMatch", new List<OneInsideGameManager.GameEvent>
+            { "HostMatch", new List<GameEvent>
                 {
-                    OneInsideGameManager.GameEvent.CreatingLobby,
-                    OneInsideGameManager.GameEvent.LoadingLobbyScene,
-                    OneInsideGameManager.GameEvent.LobbySceneLoaded
+                    GameEvent.CreatingLobby,
+                    GameEvent.LoadingLobbyScene,
+                    GameEvent.LobbySceneLoaded
                 }
             },
-            { "JoinMatch", new List<OneInsideGameManager.GameEvent>
+            { "JoinMatch", new List<GameEvent>
                 {
-                    OneInsideGameManager.GameEvent.JoiningLobby,
-                    OneInsideGameManager.GameEvent.LoadingLobbyScene,
-                    OneInsideGameManager.GameEvent.LobbySceneLoaded
+                    GameEvent.JoiningLobby,
+                    GameEvent.LoadingLobbyScene,
+                    GameEvent.LobbySceneLoaded
                 }
             }
         };
@@ -93,9 +91,9 @@ public class UIManager : SingletonPersistent<UIManager>
         }
     }
 
-    private void HandleGameStateChanged(OneInsideGameManager.GameEvent gameEvent, string message)
+    private void HandleGameStateChanged(GameEvent gameEvent, string message)
     {
-        if (gameEvent == OneInsideGameManager.GameEvent.OperationFailed)
+        if (gameEvent == GameEvent.OperationFailed)
         {
             ShowMessage(message);
             return;
@@ -105,7 +103,7 @@ public class UIManager : SingletonPersistent<UIManager>
         {
             if (sequence.Value.Contains(gameEvent))
             {
-                // If starting a new sequence
+
                 if (currentSequence != sequence.Key)
                 {
                     currentSequence = sequence.Key;
@@ -119,10 +117,10 @@ public class UIManager : SingletonPersistent<UIManager>
         }
         
         // Handle special case events that aren't part of a sequence
-        if (gameEvent == OneInsideGameManager.GameEvent.StartingGame ||
-            gameEvent == OneInsideGameManager.GameEvent.GameStarted ||
-            gameEvent == OneInsideGameManager.GameEvent.StoppingGame ||
-            gameEvent == OneInsideGameManager.GameEvent.GameStopped)
+        if (gameEvent == GameEvent.StartingGame ||
+            gameEvent == GameEvent.GameStarted ||
+            gameEvent == GameEvent.StoppingGame ||
+            gameEvent == GameEvent.GameStopped)
         {
             float progress = gameEventProgressMapping[gameEvent];
             ShowProgressChanged(progress, message);
