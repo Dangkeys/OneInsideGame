@@ -19,7 +19,6 @@ public class DoorSabotage : NetworkBehaviour
     public void DisableDoor()
     {
         DisableDoorServerRpc();
-        
     }
 
     [ServerRpc(RequireOwnership = false)]
