@@ -3,6 +3,7 @@ using UnityEngine.Rendering;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using Unity.Netcode;
+using Unity.Services.Matchmaker.Models;
 
 public class SabotageDevice : NetworkBehaviour
 {
@@ -19,16 +20,10 @@ public class SabotageDevice : NetworkBehaviour
     private void OpenSabotageDevice()
     {
         //Debug.Log("Received Signal");
-        if (!isSabotaging)
-        {
-            isSabotaging = true;
-            gameObject.SetActive(true);
-        }
-        else
-        {
-            isSabotaging = false;
-            gameObject.SetActive(false);
-        }
+
+        isSabotaging = !isSabotaging;
+        gameObject.SetActive(isSabotaging);
+
     }
 
     public override void OnDestroy(){
