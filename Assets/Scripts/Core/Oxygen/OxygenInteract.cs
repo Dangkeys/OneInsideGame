@@ -2,10 +2,15 @@ using UnityEngine;
 
 public class OxygenInteract : MonoBehaviour, IInteractable
 {
+    public bool IsDisabled;
     [field: SerializeField] private GameObject oxygen; //Jui changed this to public
     private PlayerMovement playerMovement;
     public void Interact(InteractionData interactionData)
     {
+        if (IsDisabled){
+            return;
+        }
+        
         if (!playerMovement)
         {
             playerMovement = interactionData.Interactor.GetComponent<PlayerMovement>();
@@ -15,6 +20,7 @@ public class OxygenInteract : MonoBehaviour, IInteractable
             playerMovement.EnablePlayerMovement(false);
         }
         oxygen.SetActive(true);
+        
     }
 
     public void EnableMovement()

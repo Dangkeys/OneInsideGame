@@ -462,10 +462,38 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6753754975350076364}
     m_Modifications:
+    - target: {fileID: 5533330835514189036, guid: 4de8a3f745550f040921935c56cd140b, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 2039468906
+      objectReference: {fileID: 0}
     - target: {fileID: 5959462191409633537, guid: 4de8a3f745550f040921935c56cd140b, type: 3}
       propertyPath: m_Name
       value: CharacterManager
       objectReference: {fileID: 0}
+    - target: {fileID: 7482198217819298249, guid: 4de8a3f745550f040921935c56cd140b, type: 3}
+      propertyPath: CharactersCollection
+      value: 
+      objectReference: {fileID: 11400000, guid: 1c803596387c95c458f3fe5f45fb21a4, type: 2}
+    - target: {fileID: 7482198217819298249, guid: 4de8a3f745550f040921935c56cd140b, type: 3}
+      propertyPath: DefaultWolfCharacter
+      value: 
+      objectReference: {fileID: 11400000, guid: 35232b714c1c3264da3a895512e73ea7, type: 2}
+    - target: {fileID: 7482198217819298249, guid: 4de8a3f745550f040921935c56cd140b, type: 3}
+      propertyPath: AllCharactersDatabase
+      value: 
+      objectReference: {fileID: 11400000, guid: 7a7afadb15db33f42bc6c25d423a503a, type: 2}
+    - target: {fileID: 7482198217819298249, guid: 4de8a3f745550f040921935c56cd140b, type: 3}
+      propertyPath: allCharactersCollection
+      value: 
+      objectReference: {fileID: 11400000, guid: 7a7afadb15db33f42bc6c25d423a503a, type: 2}
+    - target: {fileID: 7482198217819298249, guid: 4de8a3f745550f040921935c56cd140b, type: 3}
+      propertyPath: DefaultCrewmateCharacter
+      value: 
+      objectReference: {fileID: 11400000, guid: cbda6e21a63bc9e48ab4291d9458b83c, type: 2}
+    - target: {fileID: 7482198217819298249, guid: 4de8a3f745550f040921935c56cd140b, type: 3}
+      propertyPath: DefaultImposterCharacter
+      value: 
+      objectReference: {fileID: 11400000, guid: 35232b714c1c3264da3a895512e73ea7, type: 2}
     - target: {fileID: 9222339789096270848, guid: 4de8a3f745550f040921935c56cd140b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

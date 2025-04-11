@@ -17,27 +17,13 @@ public class SabotageDevice : NetworkBehaviour
         gameObject.SetActive(false);
     }
 
-    // public override void OnNetworkSpawn()
-    // {
-    //     Debug.Log("2");
-    //     gameObject.SetActive(true);
-    //     RemoteSabotageUI.SignalSabotageUIEvent += OpenSabotageDevice;
-    //     gameObject.SetActive(false);
-    // }
-
     private void OpenSabotageDevice()
     {
         //Debug.Log("Received Signal");
-        if (!isSabotaging)
-        {
-            isSabotaging = true;
-            gameObject.SetActive(true);
-        }
-        else
-        {
-            isSabotaging = false;
-            gameObject.SetActive(false);
-        }
+
+        isSabotaging = !isSabotaging;
+        gameObject.SetActive(isSabotaging);
+
     }
 
     public override void OnDestroy(){

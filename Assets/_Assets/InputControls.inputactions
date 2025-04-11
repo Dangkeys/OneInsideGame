@@ -103,6 +103,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Transformation",
+                    "type": "Button",
+                    "id": "12ef90f5-f687-405c-ab07-106b8274f42c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -531,7 +540,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "Open Sabotage Window",
+                    "action": "Open Sabotage Window","isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2cf4b639-1260-4d78-8b65-c1707af3f6b6",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Transformation",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

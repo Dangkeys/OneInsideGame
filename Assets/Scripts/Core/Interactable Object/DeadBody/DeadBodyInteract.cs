@@ -3,20 +3,11 @@ using UnityEngine;
 
 public class DeadBodyInteract : NetworkBehaviour, IInteractable
 {
-    [SerializeField] private GameObject deadBody;
+    [field: SerializeField] public GameObject DeadBody { get; private set; }
 
     public void Interact(InteractionData interactionData)
     {
-        if (deadBody.TryGetComponent<NetworkObject>(out NetworkObject deadBodyNetworkObject)
-            && interactionData.Interactor.TryGetComponent<NetworkObject>(out NetworkObject interactorNetworkObject))
-        {
-            ulong deadBodyOwnerID = deadBodyNetworkObject.OwnerClientId;
-            ulong interactorID = interactorNetworkObject.OwnerClientId;
-
-            Debug.Log($"Player {interactorID} found body of {deadBodyOwnerID}");
-
-            OneInsideLevelManager.Instance.VoteManager.RaiseVoteStartServerRpc();
-        }
+        DeadBody.GetComponent<DeadBody>().OnInteract(interactionData);
     }
 
     public bool CanInteract(InteractionData interactionData)
