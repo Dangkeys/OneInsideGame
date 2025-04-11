@@ -26,7 +26,6 @@ public class QuestSystem : NetworkBehaviour
                 GameObject foundQuest = GameObject.Find(quest.GetGameObjectName());
                 questList.Add(foundQuest);
                 quest.ChangeQuestInfo(foundQuest.GetComponent<QuestInfo>());
-                //foundQuest.SetActive(false);
             }
         }
     }
@@ -86,7 +85,10 @@ public class QuestSystem : NetworkBehaviour
         }
         else
         {
-            finishedQuest.Value -= 1;
+            if(finishedQuest.Value > 0)
+            {
+                finishedQuest.Value -= 1;
+            }
         }
     }
 
@@ -153,8 +155,8 @@ public class QuestSystem : NetworkBehaviour
     {
         for (int i = 0;i < maxQuest; i++)
         {
-            //questList[questEnable.Value[i]].SetActive(true);
             questList[questEnable.Value[i]].transform.position = questLocation[questChooseLocation.Value[i]].GetLocation();
+            questList[questEnable.Value[i]].GetComponent<QuestInfo>().Init();
         }
     }
 }

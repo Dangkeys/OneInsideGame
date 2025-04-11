@@ -1,11 +1,17 @@
 using System.Diagnostics;
 using Unity.Netcode;
+using UnityEngine;
 
 public abstract class QuestInfo : NetworkBehaviour
 {
     protected bool currentStatus = false;
     public event System.Action<bool> questInfoStatus;
     private PlayerMovement playerMovement;
+
+    public void Init()
+    {
+        UpdateQuestStatusServerRpc(false);
+    }
 
     protected void BreakQuest()
     {
@@ -43,6 +49,14 @@ public abstract class QuestInfo : NetworkBehaviour
     private void UpdateQuestStatus(bool status)
     {
         currentStatus = status;
+        if(status)
+        {
+            gameObject.layer = LayerMask.NameToLayer("QuestEnd");
+        }
+        else
+        {
+            gameObject.layer = LayerMask.NameToLayer("QuestStart");
+        }
     }
 
     protected void UpdateDoQuest(bool doQuest, InteractionData interactionData)

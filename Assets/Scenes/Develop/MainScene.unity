@@ -2480,7 +2480,7 @@ GameObject:
   - component: {fileID: 677574710}
   - component: {fileID: 677574709}
   - component: {fileID: 677574713}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: QuestShootingDebris
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2571,7 +2571,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8b616001269ae5546b54cc080086ae52, type: 2}
+  - {fileID: 2100000, guid: 918c2dec12a4fdb4585051b70cfed921, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2724,7 +2724,7 @@ GameObject:
   - component: {fileID: 680844178}
   - component: {fileID: 680844176}
   - component: {fileID: 680844181}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: QuestDrag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2815,7 +2815,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8b616001269ae5546b54cc080086ae52, type: 2}
+  - {fileID: 2100000, guid: 918c2dec12a4fdb4585051b70cfed921, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4368,7 +4368,7 @@ GameObject:
   - component: {fileID: 1141251092}
   - component: {fileID: 1141251091}
   - component: {fileID: 1141251095}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: QuestCleaningTree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4459,7 +4459,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8b616001269ae5546b54cc080086ae52, type: 2}
+  - {fileID: 2100000, guid: 918c2dec12a4fdb4585051b70cfed921, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4828,7 +4828,7 @@ GameObject:
   - component: {fileID: 1255383072}
   - component: {fileID: 1255383071}
   - component: {fileID: 1255383075}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: QuestTuningSignal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4919,7 +4919,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8b616001269ae5546b54cc080086ae52, type: 2}
+  - {fileID: 2100000, guid: 918c2dec12a4fdb4585051b70cfed921, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5111,7 +5111,7 @@ GameObject:
   - component: {fileID: 1351257107}
   - component: {fileID: 1351257106}
   - component: {fileID: 1351257110}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: QuestSentingPhoto
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5202,7 +5202,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8b616001269ae5546b54cc080086ae52, type: 2}
+  - {fileID: 2100000, guid: 918c2dec12a4fdb4585051b70cfed921, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5914,7 +5914,7 @@ GameObject:
   - component: {fileID: 1646476600}
   - component: {fileID: 1646476599}
   - component: {fileID: 1646476603}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: QuestSentingEmail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6005,7 +6005,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8b616001269ae5546b54cc080086ae52, type: 2}
+  - {fileID: 2100000, guid: 918c2dec12a4fdb4585051b70cfed921, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -6744,7 +6744,7 @@ GameObject:
   - component: {fileID: 1727916881}
   - component: {fileID: 1727916884}
   - component: {fileID: 1727916885}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: QuestDodge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6810,7 +6810,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8b616001269ae5546b54cc080086ae52, type: 2}
+  - {fileID: 2100000, guid: 918c2dec12a4fdb4585051b70cfed921, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -13734,7 +13734,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 500
   lifetime: 10
-  questShootingManager: {fileID: 0}
+  questShootingManager: {fileID: 7701206375166858129}
 --- !u!1 &1427812740389364602
 GameObject:
   m_ObjectHideFlags: 0
@@ -14996,7 +14996,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 500
   lifetime: 10
-  questShootingManager: {fileID: 0}
+  questShootingManager: {fileID: 7701206375166858129}
 --- !u!114 &1751471801146965671
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16037,7 +16037,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 500
   lifetime: 10
-  questShootingManager: {fileID: 0}
+  questShootingManager: {fileID: 7701206375166858129}
 --- !u!114 &2007943120003182284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23545,7 +23545,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 500
   lifetime: 10
-  questShootingManager: {fileID: 0}
+  questShootingManager: {fileID: 7701206375166858129}
 --- !u!4 &3876405751166202597
 Transform:
   m_ObjectHideFlags: 0
@@ -31502,7 +31502,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 500
   lifetime: 10
-  questShootingManager: {fileID: 0}
+  questShootingManager: {fileID: 7701206375166858129}
 --- !u!114 &6366021819070575568
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32498,7 +32498,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 500
   lifetime: 10
-  questShootingManager: {fileID: 0}
+  questShootingManager: {fileID: 7701206375166858129}
 --- !u!65 &6640517125825285234
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -33723,7 +33723,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8b616001269ae5546b54cc080086ae52, type: 2}
+  - {fileID: 2100000, guid: 918c2dec12a4fdb4585051b70cfed921, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -33774,7 +33774,7 @@ GameObject:
   - component: {fileID: 6966086813357701874}
   - component: {fileID: 6966086813357701876}
   - component: {fileID: 6966086813357701875}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: QuestClick
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34219,7 +34219,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 500
   lifetime: 10
-  questShootingManager: {fileID: 0}
+  questShootingManager: {fileID: 7701206375166858129}
 --- !u!222 &7129869806943560525
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -36494,7 +36494,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 500
   lifetime: 10
-  questShootingManager: {fileID: 0}
+  questShootingManager: {fileID: 7701206375166858129}
 --- !u!224 &7872073635164937840
 RectTransform:
   m_ObjectHideFlags: 0
@@ -37109,7 +37109,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 500
   lifetime: 10
-  questShootingManager: {fileID: 0}
+  questShootingManager: {fileID: 7701206375166858129}
 --- !u!114 &8053318196482711717
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -40795,7 +40795,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 500
   lifetime: 10
-  questShootingManager: {fileID: 0}
+  questShootingManager: {fileID: 7701206375166858129}
 --- !u!222 &9132686775822274455
 CanvasRenderer:
   m_ObjectHideFlags: 0
