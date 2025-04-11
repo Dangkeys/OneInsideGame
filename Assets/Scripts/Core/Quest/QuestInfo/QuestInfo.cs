@@ -1,4 +1,4 @@
-using System.Diagnostics;
+using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -10,7 +10,13 @@ public abstract class QuestInfo : NetworkBehaviour
 
     public void Init()
     {
-        UpdateQuestStatusServerRpc(false);
+        StartCoroutine(WaitForSpawnAndUpdate());
+    }
+
+    private IEnumerator WaitForSpawnAndUpdate()
+    {
+        yield return new WaitUntil(() => IsSpawned);
+        UpdateQuestLayoutServerRpc(false);
     }
 
     protected void BreakQuest()
@@ -18,6 +24,7 @@ public abstract class QuestInfo : NetworkBehaviour
         if (IsSpawned && currentStatus)
         {
             UpdateQuestStatusServerRpc(false);
+            UpdateQuestLayoutServerRpc(false);
         }
     }
 
@@ -26,6 +33,7 @@ public abstract class QuestInfo : NetworkBehaviour
         if (IsSpawned && !currentStatus)
         {
             UpdateQuestStatusServerRpc(true);
+            UpdateQuestLayoutServerRpc(true);
         }
     }
 
@@ -49,7 +57,27 @@ public abstract class QuestInfo : NetworkBehaviour
     private void UpdateQuestStatus(bool status)
     {
         currentStatus = status;
-        if(status)
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void UpdateQuestLayoutServerRpc(bool status)
+    {
+        if (!IsHost)
+        {
+            UpdateQuestLayout(status);
+        }
+        UpdateQuestLayoutClientRpc(status);
+    }
+
+    [ClientRpc]
+    private void UpdateQuestLayoutClientRpc(bool status)
+    {
+        UpdateQuestLayout(status);
+    }
+
+    private void UpdateQuestLayout(bool status)
+    {
+        if (status)
         {
             gameObject.layer = LayerMask.NameToLayer("QuestEnd");
         }
