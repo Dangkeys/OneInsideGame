@@ -44,11 +44,11 @@ public class PlayerMovement : NetworkBehaviour
 
     private PlayerState playerState;
 
-    private PlayerManager playerManager;
+    private PlayerSystem playerManager;
 
     void Awake()
     {
-        playerManager = OneInsideLevelManager.Instance.PlayerManager;
+        playerManager = OneInsideLevelSystem.Instance.PlayerManager;
     }
 
     void OnEnable()

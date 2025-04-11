@@ -8,7 +8,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class OneInsideLevelManager : NetworkBehaviour
+public class OneInsideLevelSystem : SingletonNetwork<OneInsideLevelSystem>
 {
 
 
@@ -17,23 +17,21 @@ public class OneInsideLevelManager : NetworkBehaviour
     public NetworkVariable<GameState> State = new NetworkVariable<GameState>(GameState.WaitingToStart);
 
     [field: SerializeField] public int ImposterAmount { get; private set; } = OneInside.Constants.Player.MAX_IMPOSTERS;
-    [field: SerializeField] public PlayerManager PlayerManager;
-    [field: SerializeField] public VoteManager VoteManager;
-    [field: SerializeField] public RoleManager RoleManager;
+    [field: SerializeField] public PlayerSystem PlayerManager;
+    [field: SerializeField] public VoteSystem VoteManager;
+    [field: SerializeField] public RoleSystem RoleManager;
     // [field: SerializeField] public VivoxManager VivoxManager;
 
     [field: SerializeField] public GameObject PlayersContainer;
     [field: SerializeField] public GameObject DeadBodiesContainer;
 
-
-    public static OneInsideLevelManager Instance { get; private set; }
     private OneInsideGameManager oneInsideGameManager;
     public static GameObject Players { get; private set; }
     public static GameObject DeadBodies { get; private set; }
 
-    private void Awake()
+    protected override void Awake()
     {
-        Instance = this;
+        base.Awake();
         oneInsideGameManager = OneInsideGameManager.Instance;
         Players = PlayersContainer;
         DeadBodies = DeadBodiesContainer;
@@ -69,7 +67,7 @@ public class OneInsideLevelManager : NetworkBehaviour
             case GameState.GameOver:
                 if (IsServer)
                 {
-                    if (OneInsideGameManager.Instance.LobbyManager.CurrentLobby != null)
+                    if (LobbyManager.Instance.CurrentLobby != null)
                     {
                         await OneInsideGameManager.Instance.LeaveMatchAsync();
 

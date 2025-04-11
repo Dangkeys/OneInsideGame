@@ -8,7 +8,7 @@ public class LoadingUI : MonoBehaviour
 {
     private TextMeshProUGUI bootstrapText;
     private Slider progressSlider;
-    private OneInsideGameManager gameManager;
+    private UIManager uIManager;
 
     void Awake()
     {
@@ -18,11 +18,9 @@ public class LoadingUI : MonoBehaviour
     }
     void Start()
     {
-        gameManager = OneInsideGameManager.Instance;
-        if (gameManager != null)
-        {
-            gameManager.OnLoadingProgressChanged += UpdateProgress;
-        }
+        uIManager = UIManager.Instance;
+        uIManager.OnLoadingProgressChanged += UpdateProgress;
+
         gameObject.SetActive(false);
     }
     void Update()
@@ -32,10 +30,9 @@ public class LoadingUI : MonoBehaviour
 
     void OnDestroy()
     {
-        if (gameManager != null)
-        {
-            gameManager.OnLoadingProgressChanged -= UpdateProgress;
-        }
+
+        uIManager.OnLoadingProgressChanged -= UpdateProgress;
+
     }
 
     private void UpdateProgress(float progressValue, string progressText)
