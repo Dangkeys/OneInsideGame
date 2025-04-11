@@ -21,7 +21,7 @@ public class ConfirmationUI : MonoBehaviour
         gameManager = OneInsideGameManager.Instance;
         if (gameManager != null)
         {
-            gameManager.OnConfirmationRequired += ShowConfirmation;
+            gameManager.UIManager.OnConfirmationRequired += ShowConfirmation;
         }
         gameObject.SetActive(false);
     }
@@ -58,7 +58,7 @@ public class ConfirmationUI : MonoBehaviour
     {
         if (gameManager != null)
         {
-            gameManager.OnConfirmationRequired -= ShowConfirmation;
+            gameManager.UIManager.OnConfirmationRequired -= ShowConfirmation;
         }
 
         confirmButton.onClick.RemoveListener(OnConfirmClick);

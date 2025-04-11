@@ -44,9 +44,9 @@ public class ViewPlayersUI : MonoBehaviour
 
             startGameButton.onClick.AddListener(() =>
             {
-                oneInsideGameManager.ShowConfirmation("Are you sure you want to start the game?", async () =>
+                oneInsideGameManager.UIManager.ShowConfirmation("Are you sure you want to start the game?", async () =>
                     {
-                        oneInsideGameManager.ShowProgressChanged(.5f, "Starting Game...");
+                        oneInsideGameManager.UIManager.ShowProgressChanged(.5f, "Starting Game...");
                         if (NetworkManager.Singleton.ConnectedClients.Count >=
                         (oneInsideGameManager.LobbyManager.CurrentLobby.Data.TryGetValue(
                             OneInside.Constants.Lobby.KEY_IMPOSTER_AMOUNT, out var imposterAmount) ?
@@ -57,8 +57,8 @@ public class ViewPlayersUI : MonoBehaviour
                         }
                         else
                         {
-                            oneInsideGameManager.ShowProgressChanged(1f, "Cannot start game, not enough players");
-                            oneInsideGameManager.ShowMessage("Cannot start game, not enough players");
+                            oneInsideGameManager.UIManager.ShowProgressChanged(1f, "Cannot start game, not enough players");
+                            oneInsideGameManager.UIManager.ShowMessage("Cannot start game, not enough players");
                         }
                     }, null);
             });

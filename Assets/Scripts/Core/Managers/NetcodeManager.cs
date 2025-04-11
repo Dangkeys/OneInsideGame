@@ -80,7 +80,7 @@ public class NetcodeManager : NetworkBehaviour
                     }
                     else
                     {
-                        OneInsideGameManager.Instance.ShowProgressChanged(1f, "Connected to server");
+                        OneInsideGameManager.Instance.UIManager.ShowProgressChanged(1f, "Connected to server");
                         Debug.Log($"Connected to server! Our ID: {data.ClientId}");
                         if (data.PeerClientIds.IsCreated)
                         {
@@ -106,21 +106,21 @@ public class NetcodeManager : NetworkBehaviour
                         Debug.Log("You stopped hosting the server!");
                         if (OneInsideGameManager.Instance.LobbyManager.CurrentLobby != null)
                             Loader.Load(GameScene.MainMenuScene);
-                        OneInsideGameManager.Instance.ShowProgressChanged(1f, "Match Left");
-                        gameManager.ShowMessage("You stopped hosting the server!");
+                        OneInsideGameManager.Instance.UIManager.ShowProgressChanged(1f, "Match Left");
+                        gameManager.UIManager.ShowMessage("You stopped hosting the server!");
                     }
                     else
                     {
                         if (OneInsideGameManager.Instance.LobbyManager.CurrentLobby != null)
                             Loader.Load(GameScene.MainMenuScene);
-                        OneInsideGameManager.Instance.ShowProgressChanged(1f, "Match Left");
+                        OneInsideGameManager.Instance.UIManager.ShowProgressChanged(1f, "Match Left");
                         if (manager.DisconnectReason != "")
                         {
-                            gameManager.ShowMessage(manager.DisconnectReason);
+                            gameManager.UIManager.ShowMessage(manager.DisconnectReason);
                         }
                         else
                         {
-                            gameManager.ShowMessage("Disconnected from server");
+                            gameManager.UIManager.ShowMessage("Disconnected from server");
                         }
                     }
                 }

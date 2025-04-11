@@ -12,7 +12,7 @@ public class MainMenuUI : MonoBehaviour
         });
 
         exitButton.onClick.AddListener(()=>{
-            OneInsideGameManager.Instance.ShowConfirmation("Are you sure you want to exit?", Application.Quit);
+            OneInsideGameManager.Instance.UIManager.ShowConfirmation("Are you sure you want to exit?", Application.Quit);
         });
     }
 

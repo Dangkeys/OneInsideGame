@@ -21,7 +21,7 @@ public class LoadingUI : MonoBehaviour
         gameManager = OneInsideGameManager.Instance;
         if (gameManager != null)
         {
-            gameManager.OnLoadingProgressChanged += UpdateProgress;
+            gameManager.UIManager.OnLoadingProgressChanged += UpdateProgress;
         }
         gameObject.SetActive(false);
     }
@@ -34,7 +34,7 @@ public class LoadingUI : MonoBehaviour
     {
         if (gameManager != null)
         {
-            gameManager.OnLoadingProgressChanged -= UpdateProgress;
+            gameManager.UIManager.OnLoadingProgressChanged -= UpdateProgress;
         }
     }
 

@@ -167,7 +167,7 @@ public class UpdateLobbyUI : MonoBehaviour
     {
         if (!IsValidConfiguration())
         {
-            OneInsideGameManager.Instance.ShowMessage("Invalid lobby configuration!");
+            OneInsideGameManager.Instance.UIManager.ShowMessage("Invalid lobby configuration!");
             return;
         }
 
@@ -187,15 +187,15 @@ public class UpdateLobbyUI : MonoBehaviour
             
             if (updatedLobby == null)
             {
-                OneInsideGameManager.Instance.ShowMessage("Failed to update lobby!");
+                OneInsideGameManager.Instance.UIManager.ShowMessage("Failed to update lobby!");
                 return;
             }
 
-            OneInsideGameManager.Instance.ShowMessage("Lobby updated successfully!");
+            OneInsideGameManager.Instance.UIManager.ShowMessage("Lobby updated successfully!");
         }
         catch (System.Exception e)
         {
-            OneInsideGameManager.Instance.ShowMessage($"Error updating lobby: {e.Message}");
+            OneInsideGameManager.Instance.UIManager.ShowMessage($"Error updating lobby: {e.Message}");
             Debug.LogError($"Error updating lobby: {e}");
         }
         finally

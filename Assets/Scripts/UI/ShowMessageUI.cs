@@ -24,7 +24,7 @@ public class ShowMessageUI : MonoBehaviour
         }
 
         lobbyManager.OnRequestFailed += ShowMessage;
-        gameManager.OnShowMessageRequired += ShowMessage;
+        gameManager.UIManager.OnShowMessageRequired += ShowMessage;
         gameObject.SetActive(false);
     }
 
@@ -48,7 +48,7 @@ public class ShowMessageUI : MonoBehaviour
         }
         if (gameManager != null)
         {
-            gameManager.OnShowMessageRequired -= ShowMessage;
+            gameManager.UIManager.OnShowMessageRequired -= ShowMessage;
         }
     }
 }

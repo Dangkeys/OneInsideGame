@@ -163,14 +163,14 @@ public class VoteManager : NetworkBehaviour
         switch (mostVotedPlayers.Count)
         {
             case 0:
-                OneInsideGameManager.Instance.ShowMessage("No votes were cast");
+                OneInsideGameManager.Instance.UIManager.ShowMessage("No votes were cast");
                 break;
             case 1:
-                OneInsideGameManager.Instance.ShowMessage($"{GetPlayerName(mostVotedPlayers[0])} has been voted to be the impostor by {highestVoteCount} players");
+                OneInsideGameManager.Instance.UIManager.ShowMessage($"{GetPlayerName(mostVotedPlayers[0])} has been voted to be the impostor by {highestVoteCount} players");
                 break;
             default:
                 string tiedPlayers = string.Join(", ", mostVotedPlayers.Select(GetPlayerName));
-                OneInsideGameManager.Instance.ShowMessage($"Tie vote! Players {tiedPlayers} each received {highestVoteCount} votes");
+                OneInsideGameManager.Instance.UIManager.ShowMessage($"Tie vote! Players {tiedPlayers} each received {highestVoteCount} votes");
                 break;
         }
     }

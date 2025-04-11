@@ -200,7 +200,7 @@ public class Player : NetworkBehaviour
 
         if (IsOwner)
         {
-            OneInsideGameManager.Instance.ShowMessage($"YOUR ROLE IS {newValue.ToString().ToUpper()}");
+            OneInsideGameManager.Instance.UIManager.ShowMessage($"YOUR ROLE IS {newValue.ToString().ToUpper()}");
         }
     }
 

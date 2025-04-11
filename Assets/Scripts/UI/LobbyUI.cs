@@ -17,9 +17,9 @@ public class LobbyUI : MonoBehaviour
 
         leaveMatchButton.onClick.AddListener(() =>
         {
-            OneInsideGameManager.Instance.ShowConfirmation("Are you sure you want to leave the match?", async () => 
+            OneInsideGameManager.Instance.UIManager.ShowConfirmation("Are you sure you want to leave the match?", async () => 
             {
-                OneInsideGameManager.Instance.ShowProgressChanged(.5f, "Leaving Match");
+                OneInsideGameManager.Instance.UIManager.ShowProgressChanged(.5f, "Leaving Match");
                 await OneInsideGameManager.Instance.LeaveMatchAsync();
             }, null);
         });
