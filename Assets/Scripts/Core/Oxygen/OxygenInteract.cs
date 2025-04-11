@@ -7,19 +7,20 @@ public class OxygenInteract : MonoBehaviour, IInteractable
     private PlayerMovement playerMovement;
     public void Interact(InteractionData interactionData)
     {
-        if (!IsDisabled)
-        {
-            if (!playerMovement)
-            {
-                playerMovement = interactionData.Interactor.GetComponent<PlayerMovement>();
-            }
-            if (playerMovement)
-            {
-                playerMovement.EnablePlayerMovement(false);
-            }
-            oxygen.SetActive(true);
+        if (IsDisabled){
+            return;
         }
-
+        
+        if (!playerMovement)
+        {
+            playerMovement = interactionData.Interactor.GetComponent<PlayerMovement>();
+        }
+        if (playerMovement)
+        {
+            playerMovement.EnablePlayerMovement(false);
+        }
+        oxygen.SetActive(true);
+        
     }
 
     public void EnableMovement()
