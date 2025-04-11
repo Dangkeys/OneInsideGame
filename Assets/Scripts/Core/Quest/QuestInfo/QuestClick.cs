@@ -16,11 +16,11 @@ public class QuestClick : QuestInfo, IInteractable
             string buttonName = pathSegments[pathSegments.Length - 1];
             questClickManager.AddWordList(buttonName);
         }
-        NetworkObject.Spawn();
     }
 
     private void OnEnable()
     {
+        inputActionReference.action.Enable();
         inputActionReference.action.started += HandleClick;
         questClickManager.onChangedWord += HandleWord;
         questClickManager.OnFinishedQuest += Finished;
@@ -28,6 +28,7 @@ public class QuestClick : QuestInfo, IInteractable
 
     private void OnDisable()
     {
+        inputActionReference.action.Disable();
         inputActionReference.action.started -= HandleClick;
         questClickManager.onChangedWord -= HandleWord;
         questClickManager.OnFinishedQuest -= Finished;
