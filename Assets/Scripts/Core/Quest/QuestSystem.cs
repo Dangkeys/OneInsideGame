@@ -90,7 +90,6 @@ public class QuestSystem : NetworkBehaviour
                 finishedQuest.Value -= 1;
             }
         }
-        Debug.Log(finishedQuest.Value);
     }
 
     private void UpdateProgressScoreBar()
