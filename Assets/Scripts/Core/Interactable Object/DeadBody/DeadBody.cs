@@ -24,6 +24,6 @@ public class DeadBody : NetworkBehaviour
     {
         Debug.Log(PlayerSystem.GetPlayerByClientId(DeadBodyOwnerID.Value).OwnerClientId);
         Debug.Log(PlayerSystem.GetPlayerScriptByClientId(DeadBodyOwnerID.Value).CharacterName.Value.ToString());
-        CharacterManager.ChangeChracter(DeadBodyPlayerVisual, PlayerSystem.GetPlayerScriptByClientId(DeadBodyOwnerID.Value).CharacterName.Value.ToString());
+        CharacterManager.Instance.ChangeChracter(DeadBodyPlayerVisual, PlayerSystem.GetPlayerScriptByClientId(DeadBodyOwnerID.Value).CharacterName.Value.ToString());
     }
 }

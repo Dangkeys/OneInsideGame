@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-using Mono.Cecil.Cil;
 using UnityEngine;
-[CreateAssetMenu(fileName = "CharacterDatabase", menuName = "Scriptable Objects/CharacterCollectionSO")]
-public class CharacterCollectionSO : ScriptableObject
+[CreateAssetMenu(fileName = "CharactersCollection", menuName = "Scriptable Objects/CharactersCollection")]
+public class CharactersCollection : ScriptableObject
 {
     [field: SerializeField] public List<CharacterSO> Characters;
 
@@ -20,7 +19,7 @@ public class CharacterCollectionSO : ScriptableObject
     {
         if (searchType == Character.SearchType.Default)
         {
-            searchType = Character.SearchType.Name;
+            searchType = Character.SearchType.ID;
         }
 
         CharacterSO characterSO = null;

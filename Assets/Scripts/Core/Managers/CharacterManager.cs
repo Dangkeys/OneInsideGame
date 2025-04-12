@@ -3,25 +3,43 @@ using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine.WSA;
+using System.Threading.Tasks;
 
-public class CharacterManager : NetworkBehaviour
+public class CharacterManager : SingletonNetwork<CharacterManager>
 {
-    [SerializeField] public CharacterCollectionSO CharactersCollection;
+    /*
+    -------------------------------------------------------
+    SERIALIZED FIELDS
+    -------------------------------------------------------
+    */
+    [SerializeField] public CharactersDatabase AllCharactersDatabase;
+    [SerializeField] public CharacterSO DefaultCrewmateCharacter;
+    [SerializeField] public CharacterSO DefaultImposterCharacter;
 
-    private void Awake()
+    /*
+    -------------------------------------------------------
+    UNITY EVENTS
+    -------------------------------------------------------
+    */
+    protected override void Awake()
     {
-        CharactersCollection.Initialize();
+        base.Awake();
+        AllCharactersDatabase.Initialize();
     }
 
-    //--------------------------------------
-    // Static Method
-    //--------------------------------------
+    /*
+    -------------------------------------------------------
+    STATIC UTILITY METHODS
+    -------------------------------------------------------
+    */
 
     static public GameObject GetCharacterSkin(GameObject targetCharacter)
     {
         foreach (Transform child in targetCharacter.transform)
         {
-            if (child.name != "Root")
+            if (child.name != "Root" && child.name != "IK")
             {
                 return child.gameObject;
             }
@@ -29,20 +47,37 @@ public class CharacterManager : NetworkBehaviour
         return null;
     }
 
-    static public CharacterSO GetCharacterSO(string character, Character.SearchType searchType = Character.SearchType.Default)
+    static public GameObject GetCharacterRoot(GameObject targetCharacter)
     {
-        return OneInsideGameManager.Instance.CharacterManager.CharactersCollection.GetCharacter(character, searchType);
+        foreach (Transform child in targetCharacter.transform)
+        {
+            if (child.name == "Root")
+            {
+                return child.gameObject;
+            }
+        }
+        return null;
     }
 
-    public static void ChangeChracter(GameObject targetPlayerVisual, CharacterSO characterSO, Animator animator = null)
+
+
+    public static async void ChangeChracter(GameObject targetPlayerVisual, CharacterSO characterSO, Animator animator = null)
     {
         targetPlayerVisual.transform.localScale = characterSO.CharacterVisual.transform.localScale;
 
         GameObject currentPlayerSkin = GetCharacterSkin(targetPlayerVisual);
+        GameObject currentPlayerRoot = GetCharacterRoot(targetPlayerVisual);
+
         GameObject targetPlayerSkin = characterSO.CharacterSkin;
+        GameObject targetRoot = characterSO.CharacterRoot;
+
+        string currentSkinName = currentPlayerSkin?.name;
+        string currentRootName = currentPlayerRoot?.name;
+
+        Dictionary<string, bool> savedAllParameters = new Dictionary<string, bool>();
+
         if (animator)
         {
-            Dictionary<string, bool> savedAllParameters = new Dictionary<string, bool>();
             foreach (AnimatorControllerParameter param in animator.parameters)
             {
                 if (param.type == AnimatorControllerParameterType.Bool)
@@ -52,29 +87,74 @@ public class CharacterManager : NetworkBehaviour
                 }
             }
             animator.avatar = characterSO.CharacterAvatar;
+        }
 
+        if (currentPlayerSkin != null)
+            GameObject.Destroy(currentPlayerSkin);
+        if (currentPlayerRoot != null)
+            GameObject.Destroy(currentPlayerRoot);
+
+        GameObject newSkin = GameObject.Instantiate(targetPlayerSkin, targetPlayerVisual.transform);
+        GameObject newRoot = GameObject.Instantiate(targetRoot, targetPlayerVisual.transform);
+
+        newSkin.name = currentSkinName ?? "Skin";
+        newRoot.name = currentRootName ?? "Root";
+
+        SkinnedMeshRenderer skinnedMesh = newSkin.GetComponent<SkinnedMeshRenderer>();
+        Transform[] newBones = new Transform[skinnedMesh.bones.Length];
+        Dictionary<string, Transform> boneMap = new Dictionary<string, Transform>();
+
+        foreach (Transform bone in newRoot.GetComponentsInChildren<Transform>())
+        {
+            boneMap[bone.name] = bone;
+        }
+
+        for (int i = 0; i < skinnedMesh.bones.Length; i++)
+        {
+            string boneName = skinnedMesh.bones[i].name;
+            if (boneMap.ContainsKey(boneName))
+            {
+                newBones[i] = boneMap[boneName];
+            }
+        }
+
+        skinnedMesh.bones = newBones;
+        skinnedMesh.rootBone = newRoot.transform;
+
+        skinnedMesh.enabled = false;
+        await Awaitable.WaitForSecondsAsync(0.01f);
+        animator.Rebind();
+        animator.Update(0f);
+        skinnedMesh.enabled = true;
+
+        if (animator)
+        {
             foreach (var item in savedAllParameters)
             {
                 animator.SetBool(item.Key, item.Value);
             }
         }
-
-        SkinnedMeshRenderer currentPlayerSkinRenderer = currentPlayerSkin.GetComponent<SkinnedMeshRenderer>(),
-         targetPlayerSkinRenderer = targetPlayerSkin.GetComponent<SkinnedMeshRenderer>();
-
-        currentPlayerSkinRenderer.sharedMesh = targetPlayerSkinRenderer.sharedMesh;
-        currentPlayerSkinRenderer.sharedMaterials = targetPlayerSkinRenderer.sharedMaterials;
     }
-
-    public static void ChangeChracter(GameObject targetPlayerVisual, string characterName, Animator animator = null)
+    /*
+    -------------------------------------------------------
+    NON STATIC METHODS
+    -------------------------------------------------------
+    */
+    public CharacterSO GetCharacterSO(string character, Character.SearchType searchType = Character.SearchType.Default)
+    {
+        return AllCharactersDatabase.GetCharacter(character, searchType);
+    }
+    public void ChangeChracter(GameObject targetPlayerVisual, string characterName, Animator animator = null)
     {
         CharacterSO characterSO = GetCharacterSO(characterName);
         ChangeChracter(targetPlayerVisual, characterSO, animator);
     }
 
-    //--------------------------------------
-    // Change Character
-    //--------------------------------------
+    /*
+    -------------------------------------------------------
+    NETWORK RPC METHODS
+    -------------------------------------------------------
+    */
 
     [ServerRpc(RequireOwnership = false)]
     public void ChangeCharacterServerRpc(string character, Character.SearchType searchType = Character.SearchType.Default, ServerRpcParams serverRpcParams = default)

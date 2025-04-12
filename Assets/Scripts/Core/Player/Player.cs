@@ -135,14 +135,14 @@ public class Player : NetworkBehaviour
             playerState.SetHealthServerRpc(playerState.MaxHealth.Value);
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            SetCharacterNameServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[0].name);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            SetCharacterNameServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[1].name);
-        }
+        // if (Input.GetKeyDown(KeyCode.Alpha1))
+        // {
+        //     SetCharacterNameServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[0].name);
+        // }
+        // if (Input.GetKeyDown(KeyCode.Alpha2))
+        // {
+        //     SetCharacterNameServerRpc(OneInsideGameManager.Instance.CharacterManager.CharactersCollection.Characters[1].name);
+        // }
     }
     //--------------
     // Attack Methods
