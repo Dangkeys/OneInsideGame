@@ -4,7 +4,7 @@ using Mono.CSharp;
 using Unity.Netcode;
 using UnityEngine;
 
-public class RoleManager : NetworkBehaviour
+public class RoleSystem : NetworkBehaviour
 {
 
     PlayerManager playerManager;

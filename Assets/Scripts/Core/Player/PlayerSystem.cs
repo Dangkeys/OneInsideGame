@@ -5,7 +5,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class PlayerManager : NetworkBehaviour
+public class PlayerSystem : NetworkBehaviour
 {
 
     [SerializeField] private Transform playerPrefab;

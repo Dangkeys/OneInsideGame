@@ -37,7 +37,7 @@ public class Player : NetworkBehaviour
     private Renderer playerRenderer;
     private Material defaultPlayerMaterial;
 
-    private PlayerManager playerManager;
+    private PlayerSystem playerManager;
 
     void Awake()
     {
@@ -170,7 +170,7 @@ public class Player : NetworkBehaviour
         if (closestCharacter != null)
         {
             Player targetPlayerScript = closestCharacter.GetComponent<Player>();
-            if (targetPlayerScript && targetPlayerScript.IsAlive.Value && PlayerManager.GetLocalPlayerScript().IsAlive.Value)
+            if (targetPlayerScript && targetPlayerScript.IsAlive.Value && PlayerSystem.GetLocalPlayerScript().IsAlive.Value)
             {
                 targetPlayerScript.TakeDamageServerRpc();
             }
@@ -254,14 +254,14 @@ public class Player : NetworkBehaviour
 
         if (IsOwner)
         {
-            foreach (Player player in PlayerManager.GetSpectatorPlayers(false))
+            foreach (Player player in PlayerSystem.GetSpectatorPlayers(false))
             {
                 player.gameObject.SetActive(true);
             }
         }
         else
         {
-            gameObject.SetActive(!PlayerManager.GetLocalPlayerScript().IsAlive.Value);
+            gameObject.SetActive(!PlayerSystem.GetLocalPlayerScript().IsAlive.Value);
         }
     }
 
@@ -275,7 +275,7 @@ public class Player : NetworkBehaviour
 
         if (IsOwner)
         {
-            foreach (Player player in PlayerManager.GetSpectatorPlayers(false))
+            foreach (Player player in PlayerSystem.GetSpectatorPlayers(false))
             {
                 player.gameObject.SetActive(false);
             }

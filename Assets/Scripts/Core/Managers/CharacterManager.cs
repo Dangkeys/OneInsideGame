@@ -86,7 +86,7 @@ public class CharacterManager : NetworkBehaviour
     [ClientRpc]
     public void ChangeCharacterClientRpc(ulong clientId, string character, Character.SearchType searchType)
     {
-        Player targetPlayer = PlayerManager.GetPlayerScriptByClientId(clientId);
+        Player targetPlayer = PlayerSystem.GetPlayerScriptByClientId(clientId);
         CharacterSO characterSO = GetCharacterSO(character, searchType);
         if (characterSO == null)
         {

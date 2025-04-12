@@ -90,7 +90,7 @@ public class PlayerAnimation : NetworkBehaviour
     {
         if (!IsLocalPlayer)
         {
-            if (!PlayerManager.GetLocalPlayerScript().IsAlive.Value)
+            if (!PlayerSystem.GetLocalPlayerScript().IsAlive.Value)
             {
                 gameObject.SetActive(false);
             }

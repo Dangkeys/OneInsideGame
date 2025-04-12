@@ -22,8 +22,8 @@ public class DeadBody : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        Debug.Log(PlayerManager.GetPlayerByClientId(DeadBodyOwnerID.Value).OwnerClientId);
-        Debug.Log(PlayerManager.GetPlayerScriptByClientId(DeadBodyOwnerID.Value).CharacterName.Value.ToString());
-        CharacterManager.ChangeChracter(DeadBodyPlayerVisual, PlayerManager.GetPlayerScriptByClientId(DeadBodyOwnerID.Value).CharacterName.Value.ToString());
+        Debug.Log(PlayerSystem.GetPlayerByClientId(DeadBodyOwnerID.Value).OwnerClientId);
+        Debug.Log(PlayerSystem.GetPlayerScriptByClientId(DeadBodyOwnerID.Value).CharacterName.Value.ToString());
+        CharacterManager.ChangeChracter(DeadBodyPlayerVisual, PlayerSystem.GetPlayerScriptByClientId(DeadBodyOwnerID.Value).CharacterName.Value.ToString());
     }
 }

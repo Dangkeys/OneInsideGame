@@ -46,7 +46,7 @@ public class PlayerMovement : NetworkBehaviour
     private PlayerState playerState;
 
 
-    private PlayerManager playerManager;
+    private PlayerSystem playerManager;
     private OneInsideGameManager oneInsideGameManager;
 
     void Awake()
