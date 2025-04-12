@@ -8,7 +8,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class OneInsideLevelManager : NetworkBehaviour
+public class OneInsideLevelSystem : NetworkBehaviour
 {
 
 
@@ -18,7 +18,7 @@ public class OneInsideLevelManager : NetworkBehaviour
 
     [field: SerializeField] public int ImposterAmount { get; private set; } = OneInside.Constants.Player.MAX_IMPOSTERS;
     [field: SerializeField] public PlayerSystem PlayerSystem;
-    [field: SerializeField] public VoteManager VoteManager;
+    [field: SerializeField] public VoteSystem VoteManager;
     [field: SerializeField] public RoleSystem RoleSystem;
 
     [field: SerializeField] public AbilityAssignment AbilityAssignment;
@@ -28,7 +28,7 @@ public class OneInsideLevelManager : NetworkBehaviour
     [field: SerializeField] public GameObject DeadBodiesContainer;
 
 
-    public static OneInsideLevelManager Instance { get; private set; }
+    public static OneInsideLevelSystem Instance { get; private set; }
     private OneInsideGameManager oneInsideGameManager;
     public static GameObject Players { get; private set; }
     public static GameObject DeadBodies { get; private set; }

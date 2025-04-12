@@ -17,7 +17,7 @@ public class AbilityWidget : MonoBehaviour
 
     void Awake()
     {
-        playerSystem = OneInsideLevelManager.Instance.PlayerSystem;
+        playerSystem = OneInsideLevelSystem.Instance.PlayerSystem;
         SetupIcon(backgroundIcon);
         SetupIcon(abilityIcon);
     }

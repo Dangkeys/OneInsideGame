@@ -36,7 +36,7 @@ public class NetcodeManager : NetworkBehaviour
         var currentLobby = OneInsideGameManager.Instance.LobbyManager.CurrentLobby;
         if (currentLobby == null)
         {
-            var levelManager = OneInsideLevelManager.Instance;
+            var levelManager = OneInsideLevelSystem.Instance;
             if (levelManager == null)
             {
                 response.Approved = false;

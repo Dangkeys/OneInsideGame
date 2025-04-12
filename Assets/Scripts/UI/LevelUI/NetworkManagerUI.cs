@@ -45,7 +45,7 @@ public class NetworkManagerUI : NetworkBehaviour
 
             startGameButton.onClick.AddListener(() =>
             {
-                OneInsideLevelManager.Instance.SetGameState(GameState.GamePlaying);
+                OneInsideLevelSystem.Instance.SetGameState(GameState.GamePlaying);
                 startGameButton.gameObject.SetActive(false);
             });
 

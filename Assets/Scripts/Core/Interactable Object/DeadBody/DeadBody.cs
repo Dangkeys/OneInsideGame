@@ -16,7 +16,7 @@ public class DeadBody : NetworkBehaviour
             Debug.Log($"Player {interactorID} found body of {DeadBodyOwnerID.Value}");
 
             deadBodyNetworkObject.Despawn();
-            OneInsideLevelManager.Instance.VoteManager.RaiseVoteStartServerRpc();
+            OneInsideLevelSystem.Instance.VoteManager.RaiseVoteStartServerRpc();
         }
     }
 

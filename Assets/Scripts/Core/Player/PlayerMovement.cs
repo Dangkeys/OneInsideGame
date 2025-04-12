@@ -51,7 +51,7 @@ public class PlayerMovement : NetworkBehaviour
 
     void Awake()
     {
-        playerSystem = OneInsideLevelManager.Instance.PlayerSystem;
+        playerSystem = OneInsideLevelSystem.Instance.PlayerSystem;
         if (!oneInsideGameManager)
             return;
         InputReader = OneInsideGameManager.Instance.InputReader;

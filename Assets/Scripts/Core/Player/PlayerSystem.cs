@@ -16,13 +16,13 @@ public class PlayerSystem : NetworkBehaviour
     public event Action OnResetAllPlayerPosition;
 
     public event Action<bool> OnEnableAllPlayersMovement;
-    private OneInsideLevelManager oneInsideLevelManager;
+    private OneInsideLevelSystem oneInsideLevelManager;
 
-    private VoteManager voteManager;
+    private VoteSystem voteManager;
 
     void Awake()
     {
-        oneInsideLevelManager = OneInsideLevelManager.Instance;
+        oneInsideLevelManager = OneInsideLevelSystem.Instance;
         voteManager = oneInsideLevelManager.VoteManager;
     }
 
@@ -72,7 +72,7 @@ public class PlayerSystem : NetworkBehaviour
             {
                 if (client.PlayerObject && client.PlayerObject.TryGetComponent<Player>(out var player))
                 {
-                    player.GetComponent<NetworkObject>().TrySetParent(OneInsideLevelManager.Players, true);
+                    player.GetComponent<NetworkObject>().TrySetParent(OneInsideLevelSystem.Players, true);
                 }
             }
         }
@@ -122,7 +122,7 @@ public class PlayerSystem : NetworkBehaviour
         {
             oneInsideLevelManager.State.OnValueChanged -= HandleGameStateChanged;
         }
-        OneInsideLevelManager.Instance.VoteManager.OnStateChanged -= OnVoteStateChangedServerRpc;
+        OneInsideLevelSystem.Instance.VoteManager.OnStateChanged -= OnVoteStateChangedServerRpc;
     }
     private void SpawnAllPlayers()
     {

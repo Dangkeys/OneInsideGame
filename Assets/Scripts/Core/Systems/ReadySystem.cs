@@ -6,7 +6,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class ReadyManager : NetworkBehaviour
+public class ReadySystem : NetworkBehaviour
 {
     public event Action<Dictionary<ulong, bool>> OnReadyStateChanged;
 

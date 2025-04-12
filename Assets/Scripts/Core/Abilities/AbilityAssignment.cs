@@ -7,14 +7,14 @@ using UnityEngine;
 public class AbilityAssignment : NetworkBehaviour
 {
     [field: SerializeField] public AbilityCollectionSO AbilityCollection { get; private set; }
-    private OneInsideLevelManager oneInsideLevelManager;
+    private OneInsideLevelSystem oneInsideLevelManager;
     private RoleSystem roleSystem;
     private NetworkPlayerData networkPlayerData;
     private OneInsideGameManager oneInsideGameManager;
     public override void OnNetworkSpawn()
     {
 
-        oneInsideLevelManager = OneInsideLevelManager.Instance;
+        oneInsideLevelManager = OneInsideLevelSystem.Instance;
         roleSystem = oneInsideLevelManager.RoleSystem;
         oneInsideGameManager = OneInsideGameManager.Instance;
         if (!oneInsideGameManager)

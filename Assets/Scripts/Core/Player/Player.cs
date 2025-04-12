@@ -41,7 +41,7 @@ public class Player : NetworkBehaviour
 
     void Awake()
     {
-        playerSystem = OneInsideLevelManager.Instance.PlayerSystem;
+        playerSystem = OneInsideLevelSystem.Instance.PlayerSystem;
     }
 
     public override void OnNetworkSpawn()
@@ -285,7 +285,7 @@ public class Player : NetworkBehaviour
     [ClientRpc]
     public void SetAbilityDataSOClientRpc(string abilityDataId, ClientRpcParams clientRpcParams)
     {
-        AbilityData = OneInsideLevelManager.Instance.AbilityAssignment.AbilityCollection.GetAbilityById(abilityDataId);
+        AbilityData = OneInsideLevelSystem.Instance.AbilityAssignment.AbilityCollection.GetAbilityById(abilityDataId);
         OnAbilityDataChanged?.Invoke();
     }
 }

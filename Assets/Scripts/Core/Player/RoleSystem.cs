@@ -13,7 +13,7 @@ public class RoleSystem : NetworkBehaviour
 
     void Awake()
     {
-        playerSystem = OneInsideLevelManager.Instance.PlayerSystem;
+        playerSystem = OneInsideLevelSystem.Instance.PlayerSystem;
     }
     public override void OnNetworkSpawn()
     {
@@ -34,7 +34,7 @@ public class RoleSystem : NetworkBehaviour
             else
             {
                 //TODO add configuration
-                AssignRandomRoles(OneInsideLevelManager.Instance.ImposterAmount);
+                AssignRandomRoles(OneInsideLevelSystem.Instance.ImposterAmount);
             }
         }
     }

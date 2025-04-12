@@ -109,9 +109,9 @@ public class PlayerAnimation : NetworkBehaviour
 
         deadbodyNetworkObject.Spawn();
 
-        if (OneInsideLevelManager.Instance)
+        if (OneInsideLevelSystem.Instance)
         {
-            deadbodyNetworkObject.TrySetParent(OneInsideLevelManager.DeadBodies, true);
+            deadbodyNetworkObject.TrySetParent(OneInsideLevelSystem.DeadBodies, true);
         }
 
     }

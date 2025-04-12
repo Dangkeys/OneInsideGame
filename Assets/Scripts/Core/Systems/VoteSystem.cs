@@ -5,7 +5,7 @@ using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
-public class VoteManager : NetworkBehaviour
+public class VoteSystem : NetworkBehaviour
 {
 
     public event Action<VoteState> OnStateChanged;
@@ -178,7 +178,7 @@ public class VoteManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void RaiseVoteStartServerRpc()
     {
-        if (OneInsideLevelManager.Instance.State.Value != GameState.GamePlaying)
+        if (OneInsideLevelSystem.Instance.State.Value != GameState.GamePlaying)
         {
             Debug.LogWarning("Attempted to start a vote while not in game");
             return;

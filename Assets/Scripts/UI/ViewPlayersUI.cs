@@ -10,7 +10,7 @@ public class ViewPlayersUI : MonoBehaviour
 {
     [SerializeField] private Button startGameButton;
     [SerializeField] private Button readyButton;
-    [SerializeField] private ReadyManager readyManager;
+    [SerializeField] private ReadySystem readyManager;
     [SerializeField] private Transform playerContainer;
     [SerializeField] private PlayerListItemUI playerPrefab;
     private OneInsideGameManager oneInsideGameManager;
