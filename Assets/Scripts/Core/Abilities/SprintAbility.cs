@@ -11,7 +11,7 @@ public class SprintAbility : BaseAbility
         if (!IsOwner)
             return;
 
-        var localPlayer = PlayerManager.GetLocalPlayer();
+        var localPlayer = PlayerSystem.GetLocalPlayer();
 
         if (localPlayer.TryGetComponent(out PlayerMovement playerMovement))
         {
@@ -30,7 +30,7 @@ public class SprintAbility : BaseAbility
         if (!IsOwner)
             return;
 
-        var localPlayer = PlayerManager.GetLocalPlayer();
+        var localPlayer = PlayerSystem.GetLocalPlayer();
 
         if (localPlayer.TryGetComponent(out PlayerMovement playerMovement))
         {

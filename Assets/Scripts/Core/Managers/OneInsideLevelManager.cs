@@ -17,9 +17,9 @@ public class OneInsideLevelManager : NetworkBehaviour
     public NetworkVariable<GameState> State = new NetworkVariable<GameState>(GameState.WaitingToStart);
 
     [field: SerializeField] public int ImposterAmount { get; private set; } = OneInside.Constants.Player.MAX_IMPOSTERS;
-    [field: SerializeField] public PlayerManager PlayerManager;
+    [field: SerializeField] public PlayerSystem PlayerSystem;
     [field: SerializeField] public VoteManager VoteManager;
-    [field: SerializeField] public RoleManager RoleManager;
+    [field: SerializeField] public RoleSystem RoleSystem;
 
     [field: SerializeField] public AbilityAssignment AbilityAssignment;
     // [field: SerializeField] public VivoxManager VivoxManager;
@@ -73,7 +73,7 @@ public class OneInsideLevelManager : NetworkBehaviour
                 {
                     if (OneInsideGameManager.Instance.LobbyManager.CurrentLobby != null)
                     {
-                        PlayerManager.ClearAllPlayers();
+                        PlayerSystem.ClearAllPlayers();
                         await OneInsideGameManager.Instance.StopGame();
                     }
                     else

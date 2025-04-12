@@ -37,11 +37,11 @@ public class Player : NetworkBehaviour
     private Renderer playerRenderer;
     private Material defaultPlayerMaterial;
 
-    private PlayerSystem playerManager;
+    private PlayerSystem playerSystem;
 
     void Awake()
     {
-        playerManager = OneInsideLevelManager.Instance.PlayerManager;
+        playerSystem = OneInsideLevelManager.Instance.PlayerSystem;
     }
 
     public override void OnNetworkSpawn()
@@ -71,9 +71,9 @@ public class Player : NetworkBehaviour
             playerState.SetRunning(false);
             playerState.SetAlive(true);
 
-            if (!playerManager)
+            if (!playerSystem)
                 return;
-            playerManager.OnResetAllPlayerPosition += ResetToSpawnPoint;
+            playerSystem.OnResetAllPlayerPosition += ResetToSpawnPoint;
         }
         InputReader.AttackEvent += OnAttackLocal;
     }
@@ -89,9 +89,9 @@ public class Player : NetworkBehaviour
         InputReader.AttackEvent -= OnAttackLocal;
         CharacterName.OnValueChanged -= OnCharacterNameChanged;
 
-        if (!playerManager)
+        if (!playerSystem)
             return;
-        playerManager.OnResetAllPlayerPosition -= ResetToSpawnPoint;
+        playerSystem.OnResetAllPlayerPosition -= ResetToSpawnPoint;
 
         var baseAbility = GetComponentInChildren<BaseAbility>();
         if (baseAbility != null)

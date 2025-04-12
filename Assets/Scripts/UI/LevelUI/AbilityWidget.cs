@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class AbilityWidget : MonoBehaviour
 {
-    private PlayerManager playerManager;
+    private PlayerSystem playerSystem;
     private Player player;
     [SerializeField] private Image backgroundIcon;
     [SerializeField] private Image abilityIcon;
@@ -17,7 +17,7 @@ public class AbilityWidget : MonoBehaviour
 
     void Awake()
     {
-        playerManager = OneInsideLevelManager.Instance.PlayerManager;
+        playerSystem = OneInsideLevelManager.Instance.PlayerSystem;
         SetupIcon(backgroundIcon);
         SetupIcon(abilityIcon);
     }
@@ -35,7 +35,7 @@ public class AbilityWidget : MonoBehaviour
 
     private void Start()
     {
-        playerManager.OnAllPlayersSpawnInTheGame += OnAllPlayersSpawnInTheGame;
+        playerSystem.OnAllPlayersSpawnInTheGame += OnAllPlayersSpawnInTheGame;
 
     }
 
@@ -43,7 +43,7 @@ public class AbilityWidget : MonoBehaviour
 
     private void OnAllPlayersSpawnInTheGame()
     {
-        player = PlayerManager.GetLocalPlayerScript();
+        player = PlayerSystem.GetLocalPlayerScript();
         if (player != null)
         {
             player.OnAbilityDataChanged += OnAbilityDataChanged;
@@ -134,7 +134,7 @@ public class AbilityWidget : MonoBehaviour
             ability.RemainingCooldown.OnValueChanged -= OnRemainingCooldownChanged;
         }
 
-        playerManager.OnAllPlayersSpawnInTheGame -= OnAllPlayersSpawnInTheGame;
+        playerSystem.OnAllPlayersSpawnInTheGame -= OnAllPlayersSpawnInTheGame;
     }
 
     private void OnDestroy()

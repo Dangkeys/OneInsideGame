@@ -14,7 +14,7 @@ public class SeethroughAbility : BaseAbility
         if (!IsOwner)
             return;
 
-        otherPlayers = PlayerManager.GetAllPlayer(player => !player.IsOwner);
+        otherPlayers = PlayerSystem.GetAllPlayer(player => !player.IsOwner);
 
         foreach (var player in otherPlayers)
         {

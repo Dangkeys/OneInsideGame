@@ -9,7 +9,7 @@ public class DetectiveAbility : BaseAbility
         if (!IsOwner)
             return;
 
-        otherPlayers = PlayerManager.GetAllPlayer(player => !player.IsOwner);
+        otherPlayers = PlayerSystem.GetAllPlayer(player => !player.IsOwner);
 
         SetPlayerTrailsVisibility(true);
     }

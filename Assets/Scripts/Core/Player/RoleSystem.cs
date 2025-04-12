@@ -7,17 +7,17 @@ using UnityEngine;
 public class RoleSystem : NetworkBehaviour
 {
 
-    PlayerManager playerManager;
+    PlayerSystem playerSystem;
 
     public event Action OnRolesAssignmentComplete;
 
     void Awake()
     {
-        playerManager = OneInsideLevelManager.Instance.PlayerManager;
+        playerSystem = OneInsideLevelManager.Instance.PlayerSystem;
     }
     public override void OnNetworkSpawn()
     {
-        playerManager.OnAllPlayersSpawnInTheGame += HandleAllPlayersInTheGame;
+        playerSystem.OnAllPlayersSpawnInTheGame += HandleAllPlayersInTheGame;
     }
 
     private void HandleAllPlayersInTheGame()
@@ -41,7 +41,7 @@ public class RoleSystem : NetworkBehaviour
 
     public override void OnNetworkDespawn()
     {
-        playerManager.OnAllPlayersSpawnInTheGame -= HandleAllPlayersInTheGame;
+        playerSystem.OnAllPlayersSpawnInTheGame -= HandleAllPlayersInTheGame;
     }
 
 

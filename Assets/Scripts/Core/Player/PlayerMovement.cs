@@ -46,12 +46,12 @@ public class PlayerMovement : NetworkBehaviour
     private PlayerState playerState;
 
 
-    private PlayerSystem playerManager;
+    private PlayerSystem playerSystem;
     private OneInsideGameManager oneInsideGameManager;
 
     void Awake()
     {
-        playerManager = OneInsideLevelManager.Instance.PlayerManager;
+        playerSystem = OneInsideLevelManager.Instance.PlayerSystem;
         if (!oneInsideGameManager)
             return;
         InputReader = OneInsideGameManager.Instance.InputReader;
@@ -75,9 +75,9 @@ public class PlayerMovement : NetworkBehaviour
         moveSpeed = WalkSpeed;
         InputReader.SprintEvent += Sprint;
         InputReader.JumpEvent += Jump;
-        if (!playerManager)
+        if (!playerSystem)
             return;
-        playerManager.OnEnableAllPlayersMovement += EnablePlayerMovement;
+        playerSystem.OnEnableAllPlayersMovement += EnablePlayerMovement;
     }
 
     private void Update()
@@ -174,9 +174,9 @@ public class PlayerMovement : NetworkBehaviour
             return;
         InputReader.SprintEvent -= Sprint;
         InputReader.JumpEvent -= Jump;
-        if (!playerManager)
+        if (!playerSystem)
             return;
-        playerManager.OnEnableAllPlayersMovement -= EnablePlayerMovement;
+        playerSystem.OnEnableAllPlayersMovement -= EnablePlayerMovement;
     }
 
     public void EnablePlayerMovement(bool shouldMove)

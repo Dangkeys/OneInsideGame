@@ -40,7 +40,7 @@ public class DisguiseAbility : BaseAbility
 
     private void ShouldDisguise(ulong disguiseClientId, bool shouldDisguise)
     {
-        var disguisePlayer = PlayerManager.GetPlayerScriptByClientId(disguiseClientId);
+        var disguisePlayer = PlayerSystem.GetPlayerScriptByClientId(disguiseClientId);
         if (IsOwner)
         {
             if (shouldDisguise)

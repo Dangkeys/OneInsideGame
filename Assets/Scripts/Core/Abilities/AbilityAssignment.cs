@@ -8,21 +8,21 @@ public class AbilityAssignment : NetworkBehaviour
 {
     [field: SerializeField] public AbilityCollectionSO AbilityCollection { get; private set; }
     private OneInsideLevelManager oneInsideLevelManager;
-    private RoleManager roleManager;
+    private RoleSystem roleSystem;
     private NetworkPlayerData networkPlayerData;
     private OneInsideGameManager oneInsideGameManager;
     public override void OnNetworkSpawn()
     {
 
         oneInsideLevelManager = OneInsideLevelManager.Instance;
-        roleManager = oneInsideLevelManager.RoleManager;
+        roleSystem = oneInsideLevelManager.RoleSystem;
         oneInsideGameManager = OneInsideGameManager.Instance;
         if (!oneInsideGameManager)
             return;
         networkPlayerData = oneInsideGameManager.NetcodeManager.NetworkPlayerData;
         if (IsServer)
         {
-            roleManager.OnRolesAssignmentComplete += AssignAbilities;
+            roleSystem.OnRolesAssignmentComplete += AssignAbilities;
         }
     }
 
@@ -30,7 +30,7 @@ public class AbilityAssignment : NetworkBehaviour
 
     private void AssignAbilities()
     {
-        var players = PlayerManager.GetAllPlayer(null);
+        var players = PlayerSystem.GetAllPlayer(null);
         foreach (var player in players)
         {
             var abilityData = GetPlayerAbilityData(player);
