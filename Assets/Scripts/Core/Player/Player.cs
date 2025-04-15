@@ -38,14 +38,16 @@ public class Player : NetworkBehaviour
     private Material defaultPlayerMaterial;
     private PlayerSystem playerManager;
     private Imposter imposter;
-
+    public AbilityDataSO AbilityData { get; private set; }
+    public event Action OnAbilityDataChanged;
     //--------------------------------------
     // Unity Lifecycle Methods
     //--------------------------------------
 
     void Awake()
     {
-        playerManager = OneInsideLevelSystem.Instance.PlayerManager;
+        playerManager = OneInsideLevelSystem.Instance.PlayerSystem;
+        
 
         CrewmateCharacterID.Value = CharacterManager.Instance.DefaultCrewmateCharacter.ID;
         ImposterCharacterID.Value = CharacterManager.Instance.DefaultImposterCharacter.ID;
@@ -273,5 +275,11 @@ public class Player : NetworkBehaviour
                     player.gameObject.SetActive(false);
             }
         }
+    }
+    [ClientRpc]
+    public void SetAbilityDataSOClientRpc(string abilityDataId, ClientRpcParams clientRpcParams)
+    {
+        AbilityData = OneInsideLevelSystem.Instance.AbilityAssignment.AbilityCollection.GetAbilityById(abilityDataId);
+        OnAbilityDataChanged?.Invoke();
     }
 }

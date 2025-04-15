@@ -6,10 +6,19 @@ using UnityEngine;
 
 public class NetworkPlayerData : NetworkBehaviour
 {
-    public NetworkVariable<Dictionary<ulong, FixedString32Bytes>> ClientIdToAuth { get; private set;} = 
+    public NetworkVariable<Dictionary<ulong, FixedString32Bytes>> ClientIdToAuth { get; private set; } =
         new NetworkVariable<Dictionary<ulong, FixedString32Bytes>>(new Dictionary<ulong, FixedString32Bytes>());
-    public NetworkVariable<Dictionary<FixedString32Bytes, UserDataDto>> AuthIdToUserData { get; private set;} = 
+    public NetworkVariable<Dictionary<FixedString32Bytes, UserDataDto>> AuthIdToUserData { get; private set; } =
         new NetworkVariable<Dictionary<FixedString32Bytes, UserDataDto>>(new Dictionary<FixedString32Bytes, UserDataDto>());
 
-    
+    public UserDataDto GetUserDataFromClientId(ulong clientId)
+    {
+
+        if (ClientIdToAuth.Value.TryGetValue(clientId, out FixedString32Bytes authId) &&
+            AuthIdToUserData.Value.TryGetValue(authId, out UserDataDto userData))
+        {
+            return userData;
+        }
+        return null;
+    }
 }

@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,21 +6,36 @@ public class AbilityWidget : MonoBehaviour
     [SerializeField] private Image abilityIcon;
     [SerializeField] private PlayerSystem playerSystem;
     private BaseAbility ability;
-
+    private Player player;
     private void Awake()
     {
         abilityIcon.type = Image.Type.Filled;
         abilityIcon.fillMethod = Image.FillMethod.Radial360;
         abilityIcon.fillOrigin = (int)Image.Origin360.Top;
         abilityIcon.fillClockwise = true;
-        playerSystem.OnAllPlayersSpawnInTheGame += Initialize;
+        playerSystem.OnAllPlayersSpawnInTheGame += OnAllPlayersSpawnInTheGame;
     }
 
-    private void Initialize()
+    private void OnAllPlayersSpawnInTheGame()
     {
-        ability = PlayerSystem.GetLocalPlayer().gameObject.GetComponentInChildren<BaseAbility>();
+        player = PlayerSystem.GetLocalPlayerScript();
+        player.OnAbilityDataChanged += OnAbilityDataChanged;
+    }
+
+    private void OnAbilityDataChanged()
+    {
         if (ability != null)
         {
+            ability.ActiveTimer.TimeRemaining.OnValueChanged -= OnActiveTimerChanged;
+            ability.CooldownTimer.TimeRemaining.OnValueChanged -= OnCooldownTimerChanged;
+            ability.CurrentState.OnValueChanged -= OnAbilityStateChanged;
+        }
+
+        ability = player.AbilityData.AbilityPrefab.GetComponent<BaseAbility>();
+
+        if (ability != null)
+        {
+            abilityIcon.sprite = player.AbilityData.Icon;
             ability.ActiveTimer.TimeRemaining.OnValueChanged += OnActiveTimerChanged;
             ability.CooldownTimer.TimeRemaining.OnValueChanged += OnCooldownTimerChanged;
             ability.CurrentState.OnValueChanged += OnAbilityStateChanged;
@@ -36,7 +50,7 @@ public class AbilityWidget : MonoBehaviour
             ability.CooldownTimer.TimeRemaining.OnValueChanged -= OnCooldownTimerChanged;
             ability.CurrentState.OnValueChanged -= OnAbilityStateChanged;
         }
-        playerSystem.OnAllPlayersSpawnInTheGame -= Initialize;
+        playerSystem.OnAllPlayersSpawnInTheGame -= OnAllPlayersSpawnInTheGame;
     }
 
     private void OnAbilityStateChanged(AbilityState previousValue, AbilityState newValue)

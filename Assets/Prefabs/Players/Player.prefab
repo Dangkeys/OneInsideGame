@@ -278,7 +278,6 @@ GameObject:
   - component: {fileID: 1558291385074665207}
   - component: {fileID: 2729509851161141685}
   - component: {fileID: 4824826090655842994}
-  - component: {fileID: -3199291015183143102}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -931,29 +930,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   <InputReader>k__BackingField: {fileID: 3937043524520739152}
---- !u!114 &-3199291015183143102
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 837731845563932383}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 620a1c7e62dbcfa46be262d47aff9397, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  <CooldownDuration>k__BackingField: 10
-  <ActiveDuration>k__BackingField: 10
-  isPassiveAbility: 0
-  shouldStartWithCooldown: 0
-  <DefaultLayerMask>k__BackingField:
-    serializedVersion: 2
-    m_Bits: 8
-  <SeethroughLayerMask>k__BackingField:
-    serializedVersion: 2
-    m_Bits: 2048
 --- !u!1 &1276935818764176119
 GameObject:
   m_ObjectHideFlags: 0
@@ -4445,6 +4421,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4885001493786356, guid: 2966910701d40974c87f0338bb5694e3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 198096858069344474, guid: 2966910701d40974c87f0338bb5694e3, type: 3}
+      propertyPath: EmissionModule.enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 198096858069344474, guid: 2966910701d40974c87f0338bb5694e3, type: 3}

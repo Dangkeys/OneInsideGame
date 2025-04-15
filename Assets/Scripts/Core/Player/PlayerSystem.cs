@@ -22,7 +22,7 @@ public class PlayerSystem : NetworkBehaviour
     void Awake()
     {
         oneInsideLevelManager = OneInsideLevelSystem.Instance;
-        voteManager = oneInsideLevelManager.VoteManager;
+        voteManager = oneInsideLevelManager.VoteSystem;
     }
 
 
@@ -121,7 +121,7 @@ public class PlayerSystem : NetworkBehaviour
         {
             oneInsideLevelManager.State.OnValueChanged -= HandleGameStateChanged;
         }
-        OneInsideLevelSystem.Instance.VoteManager.OnStateChanged -= OnVoteStateChangedServerRpc;
+        OneInsideLevelSystem.Instance.VoteSystem.OnStateChanged -= OnVoteStateChangedServerRpc;
     }
     private void SpawnAllPlayers()
     {

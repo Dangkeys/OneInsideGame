@@ -28,8 +28,8 @@ public class UserDataManager : Singleton<UserDataManager>
         {
             var data = new Dictionary<string, object>
             {
-                { OneInside.Constants.CloudSave.CREWMATE_ABILITY_KEY, "meow" },
-                { OneInside.Constants.CloudSave.IMPOSTER_ABILITY_KEY, "woof" }
+                { OneInside.Constants.CloudSave.CREWMATE_ABILITY_KEY, "ABILITY_3658F5_992900" },
+                { OneInside.Constants.CloudSave.IMPOSTER_ABILITY_KEY, "ABILITY_01DEA3_113327" }
             };
 
             await CloudSaveService.Instance.Data.Player.SaveAsync(data);

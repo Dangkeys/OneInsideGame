@@ -83,7 +83,6 @@ public abstract class BaseAbility : NetworkBehaviour
     {
         if (isPassiveAbility)
             return;
-        Debug.Log($"OnStateChanged: {newState}");
         switch (newState)
         {
             case AbilityState.Active:

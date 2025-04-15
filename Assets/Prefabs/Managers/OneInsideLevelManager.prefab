@@ -37,6 +37,7 @@ Transform:
   - {fileID: 4566108319256509477}
   - {fileID: 9136057855446851586}
   - {fileID: 4201700749774928587}
+  - {fileID: 95668502104769085}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1685535911463994085
@@ -51,7 +52,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 994968856
+  GlobalObjectIdHash: 2159356308
   InScenePlacedSourceGlobalObjectIdHash: 3220267787
   DeferredDespawnTick: 0
   Ownership: 1
@@ -83,9 +84,10 @@ MonoBehaviour:
   State:
     m_InternalValue: 0
   <ImposterAmount>k__BackingField: 1
-  PlayerManager: {fileID: 2191784326608909631}
-  VoteManager: {fileID: 3454218363725562644}
-  RoleManager: {fileID: 6459766613761483988}
+  PlayerSystem: {fileID: 2191784326608909631}
+  VoteSystem: {fileID: 3454218363725562644}
+  RoleSystem: {fileID: 6459766613761483988}
+  AbilityAssignment: {fileID: 2732124262772501949}
   PlayersContainer: {fileID: 7395644895410054645}
   DeadBodiesContainer: {fileID: 6187402818156472811}
 --- !u!1 &6187402818156472811
@@ -132,7 +134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 994968856
+  GlobalObjectIdHash: 1446165647
   InScenePlacedSourceGlobalObjectIdHash: 3220267787
   DeferredDespawnTick: 0
   Ownership: 1
@@ -189,7 +191,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 994968856
+  GlobalObjectIdHash: 3547646225
   InScenePlacedSourceGlobalObjectIdHash: 3220267787
   DeferredDespawnTick: 0
   Ownership: 1
@@ -202,6 +204,52 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
+--- !u!1 &8446367362543905211
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 95668502104769085}
+  - component: {fileID: 2732124262772501949}
+  m_Layer: 0
+  m_Name: AbilityAssignment
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &95668502104769085
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8446367362543905211}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1168847400003970533}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2732124262772501949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8446367362543905211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 511aacbd97ade1044abd2807d16a8598, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  <AbilityCollection>k__BackingField: {fileID: 0}
 --- !u!1001 &12596398470225775
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -212,7 +260,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1900650890298574790, guid: ffe30ded518bc68448da28c9d8cd4cc4, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 994968856
+      value: 1928251325
       objectReference: {fileID: 0}
     - target: {fileID: 1900650890298574790, guid: ffe30ded518bc68448da28c9d8cd4cc4, type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
@@ -345,7 +393,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8564632743897696803, guid: 9bac52a300cfbbc45b8e204261249980, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 994968856
+      value: 4184135043
       objectReference: {fileID: 0}
     - target: {fileID: 8564632743897696803, guid: 9bac52a300cfbbc45b8e204261249980, type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
@@ -382,7 +430,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -3148562235969899357, guid: 8af9277b40fcc124687d3068b341f1ff, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 994968856
+      value: 389338197
       objectReference: {fileID: 0}
     - target: {fileID: -3148562235969899357, guid: 8af9277b40fcc124687d3068b341f1ff, type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
