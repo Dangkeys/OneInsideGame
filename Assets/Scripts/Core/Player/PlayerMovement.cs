@@ -187,6 +187,19 @@ public class PlayerMovement : NetworkBehaviour
             AxisController.enabled = shouldMove;
     }
 
+    public void SetWalkSpeed(float speed)
+    {
+        WalkSpeed = speed;
+        Sprint(false);
+    }
+
+    public void SetRunSpeed(float speed)
+    {
+        RunSpeed = speed;
+        Sprint(true);
+    }
+    
+
     private void OnDrawGizmos()
     {
         DrawCheckGround();
