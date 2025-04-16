@@ -22,7 +22,7 @@ public class VoteItem : MonoBehaviour
     {
         if (voteManager == null)
         {
-            voteManager = OneInsideLevelSystem.Instance.VoteManager;
+            voteManager = OneInsideLevelSystem.Instance.VoteSystem;
             voteManager.VoteRegistry.OnValueChanged += OnVoteDictionaryChanged;
             
             if (voteManager.VoteRegistry.Value.ContainsKey(NetworkManager.Singleton.LocalClientId))

@@ -31,7 +31,7 @@ public class VoteManagerUI : NetworkBehaviour
             Debug.LogWarning("OneInsideLevelManager.Instance is null");
             return;
         }
-        voteManager = OneInsideLevelSystem.Instance.VoteManager;
+        voteManager = OneInsideLevelSystem.Instance.VoteSystem;
         voteManager.OnStateChanged += StateChanged;
         voteManager.VotingTimer.OnValueChanged += VotingTimerChanged;
         voteManager.VoteRegistry.OnValueChanged += VoteDictionaryChanged;
