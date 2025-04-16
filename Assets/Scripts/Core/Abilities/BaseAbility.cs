@@ -35,7 +35,7 @@ public abstract class BaseAbility : NetworkBehaviour
             CooldownTimer = gameObject.AddComponent<NetworkTimer>();
             ActiveTimer = gameObject.AddComponent<NetworkTimer>();
         }
-        inputReader = GetComponent<InputReader>();
+        inputReader = InputReader.Instance;
     }
 
     public override void OnNetworkSpawn()

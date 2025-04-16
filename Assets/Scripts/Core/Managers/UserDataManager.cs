@@ -4,9 +4,11 @@ using Unity.Services.Authentication;
 using Unity.Services.CloudSave;
 using Unity.Services.Core;
 using UnityEngine;
+using OneInside.Utils.CloudSave;
 
 public class UserDataManager : Singleton<UserDataManager>
 {
+    [field: SerializeField] public AbilityCollectionSO AbilityCollection { get; private set; }
     [field: SerializeField] public string CrewMateAbilityId { get; private set; } = "DefaultCrewMateAbilityId";
     [field: SerializeField] public string ImposterAbilityId { get; private set; } = "DefaultImposterAbilityId";
 
@@ -16,23 +18,42 @@ public class UserDataManager : Singleton<UserDataManager>
         {
             await UnityServices.InitializeAsync();
         }
-        await UnityServices.InitializeAsync();
 
-        _= await AuthenticationWrapper.DoAuth();
-        _ = LoadAbilitiesFromCloudSave();
+        _ = await AuthenticationWrapper.DoAuth();
+        
+        await LoadAbilitiesFromCloudSave();
+        var saveTasks = new List<Task>();
+    
+        if(AbilityCollection.GetAbilityById(CrewMateAbilityId) == null)
+        {
+            CrewMateAbilityId = AbilityCollection.GetRandomCrewMateAbility().Id;
+            saveTasks.Add(SaveAbilitiesToCloudSave(crewMateAbilityId: CrewMateAbilityId));
+        }
+        if(AbilityCollection.GetAbilityById(ImposterAbilityId) == null)
+        {
+            ImposterAbilityId = AbilityCollection.GetRandomImposterAbility().Id;
+            saveTasks.Add(SaveAbilitiesToCloudSave(imposterAbilityId: ImposterAbilityId));
+        }
+
+        if (saveTasks.Count > 0)
+        {
+            await Task.WhenAll(saveTasks);
+        }
     }
-
-    public async Task SaveAbilitiesToCloudSave()
+    public async Task SaveAbilitiesToCloudSave(string crewMateAbilityId = default, string imposterAbilityId = default)
     {
         try
         {
-            var data = new Dictionary<string, object>
+            if (!string.IsNullOrEmpty(crewMateAbilityId))
             {
-                { OneInside.Constants.CloudSave.CREWMATE_ABILITY_KEY, "ABILITY_3658F5_992900" },
-                { OneInside.Constants.CloudSave.IMPOSTER_ABILITY_KEY, "ABILITY_01DEA3_113327" }
-            };
-
-            await CloudSaveService.Instance.Data.Player.SaveAsync(data);
+                CrewMateAbilityId = crewMateAbilityId;
+                await CloudSaveWrapper.SaveData(OneInside.Constants.CloudSave.CREWMATE_ABILITY_KEY, crewMateAbilityId);
+            }
+            if (!string.IsNullOrEmpty(imposterAbilityId))
+            {
+                ImposterAbilityId = imposterAbilityId;
+                await CloudSaveWrapper.SaveData(OneInside.Constants.CloudSave.IMPOSTER_ABILITY_KEY, imposterAbilityId);
+            }
             Debug.Log("Abilities saved to Cloud Save");
         }
         catch (System.Exception e)
@@ -45,19 +66,8 @@ public class UserDataManager : Singleton<UserDataManager>
     {
         try
         {
-            var playerData = await CloudSaveService.Instance.Data.Player.LoadAsync(
-                new HashSet<string> { OneInside.Constants.CloudSave.CREWMATE_ABILITY_KEY, OneInside.Constants.CloudSave.IMPOSTER_ABILITY_KEY });
-
-            if (playerData.TryGetValue(OneInside.Constants.CloudSave.CREWMATE_ABILITY_KEY, out var crewmateValue))
-            {
-                CrewMateAbilityId = crewmateValue.Value.GetAs<string>();
-            }
-
-            if (playerData.TryGetValue(OneInside.Constants.CloudSave.IMPOSTER_ABILITY_KEY, out var impostorValue))
-            {
-                ImposterAbilityId = impostorValue.Value.GetAs<string>();
-            }
-
+            CrewMateAbilityId = await CloudSaveWrapper.LoadData<string>(OneInside.Constants.CloudSave.CREWMATE_ABILITY_KEY) ?? CrewMateAbilityId;
+            ImposterAbilityId = await CloudSaveWrapper.LoadData<string>(OneInside.Constants.CloudSave.IMPOSTER_ABILITY_KEY) ?? ImposterAbilityId;
             Debug.Log("Abilities loaded from Cloud Save");
         }
         catch (System.Exception e)
@@ -76,19 +86,5 @@ public class UserDataManager : Singleton<UserDataManager>
         userData.ImposterAbilityId = ImposterAbilityId;
 
         return userData;
-    }
-    private async void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            await SaveAbilitiesToCloudSave();
-        }
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            Debug.Log("Loading abilities from Cloud Save");
-            await LoadAbilitiesFromCloudSave();
-            Debug.Log("CrewMateAbilityId: " + CrewMateAbilityId);
-            Debug.Log("ImposterAbilityId: " + ImposterAbilityId);
-        }
     }
 }

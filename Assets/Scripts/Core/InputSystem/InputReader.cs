@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using static InputControls;
 
-public class InputReader : MonoBehaviour, IPlayerActions
+public class InputReader : Singleton<InputReader>, IPlayerActions
 {
     private InputControls controls;
     public Vector2 MovementValue { get; private set; }

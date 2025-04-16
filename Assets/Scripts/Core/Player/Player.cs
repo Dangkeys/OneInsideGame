@@ -10,7 +10,7 @@ public class Player : NetworkBehaviour
 
     [Header("References")]
     [field: SerializeField] public CinemachineCamera VirtualCamera { get; private set; }
-    [field: SerializeField] public InputReader InputReader { get; private set; }
+    public InputReader InputReader { get; private set; }
     [field: SerializeField] public GameObject Hitbox { get; private set; }
     [field: SerializeField] public CharacterController CharacterController { get; private set; }
     [field: SerializeField] public PlayerMovement PlayerMovement { get; private set; }
@@ -21,7 +21,7 @@ public class Player : NetworkBehaviour
 
     [Header("Status")]
     public NetworkVariable<bool> IsAlive = new NetworkVariable<bool>(true);
-    public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>(PlayerRole.None);
+            public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>(PlayerRole.None);
 
     [Header("Characters")]
     public NetworkVariable<FixedString64Bytes> CrewmateCharacterID = new NetworkVariable<FixedString64Bytes>();
@@ -47,7 +47,7 @@ public class Player : NetworkBehaviour
     void Awake()
     {
         playerManager = OneInsideLevelSystem.Instance.PlayerSystem;
-        
+        InputReader = InputReader.Instance;
 
         CrewmateCharacterID.Value = CharacterManager.Instance.DefaultCrewmateCharacter.ID;
         ImposterCharacterID.Value = CharacterManager.Instance.DefaultImposterCharacter.ID;

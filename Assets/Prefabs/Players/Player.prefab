@@ -271,7 +271,6 @@ GameObject:
   - component: {fileID: 295962568890882461}
   - component: {fileID: 7687890313118411661}
   - component: {fileID: 8666795281303897910}
-  - component: {fileID: 3937043524520739152}
   - component: {fileID: 3378184907274422936}
   - component: {fileID: 2130162687114717125}
   - component: {fileID: 7815416263655673313}
@@ -457,7 +456,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  <InputReader>k__BackingField: {fileID: 3937043524520739152}
   <CharacterController>k__BackingField: {fileID: 4450134948998468091}
   <MainCameraTransform>k__BackingField: {fileID: 0}
   <AxisController>k__BackingField: {fileID: 2089346930791355492}
@@ -583,7 +581,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   <VirtualCamera>k__BackingField: {fileID: 4749395338926886000}
-  <InputReader>k__BackingField: {fileID: 3937043524520739152}
   <Hitbox>k__BackingField: {fileID: 3435790326839173604}
   <CharacterController>k__BackingField: {fileID: 4450134948998468091}
   <PlayerMovement>k__BackingField: {fileID: 295962568890882461}
@@ -800,18 +797,6 @@ MonoBehaviour:
         byte0059: 0
         byte0060: 0
         byte0061: 0
---- !u!114 &3937043524520739152
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 837731845563932383}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05b7e7d56d3118149a7d168e90fd6082, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &3378184907274422936
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -825,7 +810,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  <InputReader>k__BackingField: {fileID: 3937043524520739152}
   <InteractionRadius>k__BackingField: 2
 --- !u!114 &2130162687114717125
 MonoBehaviour:
@@ -929,7 +913,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  <InputReader>k__BackingField: {fileID: 3937043524520739152}
 --- !u!1 &1276935818764176119
 GameObject:
   m_ObjectHideFlags: 0

@@ -31,7 +31,7 @@ public class AbilityWidget : MonoBehaviour
             ability.CurrentState.OnValueChanged -= OnAbilityStateChanged;
         }
 
-        ability = player.AbilityData.AbilityPrefab.GetComponent<BaseAbility>();
+        ability = player.GetComponentInChildren<BaseAbility>();
 
         if (ability != null)
         {
