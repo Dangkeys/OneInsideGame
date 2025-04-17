@@ -83,6 +83,23 @@ public class PlayerAnimation : NetworkBehaviour
     }
 
     //--------------------------------------
+    // Public Methods
+    //--------------------------------------
+
+    public void ResetAnimation()
+    {
+        foreach (var parameter in playerAnimator.parameters)
+        {
+            switch (parameter.type)
+            {
+                case AnimatorControllerParameterType.Bool:
+                    playerAnimator.SetBool(parameter.name, false);
+                    break;
+            }
+        }
+    }
+
+    //--------------------------------------
     // Ragdoll Methods
     //--------------------------------------
 
@@ -90,7 +107,7 @@ public class PlayerAnimation : NetworkBehaviour
     {
         if (!IsLocalPlayer)
         {
-            if (!PlayerManager.GetLocalPlayerScript().IsAlive.Value)
+            if (!PlayerSystem.GetLocalPlayerScript().IsAlive.Value)
             {
                 gameObject.SetActive(false);
             }
@@ -109,9 +126,9 @@ public class PlayerAnimation : NetworkBehaviour
 
         deadbodyNetworkObject.Spawn();
 
-        if (OneInsideLevelManager.Instance)
+        if (OneInsideLevelSystem.Instance)
         {
-            deadbodyNetworkObject.TrySetParent(OneInsideLevelManager.DeadBodies, true);
+            deadbodyNetworkObject.TrySetParent(OneInsideLevelSystem.DeadBodies, true);
         }
 
     }

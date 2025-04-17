@@ -20,6 +20,7 @@ public class DirectionSpawn : MonoBehaviour
     {
         size = direction.GetComponent<RectTransform>().rect.width * direction.GetComponent<RectTransform>().localScale.x;
         int count = Mathf.FloorToInt(panel.rect.width / size) - 2;
+        Debug.Log(count);
         directions = new Direction[count];
         for (int i = 0; i < count; i++)
         {

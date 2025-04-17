@@ -4,19 +4,16 @@ using UnityEngine;
 
 public class ShowMessageUI : MonoBehaviour
 {
-    OneInsideGameManager gameManager;
     LobbyManager lobbyManager;
+
+    UIManager uiManager;
     [SerializeField] private TextMeshProUGUI messageText;
     void Start()
     {
-        gameManager = OneInsideGameManager.Instance;
-        if (gameManager == null)
-        {
-            Debug.LogError("Failed to find OneInsideGameManager instance");
-            return;
-        }
 
-        lobbyManager = gameManager.LobbyManager;
+
+        lobbyManager = LobbyManager.Instance;
+        uiManager = UIManager.Instance;
         if (lobbyManager == null)
         {
             Debug.LogError("LobbyManager is null");
@@ -24,7 +21,7 @@ public class ShowMessageUI : MonoBehaviour
         }
 
         lobbyManager.OnRequestFailed += ShowMessage;
-        gameManager.OnShowMessageRequired += ShowMessage;
+        uiManager.OnShowMessageRequired += ShowMessage;
         gameObject.SetActive(false);
     }
 
@@ -46,9 +43,8 @@ public class ShowMessageUI : MonoBehaviour
         {
             lobbyManager.OnRequestFailed -= ShowMessage;
         }
-        if (gameManager != null)
-        {
-            gameManager.OnShowMessageRequired -= ShowMessage;
-        }
+
+        uiManager.OnShowMessageRequired -= ShowMessage;
+
     }
 }

@@ -8,4 +8,44 @@ namespace OneInside.Constants
         public const int MAX_IMPOSTERS = 4;
         public const int MIN_IMPOSTERS = 1;
     }
+
+    public static class DefaultPlayerConfig
+    {
+        public static class Player
+        {
+            public const float MAX_HEALTH = 3.0f;
+        }
+
+        public static class Crewmate
+        {
+            public const float STUN_DURATION = 2.0f;
+        }
+
+        public static class Imposter
+        {
+            public const float ATTACK_COOLDOWN = 1.0f;
+            public const float DAMAGE = 1.0f;
+
+            public const float TRANSFORMATION_ACTIVE_TIME = 10.0f;
+            public const float TRANSFORMATION_TIME = 0.5f;
+            public const float TRANSFORMATION_COOLDOWN_TIME = 20.0f;
+        }
+
+
+        public static class Movement
+        {
+            public const float WALK_SPEED = 6f;
+            public const float RUN_SPEED = 12f;
+            public const float ROTATION_SPEED = 15f;
+            public const float TURN_SMOOTH_TIME = .1f;
+            public const float JUMP_HEIGHT = 6f;
+
+            public const float GRAVITY = 1f;
+            public const float GROUNDED_GRAVITY = -0.5f;
+            public const float GROUND_CHECK_DISTANCE = 0.1f;
+
+            public const float MAX_DOWN_SPEED = -53f;
+        }
+
+    }
 }

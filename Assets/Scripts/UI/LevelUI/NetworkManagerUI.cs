@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using QFSW.QC;
 using UnityEngine.SceneManagement;
 using System;
+using Unity.Services.Lobbies.Models;
 
 public class NetworkManagerUI : NetworkBehaviour
 {
@@ -22,12 +23,18 @@ public class NetworkManagerUI : NetworkBehaviour
 
     private void OnSceneLoadComplete(Scene arg0, LoadSceneMode arg1)
     {
-        SceneManager.sceneLoaded -= OnSceneLoadComplete;
-        gameObject.SetActive(false);
+        Lobby currentLobby = LobbyManager.Instance.CurrentLobby;
+        Debug.Log("OnSceneLoadComplete: " + currentLobby);
+        if (currentLobby != null)
+        {
+            SceneManager.sceneLoaded -= OnSceneLoadComplete;
+            gameObject.SetActive(false);
+        }
     }
 
     void Start()
     {
+
         startGameButton.gameObject.SetActive(false);
         disconnectButton.gameObject.SetActive(false);
 
@@ -45,7 +52,7 @@ public class NetworkManagerUI : NetworkBehaviour
 
             startGameButton.onClick.AddListener(() =>
             {
-                OneInsideLevelManager.Instance.SetGameState(GameState.GamePlaying);
+                OneInsideLevelSystem.Instance.SetGameState(GameState.GamePlaying);
                 startGameButton.gameObject.SetActive(false);
             });
 
@@ -71,7 +78,7 @@ public class NetworkManagerUI : NetworkBehaviour
     private async void StartHost()
     {
         await oneInsideGameManager.InitializeGameAsync(shouldLoadScene: false);
-        NetcodeManager.TransmitUserData();
+        ConnectionManager.TransmitUserData();
         NetworkManager.Singleton.StartHost();
     }
 
@@ -79,7 +86,7 @@ public class NetworkManagerUI : NetworkBehaviour
     private async void StartClient()
     {
         await oneInsideGameManager.InitializeGameAsync(shouldLoadScene: false);
-        NetcodeManager.TransmitUserData();
+        ConnectionManager.TransmitUserData();
         NetworkManager.Singleton.StartClient();
     }
 

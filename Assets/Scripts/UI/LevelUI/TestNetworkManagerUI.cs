@@ -26,8 +26,12 @@ public class TestNetworkManagerUI : MonoBehaviour
 
     private void OnSceneLoadComplete(Scene arg0, LoadSceneMode arg1)
     {
-        SceneManager.sceneLoaded -= OnSceneLoadComplete;
-        gameObject.SetActive(false);
+        if (arg0.name == GameScene.LobbyScene.ToString())
+        {
+            SceneManager.sceneLoaded -= OnSceneLoadComplete;
+            Debug.Log("OnSceneLoadComplete - Disabling NetworkManagerUI");
+            gameObject.SetActive(false);
+        }
     }
 
     private void Start()
@@ -52,10 +56,10 @@ public class TestNetworkManagerUI : MonoBehaviour
         disconnectButton.onClick.AddListener(Disconnect);
         startGameButton.onClick.AddListener(() =>
         {
-            if (OneInsideLevelManager.Instance != null && OneInsideGameManager.Instance != null)
+            if (OneInsideLevelSystem.Instance != null && OneInsideGameManager.Instance != null)
             {
 
-                OneInsideLevelManager.Instance.SetGameState(GameState.GamePlaying);
+                OneInsideLevelSystem.Instance.SetGameState(GameState.GamePlaying);
             }
             else
             {

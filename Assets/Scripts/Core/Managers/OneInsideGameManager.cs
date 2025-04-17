@@ -5,83 +5,18 @@ using Mono.CSharp;
 using QFSW.QC;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
-using Unity.Networking.Transport.Relay;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Relay.Models;
 using Unity.Services.Vivox;
-using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
+public class OneInsideGameManager : Singleton<OneInsideGameManager>
 {
-    public event Action<float, string> OnLoadingProgressChanged;
-    public event Action<string, Action, Action> OnConfirmationRequired;
+    public event Action<GameEvent, string> OnGameStateChanged;
+    
 
-    public event Action<string> OnShowMessageRequired;
-    public enum LoadingSequence
-    {
-        GameInitialization,
-        HostMatch,
-        JoinMatch
-    }
-    private readonly Dictionary<LoadingSequence, string[]> loadingDictionary = new Dictionary<LoadingSequence, string[]>()
-    {
-        { LoadingSequence.GameInitialization, new string[]
-        {
-            "Initializing Unity Services",
-            "Authenticating User",
-            "Generated Player Name",
-            "Initializing Vivox Service",
-            "Logging into Vivox Service",
-            "Loading Main Menu",
-            "Game Initialized"
-        }},
-        { LoadingSequence.HostMatch, new string[]
-        {
-            "Creating Lobby",
-            "Loading Lobby Scene",
-            "Lobby Scene Loaded"
-        }},
-        { LoadingSequence.JoinMatch, new string[]
-        {
-            "Joining Lobby",
-            "Loading Lobby Scene",
-            "Lobby Scene Loaded"
-        }}
-    };
-
-
-    public CharacterManager CharacterManager { get; private set; }
-    public PerkManager PerkManager { get; private set; }
-    public AudioManager AudioManager { get; private set; }
-    public LobbyManager LobbyManager { get; private set; }
-    public VoiceChatManager VoiceChatManager { get; private set; }
-    public NetcodeManager NetcodeManager { get; private set; }
-    protected override void OnAwakeInitialization()
-    {
-        base.OnAwakeInitialization();
-        CharacterManager = GetComponentInChildren<CharacterManager>(true); // true to include inactive objects
-        PerkManager = GetComponentInChildren<PerkManager>(true);
-        AudioManager = GetComponentInChildren<AudioManager>(true);
-        VoiceChatManager = GetComponentInChildren<VoiceChatManager>(true);
-        LobbyManager = GetComponentInChildren<LobbyManager>(true);
-        NetcodeManager = GetComponentInChildren<NetcodeManager>(true);
-
-        if (CharacterManager == null)
-            Debug.LogError("CharacterManager not found!");
-        if (PerkManager == null)
-            Debug.LogError("PerkManager not found!");
-        if (AudioManager == null)
-            Debug.LogError("AudioManager not found!");
-        if (VoiceChatManager == null)
-            Debug.LogError("VoiceChatManager not found!");
-        if (LobbyManager == null)
-            Debug.LogError("LobbyManager not found!");
-        if (NetcodeManager == null)
-            Debug.LogError("NetcodeManager not found!");
-    }
 
     async void Start()
     {
@@ -94,191 +29,188 @@ public class OneInsideGameManager : SingletonPersistent<OneInsideGameManager>
     [Command]
     public async Task LeaveMatchAsync()
     {
-        //TODO migrate host(I don't think we can migrate in the current version of the netcode)
-
-        NetcodeManager.LeaveMatch();
-        await LobbyManager.LeaveLobbyAsync();
+        ConnectionManager.Instance.LeaveMatch();
+        await LobbyManager.Instance.LeaveLobbyAsync();
     }
 
     public async Task KickPlayerAsync(ulong clientId)
     {
-        NetcodeManager.KickPlayer(clientId);
-        await LobbyManager.KickPlayerAsync(clientId.ToString());
+        ConnectionManager.Instance.KickPlayer(clientId);
+        await LobbyManager.Instance.KickPlayerAsync(clientId.ToString());
     }
 
     public async Task HostMatch(CreateLobbyDto createLobbyDto)
     {
-        UpdateHostMatchProgress(1);
-        CreateLobbyAllocationResponseDto responseDto = await LobbyManager.CreateLobbyAsync(createLobbyDto);
+
+        NotifyGameStateChanged(GameEvent.CreatingLobby);
+        
+        CreateLobbyAllocationResponseDto responseDto = await LobbyManager.Instance.CreateLobbyAsync(createLobbyDto);
         if (responseDto == null)
         {
-            OnLoadingProgressChanged?.Invoke(1, "Failed to create lobby");
+            NotifyGameStateChanged(GameEvent.OperationFailed, "Failed to create lobby");
             return;
         }
 
+        ConnectionManager.InitializeHostRelayTransport(responseDto);
 
-        NetcodeManager.InitializeHostRelayTransport(responseDto);
 
+        NotifyGameStateChanged(GameEvent.LoadingLobbyScene);
+        
         await Loader.LoadNetwork(GameScene.LobbyScene);
 
-        UpdateHostMatchProgress(2);
+        NotifyGameStateChanged(GameEvent.LobbySceneLoaded);
     }
 
     public async Task QuickJoinMatchAsync()
     {
-        UpdateJoinMatchProgress(1);
-        JoinLobbyAllocationResponseDto responseDto = await LobbyManager.QuickJoinAsync();
+        NotifyGameStateChanged(GameEvent.JoiningLobby);
+        
+        JoinLobbyAllocationResponseDto responseDto = await LobbyManager.Instance.QuickJoinAsync();
 
         if (responseDto == null)
         {
-            OnLoadingProgressChanged?.Invoke(1, "Failed to join lobby");
+            NotifyGameStateChanged(GameEvent.OperationFailed, "Failed to join lobby");
             return;
         }
 
-        NetcodeManager.InitializeClientRelayTransport(responseDto);
+        ConnectionManager.InitializeClientRelayTransport(responseDto);
 
+        NotifyGameStateChanged(GameEvent.LoadingLobbyScene);
+        
+        await Loader.LoadNetwork(GameScene.LobbyScene);
+
+        NotifyGameStateChanged(GameEvent.LobbySceneLoaded);
     }
-
-
 
     public async Task JoinMatchByCodeAsync(string joinCode)
     {
-        UpdateJoinMatchProgress(1);
-        JoinLobbyAllocationResponseDto responseDto = await LobbyManager.JoinLobbyByCodeAsync(joinCode);
+        NotifyGameStateChanged(GameEvent.JoiningLobby);
+        
+        JoinLobbyAllocationResponseDto responseDto = await LobbyManager.Instance.JoinLobbyByCodeAsync(joinCode);
 
         if (responseDto == null)
         {
-            OnLoadingProgressChanged?.Invoke(1, "Failed to join lobby");
+            NotifyGameStateChanged(GameEvent.OperationFailed, "Failed to join lobby");
             return;
         }
 
-        NetcodeManager.InitializeClientRelayTransport(responseDto);
+        ConnectionManager.InitializeClientRelayTransport(responseDto);
 
+        NotifyGameStateChanged(GameEvent.LoadingLobbyScene);
+        
+        await Loader.LoadNetwork(GameScene.LobbyScene);
+
+        NotifyGameStateChanged(GameEvent.LobbySceneLoaded);
     }
 
     public async Task JoinMatchByLobbyIdAsync(string lobbyId)
     {
-        UpdateJoinMatchProgress(1);
-        JoinLobbyAllocationResponseDto responseDto = await LobbyManager.JoinLobbyByIdAsync(lobbyId);
+        NotifyGameStateChanged(GameEvent.JoiningLobby);
+        
+        JoinLobbyAllocationResponseDto responseDto = await LobbyManager.Instance.JoinLobbyByIdAsync(lobbyId);
         if (responseDto == null)
         {
-            OnLoadingProgressChanged?.Invoke(1, "Failed to join lobby");
+            NotifyGameStateChanged(GameEvent.OperationFailed, "Failed to join lobby");
             return;
         }
-        NetcodeManager.InitializeClientRelayTransport(responseDto);
+        
+        ConnectionManager.InitializeClientRelayTransport(responseDto);
 
+        NotifyGameStateChanged(GameEvent.LoadingLobbyScene);
+        
+        await Loader.LoadNetwork(GameScene.LobbyScene);
+
+        NotifyGameStateChanged(GameEvent.LobbySceneLoaded);
     }
-
 
     public async Task StartGame()
     {
-        var currentLobby = LobbyManager.CurrentLobby;
+        var currentLobby = LobbyManager.Instance.CurrentLobby;
         if (currentLobby == null)
         {
-            ShowMessage("Failed to start game, no lobby found");
+            NotifyGameStateChanged(GameEvent.OperationFailed, "Failed to start game, no lobby found");
             return;
         }
 
-        await LobbyManager.UpdateCurrentLobbyAsync(new UpdateLobbyDto(isLocked: true));
-        OnLoadingProgressChanged?.Invoke(0.5f, "Starting Game");
-        await Loader.LoadNetwork(GameScene.TajdangScene);
-        OnLoadingProgressChanged?.Invoke(1, "Game Started");
+        await LobbyManager.Instance.UpdateCurrentLobbyAsync(new UpdateLobbyDto(isLocked: true));
+        
+        NotifyGameStateChanged(GameEvent.StartingGame);
+        
+        await Loader.LoadNetwork(GameScene.MainScene);
+        
+        NotifyGameStateChanged(GameEvent.GameStarted);
     }
+    
     [Command]
     public async Task StopGame()
     {
-        var currentLobby = LobbyManager.CurrentLobby;
+        var currentLobby = LobbyManager.Instance.CurrentLobby;
         if (currentLobby == null)
         {
-            ShowMessage("Failed to stop game, no lobby found");
+            NotifyGameStateChanged(GameEvent.OperationFailed, "Failed to stop game, no lobby found");
             return;
         }
 
-        await LobbyManager.UpdateCurrentLobbyAsync(new UpdateLobbyDto(isLocked: false));
-        OnLoadingProgressChanged?.Invoke(0.5f, "Stopping Game");
+        await LobbyManager.Instance.UpdateCurrentLobbyAsync(new UpdateLobbyDto(isLocked: false));
+        
+        NotifyGameStateChanged(GameEvent.StoppingGame);
+        
         await Loader.LoadNetwork(GameScene.LobbyScene);
-        OnLoadingProgressChanged?.Invoke(1, "Game Stopped");
+        
+        NotifyGameStateChanged(GameEvent.GameStopped);
     }
 
     public async Task InitializeGameAsync(bool shouldLoadScene = true)
     {
-
-        UpdateGameInitializationProgress(0);
+        NotifyGameStateChanged(GameEvent.InitializingServices);
         await UnityServices.InitializeAsync();
 
-        UpdateGameInitializationProgress(1);
+        NotifyGameStateChanged(GameEvent.AuthenticatingUser);
         AuthState state = await AuthenticationWrapper.DoAuth();
 
         if (state != AuthState.Authenticated)
         {
-            //TODO Add more logic to handle failed authentication
-            Debug.LogError("Failed to authenticate user");
+            NotifyGameStateChanged(GameEvent.OperationFailed, "Failed to authenticate user");
             return;
         }
 
         if (AuthenticationService.Instance.PlayerName == null)
         {
-            UpdateGameInitializationProgress(2);
+            NotifyGameStateChanged(GameEvent.GeneratingPlayerName);
             await PlayerNameGenerator.GenerateRandomPlayerName();
         }
 
-        //TODO Fix vivox service to handle failed login or InitializeAsync
         try
         {
-            UpdateGameInitializationProgress(3);
+            NotifyGameStateChanged(GameEvent.InitializingVivox);
             await VivoxService.Instance.InitializeAsync();
 
-            UpdateGameInitializationProgress(4);
+            NotifyGameStateChanged(GameEvent.LoggingIntoVivox);
             await VivoxService.Instance.LoginAsync();
-
         }
         catch (RequestFailedException e)
         {
-            UpdateGameInitializationProgress(6);
             Debug.LogWarning(e);
         }
 
-        UpdateGameInitializationProgress(5);
+        await UserDataManager.Instance.LoadAbilitiesFromCloudSave();
+
         if (shouldLoadScene)
+        {
+            NotifyGameStateChanged(GameEvent.LoadingMainMenu);
             await SceneManager.LoadSceneAsync(GameScene.MainMenuScene.ToString());
-        UpdateGameInitializationProgress(6);
+        }
+        
+        NotifyGameStateChanged(GameEvent.GameInitialized);
     }
 
-
-    private void UpdateProgress(LoadingSequence loadingSequence, int currentStep)
+    private void NotifyGameStateChanged(GameEvent gameEvent, string message = null)
     {
-        string[] steps = loadingDictionary[loadingSequence];
-        float progress = Mathf.Clamp((float)currentStep / (steps.Length - 1), 0, 1);
-        OnLoadingProgressChanged?.Invoke(progress, steps[currentStep]);
+        if (string.IsNullOrEmpty(message))
+        {
+            message = gameEvent.ToString();
+        }
+        
+        OnGameStateChanged?.Invoke(gameEvent, message);
     }
-    private void UpdateGameInitializationProgress(int currentStep)
-    {
-        UpdateProgress(LoadingSequence.GameInitialization, currentStep);
-    }
-
-    private void UpdateHostMatchProgress(int currentStep)
-    {
-        UpdateProgress(LoadingSequence.HostMatch, currentStep);
-    }
-
-    private void UpdateJoinMatchProgress(int currentStep)
-    {
-        UpdateProgress(LoadingSequence.JoinMatch, currentStep);
-    }
-    public void ShowConfirmation(string message, Action onConfirm, Action onCancel = null)
-    {
-        OnConfirmationRequired?.Invoke(message, onConfirm, onCancel);
-    }
-
-    public void ShowMessage(string message)
-    {
-        OnShowMessageRequired?.Invoke(message);
-    }
-
-    public void ShowProgressChanged(float progress, string message)
-    {
-        OnLoadingProgressChanged?.Invoke(progress, message);
-    }
-
-
 }

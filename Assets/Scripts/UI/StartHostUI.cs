@@ -98,7 +98,7 @@ public class StartHostUI : MonoBehaviour
     {
         if (string.IsNullOrEmpty(lobbyNameInputField.text))
         {
-            OneInsideGameManager.Instance.ShowMessage("Please enter a valid lobby name");
+            UIManager.Instance.ShowMessage("Please enter a valid lobby name");
             return;
         }
 
@@ -108,7 +108,7 @@ public class StartHostUI : MonoBehaviour
             playerCount < OneInside.Constants.Player.MIN_PLAYERS ||
             playerCount > OneInside.Constants.Player.MAX_PLAYERS)
         {
-            OneInsideGameManager.Instance.ShowMessage("Invalid player or imposter count");
+            UIManager.Instance.ShowMessage("Invalid player or imposter count");
             return;
         }
 

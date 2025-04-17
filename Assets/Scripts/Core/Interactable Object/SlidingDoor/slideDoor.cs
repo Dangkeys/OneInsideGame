@@ -3,23 +3,30 @@ using UnityEngine;
 
 public class SlideDoor : NetworkBehaviour, IInteractable
 {
-    private bool doorOpen;
+    public bool IsDisabled;
+    public bool DoorOpen;
     public Animator DoorAnim;
     public void Interact(InteractionData interactionData)
-    {   
-        SlideDoorServerRPC();
+    {
+        if (!IsDisabled)
+        {
+            SlideDoorServerRPC();
+        }
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void SlideDoorServerRPC(){
-        if(!doorOpen){
+    private void SlideDoorServerRPC()
+    {
+        if (!DoorOpen)
+        {
             DoorAnim.SetTrigger("DoorOpen");
-            doorOpen = true;
+            DoorOpen = true;
         }
-        else if(doorOpen){
+        else if (DoorOpen)
+        {
             DoorAnim.SetTrigger("DoorClose");
-            doorOpen = false;
+            DoorOpen = false;
         }
     }
-    
+
 }
