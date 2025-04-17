@@ -203,6 +203,8 @@ GameObject:
   - component: {fileID: 9217890505570167821}
   - component: {fileID: 6536654121034071786}
   - component: {fileID: 5519146628300979142}
+  - component: {fileID: 6143989846231477492}
+  - component: {fileID: 3614513696390435272}
   m_Layer: 0
   m_Name: SM_Bld_Wall_Doorframe_02
   m_TagString: Untagged
@@ -323,6 +325,47 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: d15e6ce658984be4dba714b6201bc4d3, type: 3}
+--- !u!114 &6143989846231477492
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5334598080028865432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 0
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
+--- !u!114 &3614513696390435272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5334598080028865432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9be27ef4075faf54ea8c0be4dcef0572, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  IsDisabled: 0
+  DoorOpen: 0
+  DoorAnim: {fileID: 6937436834317471391}
 --- !u!1001 &1915265752130913125
 PrefabInstance:
   m_ObjectHideFlags: 0
