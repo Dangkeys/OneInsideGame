@@ -19,13 +19,9 @@ public class CharacterSO : ScriptableObject
     public GameObject CharacterRoot { get; private set; }
     public Avatar CharacterAvatar { get; private set; }
 
-    public void Initialize()
+#if UNITY_EDITOR
+    private void OnEnable()
     {
-        if (string.IsNullOrEmpty(ID))
-        {
-            ID = GameUtilities.GenerateID("Character", CharacterName);
-        }
-
         if (string.IsNullOrEmpty(CharacterName))
         {
             CharacterName = name;
@@ -36,6 +32,15 @@ public class CharacterSO : ScriptableObject
             CharacterBIO = "Hi, I'm " + CharacterName;
         }
 
+        if (string.IsNullOrEmpty(ID))
+        {
+            ID = GameUtilities.GenerateID("Character", CharacterName);
+        }
+    }
+#endif
+
+    public void Initialize()
+    {
         if (CharacterVisual != null)
         {
             CharacterVisual.name = CharacterName;
