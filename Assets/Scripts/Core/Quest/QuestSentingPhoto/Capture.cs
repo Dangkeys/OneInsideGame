@@ -32,7 +32,7 @@ public class Capture : MonoBehaviour
 
     private void OnClick(InputAction.CallbackContext context)
     {
-        if (Physics.SphereCast(transform.position, radius, transform.forward, out RaycastHit hit, 1000f))
+        if (Physics.SphereCast(transform.position, radius, transform.forward, out RaycastHit hit, 500f))
         {
             questSentingPhotoManager.CheckPhoto(hit.collider.name);
         }
