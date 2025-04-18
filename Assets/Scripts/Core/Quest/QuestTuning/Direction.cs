@@ -15,7 +15,7 @@ public class Direction : MonoBehaviour
 
     public void SetSpawn(Vector3 position)
     {
-        rectTransform.transform.position = position;
+        rectTransform.anchoredPosition = position;
         image.color = Color.white;
     }
 

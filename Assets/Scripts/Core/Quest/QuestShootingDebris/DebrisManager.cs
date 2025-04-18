@@ -4,24 +4,33 @@ using UnityEngine;
 public class DebrisManager : MonoBehaviour
 {
     [SerializeField]private float distance = 15f;
-    [SerializeField]private int numPoints = 36;
     private List<Vector3> positions = new List<Vector3>();
-    [SerializeField] private GameObject debris;
     private int index = 0;
     [SerializeField] private float spawnTime = 2f;
     private float time = 0f;
-    private GameObject[] debrises;
+    private List<GameObject> debrises = new List<GameObject>();
+    [SerializeField] private GameObject debrisePrefab;
+    [SerializeField] private Transform debriseLocation;
+    [SerializeField] private int debriseAmount = 10;
 
     private void Awake()
     {
-        GetPositionsAtDistance(transform.position, distance, numPoints);
-        debrises = new GameObject[debris.transform.childCount];
-        for (int i = 0; i < debris.transform.childCount; i++)
-        {
-            debrises[i] = debris.transform.GetChild(i).gameObject;
-        }
+        GetPositionsAtDistance(transform.position, distance);
     }
 
+    private void Start()
+    {
+        ObjectPooling();
+    }
+
+    private void ObjectPooling()
+    {
+        for (int i = 0; i < debriseAmount; i++)
+        {
+            GameObject obj = Instantiate(debrisePrefab, debriseLocation);
+            debrises.Add(obj);
+        }
+    }
     private void OnDisable()
     {
         SetDebrisInactive();
@@ -48,11 +57,11 @@ public class DebrisManager : MonoBehaviour
         }
     }
 
-    private void GetPositionsAtDistance(Vector3 center, float radius, int numSamples)
+    private void GetPositionsAtDistance(Vector3 center, float radius)
     {
-        for (int i = 0; i < numSamples; i++)
+        for (int i = 0; i < 36; i++)
         {
-            float angle = i * (360f / numSamples);
+            float angle = i * 100f;
             float rad = angle * Mathf.Deg2Rad;
             Vector3 offset = new Vector3(Mathf.Cos(rad), 0, Mathf.Sin(rad)) * radius;
             positions.Add(center + offset);
@@ -69,6 +78,6 @@ public class DebrisManager : MonoBehaviour
         int positionIndex = RandomPositionIndex();
         debrises[index].SetActive(true);
         debrises[index].GetComponent<DebrisMove>().Setinit((transform.position - positions[positionIndex]).normalized, positions[positionIndex], transform.position);
-        index = (index + 1) % debrises.Length;
+        index = (index + 1) % debrises.Count;
     }
 }

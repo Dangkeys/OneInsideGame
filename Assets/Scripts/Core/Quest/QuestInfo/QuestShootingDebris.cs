@@ -24,6 +24,10 @@ public class QuestShootingDebris : QuestInfo, IInteractable
             FinishQuest();
             HandleFinishedServerRpc(finished);
         }
+        else
+        {
+            CancelQuest();
+        }
     }
 
     [ServerRpc(RequireOwnership = false)]
