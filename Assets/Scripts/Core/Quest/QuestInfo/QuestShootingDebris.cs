@@ -53,6 +53,8 @@ public class QuestShootingDebris : QuestInfo, IInteractable
 
     public void Interact(InteractionData interactionData)
     {
+        if (index < 0)
+            return;
         if (!currentStatus)
         {
             changeCamera.SwitchCamera(0, 1);

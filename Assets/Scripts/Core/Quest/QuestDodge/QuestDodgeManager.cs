@@ -1,10 +1,13 @@
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class QuestDodgeManager : MonoBehaviour
 {
-    private Meteorite[] meteorites;
+    [SerializeField] private GameObject meteoritePrefab;
+    [SerializeField] private int meteoriteAmount = 1;
+    [SerializeField] private Transform meteoriteFolder;
+    private List<Meteorite> meteorites = new List<Meteorite>();
     private Scrollbar scoreBar;
     private int currentScore = 0;
     [SerializeField] private int maxScore = 5;
@@ -12,11 +15,18 @@ public class QuestDodgeManager : MonoBehaviour
     private float currentTime = 0f;
     [SerializeField] private float timeToGetScore = 1f;
     public event System.Action<bool> OnFinishedQuest;
+    [SerializeField] private GameObject spaceship;
+    private Vector3 startPosition;
 
     private void Awake()
     {
-        meteorites = GetComponentsInChildren<Meteorite>();
         scoreBar = GetComponentInChildren<Scrollbar>();
+        startPosition = spaceship.transform.position;
+    }
+
+    private void Start()
+    {
+        ObjectPooling();
     }
 
     private void OnEnable()
@@ -26,6 +36,7 @@ public class QuestDodgeManager : MonoBehaviour
         {
             meteorite.onHit += HandleHit;
         }
+        spaceship.transform.position = startPosition;
     }
 
     private void OnDisable()
@@ -35,6 +46,18 @@ public class QuestDodgeManager : MonoBehaviour
         foreach (Meteorite meteorite in meteorites)
         {
             meteorite.onHit -= HandleHit;
+        }
+    }
+
+    private void ObjectPooling()
+    {
+        for(int i = 0; i < meteoriteAmount; i++)
+        {
+            GameObject obj = Instantiate(meteoritePrefab, meteoriteFolder);
+            obj.SetActive(true);
+            Meteorite newMeteorite = obj.GetComponent<Meteorite>();
+            newMeteorite.onHit += HandleHit;
+            meteorites.Add(newMeteorite);
         }
     }
 
