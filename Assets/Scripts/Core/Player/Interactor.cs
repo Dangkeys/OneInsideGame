@@ -8,8 +8,7 @@ using System;
 /// </summary>
 public class Interactor : NetworkBehaviour
 {
-    [field: SerializeField, Tooltip("Reference to the input system")]
-    public InputReader InputReader { get; private set; }
+    private InputReader inputReader;
 
     [field: SerializeField, Tooltip("Maximum distance at which interactions can occur")]
     public float InteractionRadius { get; private set; }
@@ -17,7 +16,8 @@ public class Interactor : NetworkBehaviour
     {
         if (!IsOwner)
             return;
-        InputReader.InteractEvent += HandleInteractionAttempt;
+        inputReader = InputReader.Instance;
+        inputReader.InteractEvent += HandleInteractionAttempt;
     }
 
     private void HandleInteractionAttempt()
@@ -98,6 +98,6 @@ public class Interactor : NetworkBehaviour
     {
         if (!IsOwner)
             return;
-        InputReader.InteractEvent -= HandleInteractionAttempt;
+        inputReader.InteractEvent -= HandleInteractionAttempt;
     }
 }

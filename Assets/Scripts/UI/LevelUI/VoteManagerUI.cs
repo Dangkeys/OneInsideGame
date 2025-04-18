@@ -12,7 +12,7 @@ public class VoteManagerUI : NetworkBehaviour
     [SerializeField][AssetsOnly] private VoteItem voteItemPrefab;
     [SerializeField][SceneObjectsOnly] private Transform voteItemParent;
     [SerializeField][SceneObjectsOnly] private Slider votingTimerSlider;
-    private VoteManager voteManager;
+    private VoteSystem voteManager;
     NetworkPlayerData networkPlayerData;
     void Awake()
     {
@@ -21,17 +21,17 @@ public class VoteManagerUI : NetworkBehaviour
             Debug.LogWarning("OneInsideGameManager.Instance is null");
             return;
         }
-        networkPlayerData = OneInsideGameManager.Instance.NetcodeManager.NetworkPlayerData;
+        networkPlayerData = ConnectionManager.Instance.NetworkPlayerData;
     }
 
     private void Start()
     {
-        if (OneInsideLevelManager.Instance == null)
+        if (OneInsideLevelSystem.Instance == null)
         {
             Debug.LogWarning("OneInsideLevelManager.Instance is null");
             return;
         }
-        voteManager = OneInsideLevelManager.Instance.VoteManager;
+        voteManager = OneInsideLevelSystem.Instance.VoteSystem;
         voteManager.OnStateChanged += StateChanged;
         voteManager.VotingTimer.OnValueChanged += VotingTimerChanged;
         voteManager.VoteRegistry.OnValueChanged += VoteDictionaryChanged;
@@ -73,7 +73,7 @@ public class VoteManagerUI : NetworkBehaviour
         foreach (var vote in voteManager.VoteRegistry.Value)
         {
             VoteItem voteItem = Instantiate(voteItemPrefab, voteItemParent);
-            voteItem.Initialise(GetPlayerName(vote.Key), vote.Key, vote.Value != VoteManager.NO_VOTE);
+            voteItem.Initialise(GetPlayerName(vote.Key), vote.Key, vote.Value != VoteSystem.NO_VOTE);
         }
     }
     private string GetPlayerName(ulong clientId)

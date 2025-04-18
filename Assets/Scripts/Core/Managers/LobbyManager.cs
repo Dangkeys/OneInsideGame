@@ -12,7 +12,7 @@ using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
 
-public class LobbyManager : MonoBehaviour
+public class LobbyManager : Singleton<LobbyManager>
 {
     public event Action<RequestErrorDto> OnRequestFailed;
     public Lobby CurrentLobby { get; private set; }

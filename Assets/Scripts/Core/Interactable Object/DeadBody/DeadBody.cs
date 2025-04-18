@@ -16,14 +16,14 @@ public class DeadBody : NetworkBehaviour
             Debug.Log($"Player {interactorID} found body of {DeadBodyOwnerID.Value}");
 
             deadBodyNetworkObject.Despawn();
-            OneInsideLevelManager.Instance.VoteManager.RaiseVoteStartServerRpc();
+            OneInsideLevelSystem.Instance.VoteSystem.RaiseVoteStartServerRpc();
         }
     }
 
     public override void OnNetworkSpawn()
     {
-        Debug.Log(PlayerManager.GetPlayerByClientId(DeadBodyOwnerID.Value).OwnerClientId);
-        Debug.Log(PlayerManager.GetPlayerByClientId(DeadBodyOwnerID.Value).CurrentCharacterID.Value.ToString());
-        CharacterManager.ChangeChracter(DeadBodyPlayerVisual, PlayerManager.GetPlayerByClientId(DeadBodyOwnerID.Value).CurrentCharacterID.Value.ToString());
+        Debug.Log(PlayerSystem.GetPlayerByClientId(DeadBodyOwnerID.Value).OwnerClientId);
+        Debug.Log(PlayerSystem.GetPlayerByClientId(DeadBodyOwnerID.Value).CurrentCharacterID.Value.ToString());
+        CharacterManager.Instance.ChangeChracter(DeadBodyPlayerVisual, PlayerSystem.GetPlayerByClientId(DeadBodyOwnerID.Value).CurrentCharacterID.Value.ToString());
     }
 }

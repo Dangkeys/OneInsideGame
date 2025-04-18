@@ -11,7 +11,7 @@ public class VoteItem : MonoBehaviour
     [SerializeField] private Image voteImage;
     [SerializeField] private Image selectedImage;
     private ulong playerId;
-    private VoteManager voteManager;
+    private VoteSystem voteManager;
 
     private void Start() 
     {
@@ -22,7 +22,7 @@ public class VoteItem : MonoBehaviour
     {
         if (voteManager == null)
         {
-            voteManager = OneInsideLevelManager.Instance.VoteManager;
+            voteManager = OneInsideLevelSystem.Instance.VoteSystem;
             voteManager.VoteRegistry.OnValueChanged += OnVoteDictionaryChanged;
             
             if (voteManager.VoteRegistry.Value.ContainsKey(NetworkManager.Singleton.LocalClientId))

@@ -47,10 +47,14 @@ public class VivoxManager : Singleton<VivoxManager>
     }
     private async void OnDestroy()
     {
-        if (VivoxService.Instance.ActiveChannels.Count != 0)
+        if (VivoxService.Instance != null)
         {
-            await VivoxService.Instance.LeaveAllChannelsAsync();
+            if (VivoxService.Instance.ActiveChannels != null &&
+                VivoxService.Instance.ActiveChannels.Count != 0)
+            {
+                await VivoxService.Instance.LeaveAllChannelsAsync();
+            }
+            await VivoxService.Instance.LogoutAsync();
         }
-        await VivoxService.Instance.LogoutAsync();
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using static InputControls;
 
-public class InputReader : MonoBehaviour, IPlayerActions
+public class InputReader : Singleton<InputReader>, IPlayerActions
 {
     private InputControls controls;
     public Vector2 MovementValue { get; private set; }
@@ -18,7 +18,7 @@ public class InputReader : MonoBehaviour, IPlayerActions
 
     public Action OpenSabotageUIEvent;
 
-
+    public Action UseAbilityEvent;
 
     private void Start()
     {
@@ -137,6 +137,14 @@ public class InputReader : MonoBehaviour, IPlayerActions
     {
         if(context.started){
             OpenSabotageUIEvent?.Invoke();
+        }
+    }
+
+    public void OnUseAbility(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            UseAbilityEvent?.Invoke();
         }
     }
 }

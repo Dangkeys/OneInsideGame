@@ -10,7 +10,7 @@ public class Player : NetworkBehaviour
 
     [Header("References")]
     [field: SerializeField] public CinemachineCamera VirtualCamera { get; private set; }
-    [field: SerializeField] public InputReader InputReader { get; private set; }
+    public InputReader InputReader { get; private set; }
     [field: SerializeField] public GameObject Hitbox { get; private set; }
     [field: SerializeField] public CharacterController CharacterController { get; private set; }
     [field: SerializeField] public PlayerMovement PlayerMovement { get; private set; }
@@ -21,7 +21,7 @@ public class Player : NetworkBehaviour
 
     [Header("Status")]
     public NetworkVariable<bool> IsAlive = new NetworkVariable<bool>(true);
-    public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>(PlayerRole.None);
+            public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>(PlayerRole.None);
 
     [Header("Characters")]
     public NetworkVariable<FixedString64Bytes> CrewmateCharacterID = new NetworkVariable<FixedString64Bytes>();
@@ -36,19 +36,21 @@ public class Player : NetworkBehaviour
     private PlayerState playerState;
     private Renderer playerRenderer;
     private Material defaultPlayerMaterial;
-    private PlayerManager playerManager;
+    private PlayerSystem playerManager;
     private Imposter imposter;
-
+    public AbilityDataSO AbilityData { get; private set; }
+    public event Action OnAbilityDataChanged;
     //--------------------------------------
     // Unity Lifecycle Methods
     //--------------------------------------
 
     void Awake()
     {
-        playerManager = OneInsideLevelManager.Instance.PlayerManager;
+        playerManager = OneInsideLevelSystem.Instance.PlayerSystem;
+        InputReader = InputReader.Instance;
 
-        CrewmateCharacterID.Value = OneInsideGameManager.Instance.CharacterManager.DefaultCrewmateCharacter.ID;
-        ImposterCharacterID.Value = OneInsideGameManager.Instance.CharacterManager.DefaultImposterCharacter.ID;
+        CrewmateCharacterID.Value = CharacterManager.Instance.DefaultCrewmateCharacter.ID;
+        ImposterCharacterID.Value = CharacterManager.Instance.DefaultImposterCharacter.ID;
 
         CurrentCharacterID.Value = CrewmateCharacterID.Value;
     }
@@ -114,7 +116,7 @@ public class Player : NetworkBehaviour
 
     public void OnCharacterIDChanged(FixedString64Bytes previousValue, FixedString64Bytes newValue)
     {
-        OneInsideGameManager.Instance.CharacterManager.ChangeCharacterServerRpc(newValue.ToString());
+        CharacterManager.Instance.ChangeCharacterServerRpc(newValue.ToString());
     }
 
     [ServerRpc]
@@ -125,7 +127,7 @@ public class Player : NetworkBehaviour
 
     public void ServerSetCharacterID(FixedString64Bytes newValue)
     {
-        OneInsideGameManager.Instance.CharacterManager.ChangeCharacterClientRpc(OwnerClientId, newValue.ToString(), Character.SearchType.Default);
+        CharacterManager.Instance.ChangeCharacterClientRpc(OwnerClientId, newValue.ToString(), Character.SearchType.Default);
     }
 
 
@@ -162,7 +164,7 @@ public class Player : NetworkBehaviour
     public void TakeDamageServerRpc(float damage = DefaultPlayerConfig.Imposter.DAMAGE, ServerRpcParams serverRpcParams = default)
     {
         // Check if the sender is an Imposter and the target (this player) is alive
-        if (PlayerManager.GetPlayerRoleByClientId(serverRpcParams.Receive.SenderClientId) == PlayerRole.Imposter && IsAlive.Value)
+        if (PlayerSystem.GetPlayerRoleByClientId(serverRpcParams.Receive.SenderClientId) == PlayerRole.Imposter && IsAlive.Value)
         {
             TakeDamage(damage);
         }
@@ -200,7 +202,7 @@ public class Player : NetworkBehaviour
 
         if (IsOwner)
         {
-            OneInsideGameManager.Instance.ShowMessage($"YOUR ROLE IS {newValue.ToString().ToUpper()}");
+            UIManager.Instance.ShowMessage($"YOUR ROLE IS {newValue.ToString().ToUpper()}");
         }
     }
 
@@ -242,7 +244,7 @@ public class Player : NetworkBehaviour
 
         if (IsOwner)
         {
-            foreach (Player player in PlayerManager.GetSpectatorPlayers(false))
+            foreach (Player player in PlayerSystem.GetSpectatorPlayers(false))
             {
                 if (player != this)
                     player.gameObject.SetActive(true);
@@ -250,7 +252,7 @@ public class Player : NetworkBehaviour
         }
         else
         {
-            gameObject.SetActive(!PlayerManager.GetLocalPlayerScript().IsAlive.Value);
+            gameObject.SetActive(!PlayerSystem.GetLocalPlayerScript().IsAlive.Value);
         }
     }
 
@@ -267,11 +269,17 @@ public class Player : NetworkBehaviour
 
         if (IsOwner)
         {
-            foreach (Player player in PlayerManager.GetSpectatorPlayers(false))
+            foreach (Player player in PlayerSystem.GetSpectatorPlayers(false))
             {
                 if (player != this)
                     player.gameObject.SetActive(false);
             }
         }
+    }
+    [ClientRpc]
+    public void SetAbilityDataSOClientRpc(string abilityDataId, ClientRpcParams clientRpcParams)
+    {
+        AbilityData = OneInsideLevelSystem.Instance.AbilityAssignment.AbilityCollection.GetAbilityById(abilityDataId);
+        OnAbilityDataChanged?.Invoke();
     }
 }

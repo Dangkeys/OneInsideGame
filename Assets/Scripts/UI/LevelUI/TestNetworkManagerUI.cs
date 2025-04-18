@@ -56,10 +56,10 @@ public class TestNetworkManagerUI : MonoBehaviour
         disconnectButton.onClick.AddListener(Disconnect);
         startGameButton.onClick.AddListener(() =>
         {
-            if (OneInsideLevelManager.Instance != null && OneInsideGameManager.Instance != null)
+            if (OneInsideLevelSystem.Instance != null && OneInsideGameManager.Instance != null)
             {
 
-                OneInsideLevelManager.Instance.SetGameState(GameState.GamePlaying);
+                OneInsideLevelSystem.Instance.SetGameState(GameState.GamePlaying);
             }
             else
             {

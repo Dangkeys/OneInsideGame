@@ -7,7 +7,7 @@ using UnityEditor;
 using UnityEngine.WSA;
 using System.Threading.Tasks;
 
-public class CharacterManager : NetworkBehaviour
+public class CharacterManager : SingletonNetwork<CharacterManager>
 {
     /*
     -------------------------------------------------------
@@ -23,8 +23,9 @@ public class CharacterManager : NetworkBehaviour
     UNITY EVENTS
     -------------------------------------------------------
     */
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         AllCharactersDatabase.Initialize();
     }
 
@@ -58,10 +59,7 @@ public class CharacterManager : NetworkBehaviour
         return null;
     }
 
-    static public CharacterSO GetCharacterSO(string character, Character.SearchType searchType = Character.SearchType.Default)
-    {
-        return OneInsideGameManager.Instance.CharacterManager.AllCharactersDatabase.GetCharacter(character, searchType);
-    }
+
 
     public static async void ChangeChracter(GameObject targetPlayerVisual, CharacterSO characterSO, Animator animator = null)
     {
@@ -137,8 +135,16 @@ public class CharacterManager : NetworkBehaviour
             }
         }
     }
-
-    public static void ChangeChracter(GameObject targetPlayerVisual, string characterName, Animator animator = null)
+    /*
+    -------------------------------------------------------
+    NON STATIC METHODS
+    -------------------------------------------------------
+    */
+    public CharacterSO GetCharacterSO(string character, Character.SearchType searchType = Character.SearchType.Default)
+    {
+        return AllCharactersDatabase.GetCharacter(character, searchType);
+    }
+    public void ChangeChracter(GameObject targetPlayerVisual, string characterName, Animator animator = null)
     {
         CharacterSO characterSO = GetCharacterSO(characterName);
         ChangeChracter(targetPlayerVisual, characterSO, animator);
@@ -160,7 +166,7 @@ public class CharacterManager : NetworkBehaviour
     [ClientRpc]
     public void ChangeCharacterClientRpc(ulong clientId, string character, Character.SearchType searchType)
     {
-        Player targetPlayer = PlayerManager.GetPlayerByClientId(clientId);
+        Player targetPlayer = PlayerSystem.GetPlayerByClientId(clientId);
         CharacterSO characterSO = GetCharacterSO(character, searchType);
         if (characterSO == null)
         {
