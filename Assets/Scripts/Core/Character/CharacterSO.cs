@@ -7,6 +7,8 @@ using UnityEditor;
 [CreateAssetMenu(fileName = "CharacterSO", menuName = "Scriptable Objects/CharacterSO")]
 public class CharacterSO : ScriptableObject
 {
+
+    [field: SerializeField] public string ID { get; private set; }
     [field: SerializeField] public string CharacterName { get; private set; }
     [field: SerializeField] public string CharacterBIO { get; private set; }
     [field: SerializeField] public Sprite CharacterSprite { get; private set; }
@@ -17,31 +19,28 @@ public class CharacterSO : ScriptableObject
     public GameObject CharacterRoot { get; private set; }
     public Avatar CharacterAvatar { get; private set; }
 
-    private string privateId;
-    public string ID
+#if UNITY_EDITOR
+    private void OnEnable()
     {
-        get
-        {
-            if (string.IsNullOrEmpty(privateId))
-            {
-                privateId = GameUtilities.GenerateID("Character", CharacterName);
-            }
-            return privateId;
-        }
-    }
-
-    public void Initialize()
-    {
-        if (CharacterName == null || CharacterName == "")
+        if (string.IsNullOrEmpty(CharacterName))
         {
             CharacterName = name;
         }
 
-        if (CharacterBIO == null || CharacterBIO == "")
+        if (string.IsNullOrEmpty(CharacterBIO))
         {
             CharacterBIO = "Hi, I'm " + CharacterName;
         }
 
+        if (string.IsNullOrEmpty(ID))
+        {
+            ID = GameUtilities.GenerateID("Character", CharacterName);
+        }
+    }
+#endif
+
+    public void Initialize()
+    {
         if (CharacterVisual != null)
         {
             CharacterVisual.name = CharacterName;
