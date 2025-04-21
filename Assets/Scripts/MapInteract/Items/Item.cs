@@ -28,7 +28,6 @@ public class Item
             case ItemType.IngredientE:
                 return ItemAssets.Instance.IngredientESprite;
             default:
-                Debug.LogError("Item type not found: " + IType);
                 return null;
         }
     }

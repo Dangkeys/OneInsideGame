@@ -9,7 +9,7 @@ public class UIInventory : NetworkBehaviour
     public GameObject[] ItemSlots;
     public override void OnNetworkSpawn()
     {
-        Player.OnRefreshInventory += RefreshInventory;
+        Inventory.OnRefreshInventory += RefreshInventory;
     }
 
     private void RefreshInventory(Inventory inv)

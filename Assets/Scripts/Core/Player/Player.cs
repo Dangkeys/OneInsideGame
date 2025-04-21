@@ -38,8 +38,8 @@ public class Player : NetworkBehaviour
     private Material defaultPlayerMaterial;
     private PlayerSystem playerManager;
     private Imposter imposter;
-    private Inventory inventory;
-    public static event Action<Inventory> OnRefreshInventory;
+    public Inventory Inventory;
+    //public static event Action<Inventory> OnRefreshInventory;
 
     //--------------------------------------
     // Unity Lifecycle Methods
@@ -54,8 +54,8 @@ public class Player : NetworkBehaviour
 
         CurrentCharacterID.Value = CrewmateCharacterID.Value;
 
-        inventory = new Inventory();
-        OnRefreshInventory?.Invoke(inventory);
+        Inventory = new Inventory();
+        //OnRefreshInventory?.Invoke(Inventory);
     }
 
     public override void OnNetworkSpawn()
