@@ -8,13 +8,10 @@ public class SpawnIngredient : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (IsServer)
-        {
-            SpawnIngredientServerRpc();
-        }
+        SpawnIngredientServerRpc();
     }
 
-    [ServerRpc]
+    [ServerRpc (RequireOwnership = false)]
     private void SpawnIngredientServerRpc()
     {
         SpawnIngredientClientRpc();
@@ -23,11 +20,17 @@ public class SpawnIngredient : NetworkBehaviour
     [ClientRpc]
     private void SpawnIngredientClientRpc()
     {
-        for(int i = 0; i < IngredientArray.transform.childCount; i++)
+        int j = 0;
+        for(int i = 0; i < SpawnPointArray.transform.childCount; i++)
         {
-            GameObject ingredientPrefab = IngredientArray.transform.GetChild(i).gameObject;
+            if(j >= IngredientArray.transform.childCount)
+            {
+                j = 0;
+            }
+            GameObject ingredientPrefab = IngredientArray.transform.GetChild(j).gameObject;
             Transform spawnPoint = SpawnPointArray.GetChild(i);
             Instantiate(ingredientPrefab, spawnPoint.position, Quaternion.identity);
+            j++;
         }
         
     }

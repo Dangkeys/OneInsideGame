@@ -316,7 +316,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2988666616
+  GlobalObjectIdHash: 10364231
   InScenePlacedSourceGlobalObjectIdHash: 10364231
   DeferredDespawnTick: 0
   Ownership: 1
@@ -586,6 +586,7 @@ MonoBehaviour:
   <Hitbox>k__BackingField: {fileID: 3435790326839173604}
   <CharacterController>k__BackingField: {fileID: 4450134948998468091}
   <PlayerMovement>k__BackingField: {fileID: 295962568890882461}
+  <UIInventory>k__BackingField: {fileID: 1725066495835527325, guid: 0ed9e26dc521dc645ac2d49e6b570de1, type: 3}
   <SpectatorMaterial>k__BackingField: {fileID: 2100000, guid: 820158f1bc8fa7a4faa58682e23b1cee, type: 2}
   <PlayerVisual>k__BackingField: {fileID: 8896104640911753412}
   IsAlive:
@@ -895,6 +896,40 @@ MonoBehaviour:
   - m_Rig: {fileID: 4464370892821545752}
     m_Active: 1
   m_Effectors: []
+--- !u!114 &2729509851161141685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 837731845563932383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fff0960ef4ea6e04eac66b4a7fd2189d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RigLayers:
+  - m_Rig: {fileID: 4464370892821545752}
+    m_Active: 1
+  - m_Rig: {fileID: 0}
+    m_Active: 1
+  - m_Rig: {fileID: 0}
+    m_Active: 1
+  m_Effectors: []
+--- !u!114 &4824826090655842994
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 837731845563932383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fad3dc373cb25b7498df5557ee084f23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  <InputReader>k__BackingField: {fileID: 3937043524520739152}
 --- !u!1 &1276935818764176119
 GameObject:
   m_ObjectHideFlags: 0
@@ -1756,41 +1791,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &2729509851161141685
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 837731845563932383}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fff0960ef4ea6e04eac66b4a7fd2189d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_RigLayers:
-  - m_Rig: {fileID: 4464370892821545752}
-    m_Active: 1
-  - m_Rig: {fileID: 0}
-    m_Active: 1
-  - m_Rig: {fileID: 0}
-    m_Active: 1
-  m_Effectors: []
---- !u!114 &4824826090655842994
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 837731845563932383}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fad3dc373cb25b7498df5557ee084f23, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  sabotageUI: {fileID: 0}
-  <InputReader>k__BackingField: {fileID: 3937043524520739152}
 --- !u!1 &3435790326839173604
 GameObject:
   m_ObjectHideFlags: 0
@@ -4539,6 +4539,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 2966262622835429234, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3230431681622835952, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
       propertyPath: m_Layer
       value: 3
@@ -4546,10 +4550,6 @@ PrefabInstance:
     - target: {fileID: 3296510633456680342, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
       propertyPath: m_Layer
       value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 2966262622835429234, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3523352143388612352, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
       propertyPath: m_Layer
@@ -4741,10 +4741,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2383991533042498037, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4373095838832205112}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 136839821121553149, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1085828297503051263}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aa2c9a6e454a97e4e921f8abcb679b95, type: 3}
 --- !u!4 &6595192579084696524 stripped
 Transform:
