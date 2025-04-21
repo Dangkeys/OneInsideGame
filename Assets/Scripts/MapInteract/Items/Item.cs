@@ -6,7 +6,9 @@ public class Item
     {
         IngredientA,
         IngredientB,
-        IngredientC
+        IngredientC,
+        IngredientD,
+        IngredientE
     }
 
     public ItemType IType;
@@ -21,7 +23,12 @@ public class Item
                 return ItemAssets.Instance.IngredientBSprite;
             case ItemType.IngredientC:
                 return ItemAssets.Instance.IngredientCSprite;
+            case ItemType.IngredientD:
+                return ItemAssets.Instance.IngredientDSprite;
+            case ItemType.IngredientE:
+                return ItemAssets.Instance.IngredientESprite;
             default:
+                Debug.LogError("Item type not found: " + IType);
                 return null;
         }
     }
