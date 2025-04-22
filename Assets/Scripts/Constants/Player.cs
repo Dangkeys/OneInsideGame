@@ -13,7 +13,7 @@ namespace OneInside.Constants
     {
         public static class Player
         {
-            public const float MAX_HEALTH = 3.0f;
+            public const float MAX_HEALTH = 1.0f;
         }
 
         public static class Crewmate

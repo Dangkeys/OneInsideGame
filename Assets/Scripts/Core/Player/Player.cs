@@ -21,7 +21,7 @@ public class Player : NetworkBehaviour
 
     [Header("Status")]
     public NetworkVariable<bool> IsAlive = new NetworkVariable<bool>(true);
-            public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>(PlayerRole.None);
+    public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>(PlayerRole.None);
 
     [Header("Characters")]
     public NetworkVariable<FixedString64Bytes> CrewmateCharacterID = new NetworkVariable<FixedString64Bytes>();
@@ -48,11 +48,6 @@ public class Player : NetworkBehaviour
     {
         playerManager = OneInsideLevelSystem.Instance.PlayerSystem;
         InputReader = InputReader.Instance;
-
-        CrewmateCharacterID.Value = CharacterManager.Instance.DefaultCrewmateCharacter.ID;
-        ImposterCharacterID.Value = CharacterManager.Instance.DefaultImposterCharacter.ID;
-
-        CurrentCharacterID.Value = CrewmateCharacterID.Value;
     }
 
     public override void OnNetworkSpawn()
@@ -62,6 +57,15 @@ public class Player : NetworkBehaviour
 
         playerRenderer = CharacterManager.GetCharacterSkin(PlayerVisual).GetComponent<Renderer>();
         defaultPlayerMaterial = playerRenderer.material;
+
+        if (IsServer)
+        {
+            CrewmateCharacterID.Value = CharacterManager.Instance.DefaultCrewmateCharacter.ID;
+            ImposterCharacterID.Value = CharacterManager.Instance.DefaultImposterCharacter.ID;
+        }
+
+
+        CurrentCharacterID.Value = CrewmateCharacterID.Value;
 
         Role.OnValueChanged += OnRoleChanged;
         IsAlive.OnValueChanged += OnAliveChanged;

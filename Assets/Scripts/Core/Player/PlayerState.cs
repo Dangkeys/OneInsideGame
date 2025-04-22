@@ -172,7 +172,8 @@ public class PlayerState : NetworkBehaviour
     //--------------------------------------
     public bool IsCanMove()
     {
-        return !(Stunning.Value || Attacking.Value);
+        // return !(Stunning.Value || Attacking.Value);
+        return !Attacking.Value;
     }
 
     private void UpdateCanMove(bool previous, bool current)
