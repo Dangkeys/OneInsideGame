@@ -58,8 +58,12 @@ public class Player : NetworkBehaviour
         playerRenderer = CharacterManager.GetCharacterSkin(PlayerVisual).GetComponent<Renderer>();
         defaultPlayerMaterial = playerRenderer.material;
 
-        CrewmateCharacterID.Value = CharacterManager.Instance.DefaultCrewmateCharacter.ID;
-        ImposterCharacterID.Value = CharacterManager.Instance.DefaultImposterCharacter.ID;
+        if (IsServer)
+        {
+            CrewmateCharacterID.Value = CharacterManager.Instance.DefaultCrewmateCharacter.ID;
+            ImposterCharacterID.Value = CharacterManager.Instance.DefaultImposterCharacter.ID;
+        }
+
 
         CurrentCharacterID.Value = CrewmateCharacterID.Value;
 

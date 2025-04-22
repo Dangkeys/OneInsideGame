@@ -76,18 +76,22 @@ public class CharacterManager : SingletonNetwork<CharacterManager>
 
         Dictionary<string, bool> savedAllParameters = new Dictionary<string, bool>();
 
-        if (animator)
+        if (!animator)
         {
-            foreach (AnimatorControllerParameter param in animator.parameters)
-            {
-                if (param.type == AnimatorControllerParameterType.Bool)
-                {
-                    bool value = animator.GetBool(param.name);
-                    savedAllParameters.Add(param.name, value);
-                }
-            }
-            animator.avatar = characterSO.CharacterAvatar;
+            currentPlayerSkin.GetComponent<SkinnedMeshRenderer>().sharedMesh = targetPlayerSkin.GetComponent<SkinnedMeshRenderer>().sharedMesh;
+            return;
         }
+
+        foreach (AnimatorControllerParameter param in animator.parameters)
+        {
+            if (param.type == AnimatorControllerParameterType.Bool)
+            {
+                bool value = animator.GetBool(param.name);
+                savedAllParameters.Add(param.name, value);
+            }
+        }
+        animator.avatar = characterSO.CharacterAvatar;
+
 
         if (currentPlayerSkin != null)
             GameObject.Destroy(currentPlayerSkin);
@@ -126,15 +130,12 @@ public class CharacterManager : SingletonNetwork<CharacterManager>
         animator.Rebind();
         animator.Update(0f);
         skinnedMesh.enabled = true;
-
-        if (animator)
+        foreach (var item in savedAllParameters)
         {
-            foreach (var item in savedAllParameters)
-            {
-                animator.SetBool(item.Key, item.Value);
-            }
+            animator.SetBool(item.Key, item.Value);
         }
     }
+
     /*
     -------------------------------------------------------
     NON STATIC METHODS
