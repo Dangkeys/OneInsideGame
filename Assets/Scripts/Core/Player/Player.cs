@@ -21,7 +21,7 @@ public class Player : NetworkBehaviour
 
     [Header("Status")]
     public NetworkVariable<bool> IsAlive = new NetworkVariable<bool>(true);
-            public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>(PlayerRole.None);
+    public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>(PlayerRole.None);
 
     [Header("Characters")]
     public NetworkVariable<FixedString64Bytes> CrewmateCharacterID = new NetworkVariable<FixedString64Bytes>();
