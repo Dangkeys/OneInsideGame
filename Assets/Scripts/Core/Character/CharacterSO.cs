@@ -36,7 +36,7 @@ public class CharacterSO : ScriptableObject
         {
             ID = GameUtilities.GenerateID("Character", CharacterName);
         }
-            EditorUtility.SetDirty(this);
+        EditorUtility.SetDirty(this);
     }
 #endif
 
