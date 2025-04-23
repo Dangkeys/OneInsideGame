@@ -1,33 +1,51 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class QuestDragManager : MonoBehaviour
 {
     private Scrollbar scoreBar;
-    private CircleTarget[] circleTargets;
-    private RectTransform[] rectCircleTargets;
+    private List<CircleTarget> circleTargets = new List<CircleTarget>();
+    private List<RectTransform> rectCircleTargets = new List<RectTransform>();
     private RectTransform rectPanel;
     private int currentScore = 0;
     [SerializeField]private int maxScore = 10;
     [SerializeField] private int loseScore = 1;
     public event System.Action<bool> OnFinishedQuest;
+    [SerializeField] private GameObject circlePrefab;
+    [SerializeField] private Transform circleLocation;
+    [SerializeField] private int circleAmount = 3;
 
     private void Awake()
     {
         scoreBar = transform.Find("ScoreBar").GetComponent<Scrollbar>();
         rectPanel = GetComponent<RectTransform>();
-        circleTargets = GetComponentsInChildren<CircleTarget>();
-        rectCircleTargets = new RectTransform[circleTargets.Length];
+    }
 
-        for (int i = 0; i < circleTargets.Length; i++)
+    private void Start()
+    {
+        ObjectPooling();
+    }
+
+    private void ObjectPooling()
+    {
+        for(int i = 0; i < circleAmount; i++)
         {
-            rectCircleTargets[i] = circleTargets[i].GetComponent<RectTransform>();
+            GameObject obj = Instantiate(circlePrefab, circleLocation);
+            obj.SetActive(true);
+            CircleTarget target = obj.GetComponent<CircleTarget>();
+            int index = i;
+            target.onHit += (hit) => HandleHit(index, hit);
+            circleTargets.Add(target);
+            RectTransform rect = target.GetComponent<RectTransform>();
+            rectCircleTargets.Add(rect);
+            RandomPositionTarget(i);
         }
     }
 
     private void OnEnable()
     {
-        for (int i = 0; i < circleTargets.Length; i++)
+        for (int i = 0; i < circleAmount; i++)
         {
             int index = i;
             circleTargets[i].onHit += (hit) => HandleHit(index, hit);
@@ -39,9 +57,10 @@ public class QuestDragManager : MonoBehaviour
     {
         currentScore = 0;
         UpdateScoreBar(false);
-        for (int i = 0; i < circleTargets.Length; i++)
+        for (int i = 0; i < circleAmount; i++)
         {
-            circleTargets[i].onHit -= (hit) => HandleHit(i, hit);
+            int index = i;
+            circleTargets[i].onHit -= (hit) => HandleHit(index, hit);
         }
     }
 
@@ -68,7 +87,7 @@ public class QuestDragManager : MonoBehaviour
 
             positionIsValid = true;
 
-            for (int i = 0; i < rectCircleTargets.Length; i++)
+            for (int i = 0; i < rectCircleTargets.Count; i++)
             {
                 float distance = Vector3.Distance(position, rectCircleTargets[i].transform.localPosition);
                 float minDistance = (circleWidth + rectCircleTargets[i].rect.width) / 2;

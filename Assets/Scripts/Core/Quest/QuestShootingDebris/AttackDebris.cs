@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,15 +9,22 @@ public class AttackDebris : MonoBehaviour
     [SerializeField] private float cooldown = 2f;
     private float time = 2f;
     private int index = 0;
-    private GameObject[] bullets;
+    private List<GameObject> bullets = new List<GameObject>();
+    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private Transform bulletLocation;
+    [SerializeField] private int bulletAmount = 10;
 
-    private void Awake()
+    private void Start()
     {
-        bullets = new GameObject[bullet.transform.childCount];  
+        ObjectPooling();
+    }
 
-        for (int i = 0; i < bullet.transform.childCount; i++)
+    private void ObjectPooling()
+    {
+        for(int i = 0;i < bulletAmount; i++)
         {
-            bullets[i] = bullet.transform.GetChild(i).gameObject;
+            GameObject obj = Instantiate(bulletPrefab, bulletLocation);
+            bullets.Add(obj);
         }
     }
 
@@ -63,6 +70,6 @@ public class AttackDebris : MonoBehaviour
     {
         bullets[index].SetActive(true);
         bullets[index].GetComponent<BulletMove>().Setinit(transform.forward, transform.position);
-        index = (index + 1) % bullets.Length;
+        index = (index + 1) % bullets.Count;
     }
 }

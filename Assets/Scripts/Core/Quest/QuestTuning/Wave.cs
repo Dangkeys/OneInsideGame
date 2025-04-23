@@ -11,6 +11,7 @@ public class Wave : MonoBehaviour
     private RectTransform rectTransform;
     public event System.Action<bool> OnEndDirection;
     private Vector3 initPosition;
+    [SerializeField] private Canvas canvas;
 
     private void Awake()
     {
@@ -34,7 +35,7 @@ public class Wave : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector2 desiredPosition = waveRigidbody2D.position + movement * speed * Time.fixedDeltaTime;
+        Vector2 desiredPosition = waveRigidbody2D.position + movement * speed * canvas.scaleFactor * Time.fixedDeltaTime;
 
         Vector2 clampedPosition = ClampPosition(desiredPosition);
 
