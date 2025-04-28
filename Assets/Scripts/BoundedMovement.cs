@@ -61,7 +61,7 @@ public class BoundedMovement : MonoBehaviour
     {
         Vector3 movement = new Vector3(moveInput.x, 0f, moveInput.y) * speed;
 
-        rb.linearVelocity = new Vector3(movement.x, rb.linearVelocity.y, movement.z);
+        rb.linearVelocity = new Vector3(movement.x, 0, movement.z);
 
         Vector3 clampedPosition = rb.position;
         clampedPosition.x = Mathf.Clamp(clampedPosition.x, minBounds.x, maxBounds.x);
