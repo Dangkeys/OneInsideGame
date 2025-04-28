@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using OneInside.Constants;
 using Unity.Collections;
 using Unity.Netcode;
@@ -5,7 +6,12 @@ using UnityEngine;
 
 public class PlayerState : NetworkBehaviour
 {
-    [Header("Player Identification")]
+    /*
+    -------------------------------------------------------
+    Player Identification
+    -------------------------------------------------------
+    */
+    [Header("Info")]
     [field: SerializeField]
     public NetworkVariable<ulong> PlayerID { get; private set; } = new NetworkVariable<ulong>(
          default,
@@ -19,9 +25,20 @@ public class PlayerState : NetworkBehaviour
          NetworkVariableWritePermission.Server
     );
 
-    [Header("Player States")]
+    /*
+    -------------------------------------------------------
+    Player States
+    -------------------------------------------------------
+    */
+    [Header("Status")]
     [field: SerializeField]
     public NetworkVariable<bool> Attacking { get; private set; } = new NetworkVariable<bool>(
+         default,
+         NetworkVariableReadPermission.Everyone,
+         NetworkVariableWritePermission.Owner
+    );
+    [field: SerializeField]
+    public NetworkVariable<bool> Poking { get; private set; } = new NetworkVariable<bool>(
          default,
          NetworkVariableReadPermission.Everyone,
          NetworkVariableWritePermission.Owner
@@ -63,9 +80,11 @@ public class PlayerState : NetworkBehaviour
     [field: SerializeField] public PlayerMovement PlayerMovement { get; private set; }
     [field: SerializeField] public Player Player { get; private set; }
 
-    //--------------------------------------
-    // Network & Lifecycle Methods
-    //--------------------------------------
+    /*
+    -------------------------------------------------------
+    Network & Lifecycle Methods
+    -------------------------------------------------------
+    */
     public override void OnNetworkSpawn()
     {
         if (IsServer)
@@ -73,7 +92,17 @@ public class PlayerState : NetworkBehaviour
             PlayerName.Value = "Player " + NetworkObjectId;
             PlayerID.Value = OwnerClientId;
             CurrentHealth.Value = MaxHealth.Value;
+            Stunning.Value = false;
         }
+
+        if (IsOwner)
+        {
+            Attacking.Value = false;
+            Poking.Value = false;
+            Walking.Value = false;
+            Running.Value = false;
+        }
+
 
         Attacking.OnValueChanged += UpdateCanMove;
         Stunning.OnValueChanged += UpdateCanMove;
@@ -87,9 +116,11 @@ public class PlayerState : NetworkBehaviour
         Player.IsAlive.OnValueChanged -= UpdateCanMove;
     }
 
-    //--------------------------------------
-    // Health Management Methods
-    //--------------------------------------
+    /*
+    -------------------------------------------------------
+    Health Management Methods
+    -------------------------------------------------------
+    */
 
     private void UpdateAlive()
     {
@@ -132,31 +163,49 @@ public class PlayerState : NetworkBehaviour
         SetAlive(value);
     }
 
-    //--------------------------------------
-    // State Management Methods
-    //------------------------------
+    /*
+    -------------------------------------------------------
+    State Management Methods
+    -------------------------------------------------------
+    */
     public void SetAttacking(bool value)
     {
         if (IsOwner)
-        { Attacking.Value = value; }
+        {
+            Attacking.Value = value;
+        }
     }
 
     public void SetStunning(bool value)
     {
         if (IsServer)
-        { Stunning.Value = value; }
+        {
+            Stunning.Value = value;
+        }
     }
 
     public void SetWalking(bool value)
     {
         if (IsOwner)
-        { Walking.Value = value; }
+        {
+            Walking.Value = value;
+        }
     }
 
     public void SetRunning(bool value)
     {
         if (IsOwner)
-        { Running.Value = value; }
+        {
+            Running.Value = value;
+        }
+    }
+
+    public void SetPoking(bool value)
+    {
+        if (IsOwner)
+        {
+            Poking.Value = value;
+        }
     }
 
     public void SetAlive(bool value)
@@ -167,22 +216,28 @@ public class PlayerState : NetworkBehaviour
         }
     }
 
-    //--------------------------------------
-    // Movement Control Methods
-    //--------------------------------------
+    /*
+    -------------------------------------------------------
+    Movement Control Methods
+    -------------------------------------------------------
+    */
     public bool IsCanMove()
     {
-        // return !(Stunning.Value || Attacking.Value);
-        return !Attacking.Value;
+        return Player.IsAlive.Value && !Stunning.Value && !Attacking.Value;
     }
 
     private void UpdateCanMove(bool previous, bool current)
     {
-        PlayerMovement.enabled = IsCanMove();
+        if (PlayerMovement != null)
+        {
+            PlayerMovement.enabled = IsCanMove();
+        }
     }
 
-    //--------------------------------------
-    // Utility Methods
-    //--------------------------------------
-    public float HealthPercentage => (float)CurrentHealth.Value / MaxHealth.Value;
+    /*
+    -------------------------------------------------------
+    Utility Methods
+    -------------------------------------------------------
+    */
+    public float HealthPercentage => MaxHealth.Value > 0 ? (float)CurrentHealth.Value / MaxHealth.Value : 0;
 }

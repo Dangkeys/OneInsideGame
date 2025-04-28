@@ -74,20 +74,16 @@ public class Player : NetworkBehaviour
 
         if (!IsOwner)
         {
-            // Other Player
             VirtualCamera.Priority = int.MinValue;
         }
         else
         {
-            // Owner Player
-
             CurrentCharacterID.OnValueChanged += OnCharacterIDChanged;
 
             playerState.SetAttacking(false);
-            playerState.SetStunning(false);
+            playerState.SetPoking(false);
             playerState.SetWalking(false);
             playerState.SetRunning(false);
-            playerState.SetAlive(true);
 
             if (playerManager != null)
             {
@@ -149,15 +145,6 @@ public class Player : NetworkBehaviour
             playerState.SetAliveServerRpc(true);
             playerState.SetHealthServerRpc(playerState.MaxHealth.Value);
         }
-
-        // if (Input.GetKeyDown(KeyCode.Alpha1))
-        // {
-        //     SetCharacterIDServerRpc("Psycho");
-        // }
-        // if (Input.GetKeyDown(KeyCode.Alpha2))
-        // {
-        //     SetCharacterIDServerRpc("Warewolf");
-        // }
     }
 
     //--------------------------------------
@@ -167,16 +154,15 @@ public class Player : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void TakeDamageServerRpc(float damage = DefaultPlayerConfig.Imposter.DAMAGE, ServerRpcParams serverRpcParams = default)
     {
-        // Check if the sender is an Imposter and the target (this player) is alive
         if (PlayerSystem.GetPlayerRoleByClientId(serverRpcParams.Receive.SenderClientId) == PlayerRole.Imposter && IsAlive.Value)
         {
-            TakeDamage(damage);
+            TakeDamageInternal(damage);
         }
     }
 
-    private async void TakeDamage(float damage)
+    private async void TakeDamageInternal(float damage)
     {
-        if (playerState.Stunning.Value || !IsAlive.Value)
+        if (!IsAlive.Value)
             return;
 
         playerState.SetStunning(true);
