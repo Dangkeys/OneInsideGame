@@ -36,7 +36,7 @@ namespace OneInside.Constants
         public static class Imposter
         {
             public const float ATTACK_COOLDOWN = 2.0f;
-            public const float ATTACK_STUN_DURATION = 2.0f;
+            public const float ATTACK_STUN_DURATION = 1.5f;
 
             public const float DAMAGE = 1.0f;
 
