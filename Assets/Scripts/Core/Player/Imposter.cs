@@ -21,8 +21,6 @@ public class Imposter : NetworkBehaviour
     private Player player;
     private PlayerState playerState;
     private PlayerMovement playerMovement;
-    private BoxCollider[] hitBoxes;
-    private CharacterController characterController;
 
     private Timer localTransformationCooldownTimer;
     private Timer localTransformationActiveTimer;
@@ -40,12 +38,10 @@ public class Imposter : NetworkBehaviour
         playerState = player.GetComponent<PlayerState>();
         playerMovement = player.GetComponent<PlayerMovement>();
 
-        hitBoxes = player.Hitbox.GetComponents<BoxCollider>();
-        characterController = player.CharacterController;
+
 
         if (IsOwner)
         {
-            player.InputReader.AttackEvent += Attack;
             player.InputReader.TranformationEvent += RequestToggleTransformation;
             Transformed.OnValueChanged += OnTransformedUpdate;
         }
@@ -55,7 +51,6 @@ public class Imposter : NetworkBehaviour
     {
         if (IsOwner)
         {
-            player.InputReader.AttackEvent -= Attack;
             player.InputReader.TranformationEvent -= RequestToggleTransformation;
             Transformed.OnValueChanged -= OnTransformedUpdate;
 
@@ -66,35 +61,22 @@ public class Imposter : NetworkBehaviour
     // Imposter Methods
     //--------------------------------------
 
-    private async void Attack()
+    public async void Attack(Player targetPlayerScript)
     {
         if (
             player.Role.Value != PlayerRole.Imposter
             || !Transformed.Value
-            || !playerState.IsCanMove()
+            || !playerState.IsCanMove() || playerState.Attacking.Value
         )
             return;
 
 
-        playerState.SetAttacking(true);
-
-        var AllHitCharacters = HitboxUtilities.GetTouchingObjects(new HitboxUtilities.HitboxParams
+        if (targetPlayerScript && targetPlayerScript.IsAlive.Value && player.IsAlive.Value)
         {
-            Hitboxs = hitBoxes,
-            Type = HitboxUtilities.ColliderType.CharacterController,
-            Exclude = new Collider[] { characterController }
-        });
-
-        GameObject closestCharacter = GameUtilities.GetClosetTarget(transform.position, AllHitCharacters);
-
-        if (closestCharacter != null)
-        {
-            Player targetPlayerScript = closestCharacter.GetComponent<Player>();
-            if (targetPlayerScript && targetPlayerScript.IsAlive.Value && player.IsAlive.Value)
-            {
-                targetPlayerScript.TakeDamageServerRpc();
-            }
+            targetPlayerScript.TakeDamageServerRpc();
         }
+
+        playerState.SetAttacking(true);
 
         await Awaitable.WaitForSecondsAsync(DefaultPlayerConfig.Imposter.ATTACK_COOLDOWN);
 

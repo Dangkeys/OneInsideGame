@@ -60,7 +60,10 @@ public class PlayerAnimation : NetworkBehaviour
 
     private void OnPokingChanged(bool previousValue, bool newValue)
     {
-        playerAnimator.SetBool("Running", newValue);
+        if (newValue)
+        {
+            playerAnimator.SetTrigger("Poke");
+        }
     }
 
     private void OnStunningChanged(bool previousValue, bool newValue)
