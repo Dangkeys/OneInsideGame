@@ -22,8 +22,8 @@ namespace OneInside.Constants
         {
             public const float MAX_HEALTH = 1.0f;
 
-
             public const float POKE_COOLDOWN = 2.0f;
+            public const float POKE_STUN_DURATION = 1.0f;
 
             public const float STUN_DURATION = 2.0f;
         }
@@ -35,7 +35,9 @@ namespace OneInside.Constants
 
         public static class Imposter
         {
-            public const float ATTACK_COOLDOWN = 1.0f;
+            public const float ATTACK_COOLDOWN = 2.0f;
+            public const float ATTACK_STUN_DURATION = 2.0f;
+
             public const float DAMAGE = 1.0f;
 
             public const float TRANSFORMATION_ACTIVE_TIME = 10.0f;

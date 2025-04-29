@@ -62,6 +62,11 @@ public class PlayerState : NetworkBehaviour
          NetworkVariableWritePermission.Owner
     );
 
+    /*
+    -------------------------------------------------------
+    Health
+    -------------------------------------------------------
+    */
     [Header("Health")]
     [field: SerializeField]
     public NetworkVariable<float> CurrentHealth { get; private set; } = new NetworkVariable<float>(
@@ -91,6 +96,7 @@ public class PlayerState : NetworkBehaviour
         {
             PlayerName.Value = "Player " + NetworkObjectId;
             PlayerID.Value = OwnerClientId;
+            MaxHealth.Value = DefaultPlayerConfig.Player.MAX_HEALTH;
             CurrentHealth.Value = MaxHealth.Value;
             Stunning.Value = false;
         }
@@ -124,11 +130,12 @@ public class PlayerState : NetworkBehaviour
 
     private void UpdateAlive()
     {
+        Debug.Log(CurrentHealth.Value);
         SetAliveServerRpc(CurrentHealth.Value > 0);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void TakeDamageServerRpc(float damage)
+    public void ChangeHealthServerRpc(float damage)
     {
         if (IsServer && Player.IsAlive.Value)
         {
@@ -223,7 +230,8 @@ public class PlayerState : NetworkBehaviour
     */
     public bool IsCanMove()
     {
-        return Player.IsAlive.Value;
+        // Should have something that can make player can't move :D
+        return true;
     }
 
     private void UpdateCanMove(bool previous, bool current)

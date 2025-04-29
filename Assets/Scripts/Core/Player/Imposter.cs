@@ -28,6 +28,9 @@ public class Imposter : NetworkBehaviour
     private Timer serverTransformationCooldownTimer;
     private Timer serverTransformationActiveTimer;
 
+    private float attackStunDuration = DefaultPlayerConfig.Imposter.ATTACK_STUN_DURATION;
+    private float attackCoolDown = DefaultPlayerConfig.Imposter.ATTACK_COOLDOWN;
+
     //--------------------------------------
     // Initialization & Cleanup
     //--------------------------------------
@@ -78,8 +81,11 @@ public class Imposter : NetworkBehaviour
 
         playerState.SetAttacking(true);
 
-        await Awaitable.WaitForSecondsAsync(DefaultPlayerConfig.Imposter.ATTACK_COOLDOWN);
+        playerMovement.Behaviour = MovementBehaviour.STUNNING;
+        await Awaitable.WaitForSecondsAsync(attackStunDuration);
+        playerMovement.Behaviour = MovementBehaviour.DEFAULT;
 
+        await Awaitable.WaitForSecondsAsync(attackCoolDown - attackStunDuration);
         playerState.SetAttacking(false);
     }
 
