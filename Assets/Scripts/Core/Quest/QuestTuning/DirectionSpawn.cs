@@ -20,7 +20,6 @@ public class DirectionSpawn : MonoBehaviour
     {
         size = direction.GetComponent<RectTransform>().rect.width * direction.GetComponent<RectTransform>().localScale.x;
         int count = Mathf.FloorToInt(panel.rect.width / size) - 2;
-        Debug.Log(count);
         directions = new Direction[count];
         for (int i = 0; i < count; i++)
         {
@@ -37,7 +36,7 @@ public class DirectionSpawn : MonoBehaviour
             direction.OnConnect += OnConnect;
         }
         wave.OnEndDirection += OnEndDirection;
-        currentPosition = panel.position - new Vector3(panel.rect.width / 2, 0, 0);
+        currentPosition = new Vector3(-panel.rect.width / 2 - size, 0, 0);
         isRandomFinish = false;
         allDistance = 0;
         isFirstSpawn = true;
@@ -64,7 +63,7 @@ public class DirectionSpawn : MonoBehaviour
     {
         if (end)
         {
-            currentPosition = panel.position - new Vector3(panel.rect.width / 2, 0, 0);
+            currentPosition = new Vector3(-panel.rect.width / 2 - size, 0, 0);
             isRandomFinish = false;
             allDistance = 0;
             isFirstSpawn = true;
@@ -78,6 +77,7 @@ public class DirectionSpawn : MonoBehaviour
         while (!isRandomFinish)
         {
             bool isHorizontal = (Random.Range(0, 2) == 0) ? true : false  || isFirstSpawn;
+            int verticalDir = Random.Range(0, 2) == 0 ? 1 : -1;
             isFirstSpawn = false;
             useDistance = 0f;
             while (useDistance < distance)
@@ -90,19 +90,26 @@ public class DirectionSpawn : MonoBehaviour
                 currentPosition += new Vector3(size, 0, 0);
                 if (!isHorizontal)
                 {
-                    if (useDistance < distance / 2 && currentPosition.y < panel.position.y + panel.rect.height / 4)
+                    float height = directions[index].GetHeight();
+                    float maxY = panel.rect.height / 2;
+
+                    if (verticalDir == 1 && currentPosition.y + height < maxY)
                     {
-                        currentPosition += new Vector3(0, directions[index].GetHeight(), 0);
+                        currentPosition += new Vector3(0, height, 0);
                     }
-                    else if (currentPosition.y > panel.position.y - panel.rect.height / 4 )
+                    else if (verticalDir == -1 && currentPosition.y - height > -maxY)
                     {
-                        currentPosition -= new Vector3(0, directions[index].GetHeight(), 0);
+                        currentPosition -= new Vector3(0, height, 0);
+                    }
+                    else
+                    {
+                        verticalDir *= -1;
                     }
                 }
-                useDistance += size;
-                allDistance += size;
                 directions[index].SetSpawn(currentPosition);
                 index = (index + 1) % directions.Length;
+                useDistance += size;
+                allDistance += size;
             }
         }
     }

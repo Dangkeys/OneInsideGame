@@ -8,7 +8,7 @@ public class QuestSystem : NetworkBehaviour
 {
     private Scrollbar scoreBar;
     [SerializeField] private Quest[] quests;
-    private NetworkVariable<int> finishedQuest = new NetworkVariable<int>(0);
+    private NetworkVariable<List<bool>> finishedQuest = new NetworkVariable<List<bool>>(new List<bool>());
     [SerializeField] private int maxQuest;
     private List<GameObject> questList = new List<GameObject>();
     private NetworkVariable<List<int>> questEnable = new NetworkVariable<List<int>>(new List<int>());
@@ -18,7 +18,6 @@ public class QuestSystem : NetworkBehaviour
     private void Awake()
     {
         scoreBar = GetComponent<Scrollbar>();
-        UpdateProgressScoreBar();
         foreach (Quest quest in quests)
         {
             if (quest != null)
@@ -52,13 +51,29 @@ public class QuestSystem : NetworkBehaviour
         }
     }
 
-    public override void OnNetworkSpawn()
+    private void Init()
     {
-        finishedQuest.OnValueChanged += HandleQuestFinished;
-        if(IsServer || IsHost)
+        if (IsServer || IsHost )
         {
+            if (finishedQuest.Value.Count != maxQuest)
+            {
+                List<bool> initial = new List<bool>(maxQuest);
+                for (int i = 0; i < maxQuest; i++)
+                {
+                    initial.Add(false);
+                }
+
+                finishedQuest.Value = initial;
+            }
             RandomQuest();
         }
+        UpdateProgressScoreBar();
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        Init();
+        finishedQuest.OnValueChanged += HandleQuestFinished;
         UpdateQuestServerRpc();
     }
 
@@ -67,36 +82,29 @@ public class QuestSystem : NetworkBehaviour
         finishedQuest.OnValueChanged -= HandleQuestFinished;
     }
 
-    private void HandleQuestFinished(int oldValue, int newValue)
+    private void HandleQuestFinished(List<bool> previousValue, List<bool> newValue)
     {
         UpdateProgressScoreBar();
     }
 
-    private void HandleQuestStatus(bool status)
+    private void HandleQuestStatus(int index, bool status)
     {
-        UpdateFinishedQuest(status);
+        UpdateFinishedQuest(index, status);
     }
 
-    private void UpdateFinishedQuest(bool status)
+    private void UpdateFinishedQuest(int index, bool status)
     {
-        if (status)
-        {
-            finishedQuest.Value += 1;
-        }
-        else
-        {
-            if(finishedQuest.Value > 0)
-            {
-                finishedQuest.Value -= 1;
-            }
-        }
+        List<bool> temp = new List<bool>(finishedQuest.Value);
+        temp[index] = status;
+        finishedQuest.Value = temp;
     }
 
     private void UpdateProgressScoreBar()
     {
         if (scoreBar != null)
         {
-            float percent = (float)finishedQuest.Value / maxQuest;
+            int score = GetFinishedQuestCount();
+            float percent = (float)score / maxQuest;
             scoreBar.size = percent;
             if(percent >= 1)
             {
@@ -107,6 +115,17 @@ public class QuestSystem : NetworkBehaviour
         {
             Debug.LogWarning("ScrollBar is not assigned.");
         }
+    }
+
+    private int GetFinishedQuestCount()
+    {
+        int count = 0;
+        foreach (bool isFinished in finishedQuest.Value)
+        {
+            if (isFinished)
+                count++;
+        }
+        return count;
     }
 
     private void RandomQuest()
@@ -156,7 +175,7 @@ public class QuestSystem : NetworkBehaviour
         for (int i = 0;i < maxQuest; i++)
         {
             questList[questEnable.Value[i]].transform.position = questLocation[questChooseLocation.Value[i]].GetLocation();
-            questList[questEnable.Value[i]].GetComponent<QuestInfo>().Init();
+            questList[questEnable.Value[i]].GetComponent<QuestInfo>().Init(i);
         }
     }
 }
