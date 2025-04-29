@@ -223,7 +223,7 @@ public class PlayerState : NetworkBehaviour
     */
     public bool IsCanMove()
     {
-        return Player.IsAlive.Value && !Stunning.Value && !Attacking.Value;
+        return Player.IsAlive.Value;
     }
 
     private void UpdateCanMove(bool previous, bool current)

@@ -40,6 +40,9 @@ public class Player : NetworkBehaviour
     private Imposter imposter;
     public AbilityDataSO AbilityData { get; private set; }
     public event Action OnAbilityDataChanged;
+
+    private BoxCollider[] hitBoxes;
+
     //--------------------------------------
     // Unity Lifecycle Methods
     //--------------------------------------
@@ -54,6 +57,8 @@ public class Player : NetworkBehaviour
     {
         playerState = GetComponent<PlayerState>();
         imposter = GetComponent<Imposter>();
+
+        hitBoxes = Hitbox.GetComponents<BoxCollider>();
 
         playerRenderer = CharacterManager.GetCharacterSkin(PlayerVisual).GetComponent<Renderer>();
         defaultPlayerMaterial = playerRenderer.material;
@@ -78,6 +83,8 @@ public class Player : NetworkBehaviour
         }
         else
         {
+            InputReader.AttackEvent += OnAttack;
+
             CurrentCharacterID.OnValueChanged += OnCharacterIDChanged;
 
             playerState.SetAttacking(false);
@@ -94,6 +101,8 @@ public class Player : NetworkBehaviour
 
     public override void OnNetworkDespawn()
     {
+        InputReader.AttackEvent -= OnAttack;
+
         Role.OnValueChanged -= OnRoleChanged;
         IsAlive.OnValueChanged -= OnAliveChanged;
 
@@ -151,16 +160,85 @@ public class Player : NetworkBehaviour
     // Damage & Health Methods
     //--------------------------------------
 
-    [ServerRpc(RequireOwnership = false)]
-    public void TakeDamageServerRpc(float damage = DefaultPlayerConfig.Imposter.DAMAGE, ServerRpcParams serverRpcParams = default)
+    public Player GetPlayerInHitbox()
     {
-        if (PlayerSystem.GetPlayerRoleByClientId(serverRpcParams.Receive.SenderClientId) == PlayerRole.Imposter && IsAlive.Value)
+        var AllHitCharacters = HitboxUtilities.GetTouchingObjects(new HitboxUtilities.HitboxParams
         {
-            TakeDamageInternal(damage);
+            Hitboxs = hitBoxes,
+            Type = HitboxUtilities.ColliderType.CharacterController,
+            Exclude = new Collider[] { CharacterController }
+        });
+
+        GameObject closestCharacter = GameUtilities.GetClosetTarget(transform.position, AllHitCharacters);
+        Player targetPlayerScript = null;
+
+        if (closestCharacter != null)
+        {
+            targetPlayerScript = closestCharacter.GetComponent<Player>();
+            if (targetPlayerScript && targetPlayerScript.IsAlive.Value && IsAlive.Value)
+            {
+                targetPlayerScript.TakeDamageServerRpc();
+            }
+        }
+
+        return targetPlayerScript;
+    }
+
+    private void OnAttack()
+    {
+        Player targetPlayerScript = GetPlayerInHitbox();
+        switch (Role.Value)
+        {
+            case PlayerRole.Imposter:
+                if (imposter.Transformed.Value)
+                {
+                    imposter.Attack(targetPlayerScript);
+                }
+                else
+                {
+                    Poke(targetPlayerScript);
+                }
+                break;
+            default:
+                Poke(targetPlayerScript);
+                break;
         }
     }
 
-    private async void TakeDamageInternal(float damage)
+    private async void Poke(Player targetPlayerScript)
+    {
+        if (!playerState.IsCanMove() || playerState.Poking.Value)
+            return;
+
+
+        if (targetPlayerScript)
+        {
+            targetPlayerScript.TakeDamageServerRpc(0.0f);
+        }
+
+        playerState.SetPoking(true);
+
+        await Awaitable.WaitForSecondsAsync(DefaultPlayerConfig.Player.POKE_COOLDOWN);
+
+        playerState.SetPoking(false);
+
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void TakeDamageServerRpc(float damage = DefaultPlayerConfig.Imposter.DAMAGE, ServerRpcParams serverRpcParams = default)
+    {
+        if (PlayerSystem.GetPlayerRoleByClientId(serverRpcParams.Receive.SenderClientId) != PlayerRole.Imposter)
+        {
+            damage = 0;
+        }
+
+        if (IsAlive.Value)
+        {
+            TakeDamageLocal(damage);
+        }
+    }
+
+    private async void TakeDamageLocal(float damage)
     {
         if (!IsAlive.Value)
             return;
@@ -168,7 +246,9 @@ public class Player : NetworkBehaviour
         playerState.SetStunning(true);
         playerState.TakeDamageServerRpc(damage);
 
-        await Awaitable.WaitForSecondsAsync(DefaultPlayerConfig.Crewmate.STUN_DURATION);
+        PlayerMovement.Behaviour = MovementBehaviour.STUNNING;
+        await Awaitable.WaitForSecondsAsync(DefaultPlayerConfig.Player.STUN_DURATION);
+        PlayerMovement.Behaviour = MovementBehaviour.DEFAULT;
 
         playerState.SetStunning(false);
     }
