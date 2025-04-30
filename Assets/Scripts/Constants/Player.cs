@@ -25,7 +25,7 @@ namespace OneInside.Constants
             public const float POKE_COOLDOWN = 2.0f;
             public const float POKE_STUN_DURATION = 1.0f;
 
-            public const float STUN_DURATION = 2.0f;
+            public const float POKED_STUN_DURATION = 1.0f;
         }
 
         // public static class Crewmate

@@ -28,7 +28,7 @@ public class PlayerMovement : NetworkBehaviour
     -------------------------------------------------------
     */
     [Header("Movement Settings")]
-    [field: SerializeField] public string Behaviour { get; set; } = MovementBehaviour.DEFAULT;
+    [field: SerializeField] public string Behaviour { get; private set; } = MovementBehaviour.DEFAULT;
 
     [field: SerializeField] public float FixedSpeed { get; private set; } = DefaultPlayerConfig.Movement.WALK_SPEED;
     [field: SerializeField] public float WalkSpeed { get; private set; } = DefaultPlayerConfig.Movement.WALK_SPEED;
@@ -110,9 +110,11 @@ public class PlayerMovement : NetworkBehaviour
                 break;
             case MovementBehaviour.STUNNING:
                 currentMoveSpeed = DefaultPlayerConfig.Movement.STUN_WALK_SPEED;
+                playerState.SetRunning(false);
                 break;
             case MovementBehaviour.DEFAULT:
                 currentMoveSpeed = autoMoveSpeed;
+                playerState.SetRunning(playerState.Running.Value);
                 break;
         }
 
@@ -196,12 +198,11 @@ public class PlayerMovement : NetworkBehaviour
             return;
 
         autoMoveSpeed = sprint ? RunSpeed : WalkSpeed;
-        playerState.SetRunning(sprint);
     }
 
     private void Jump(bool value)
     {
-        if (!IsOwner || !isGrounded || !playerState.IsCanMove() || value == false)
+        if (!IsOwner || !isGrounded || !playerState.IsCanMove() || value == false || !playerState.IsCanJump())
             return;
 
         verticalVelocity = JumpHeight;
@@ -266,7 +267,7 @@ public class PlayerMovement : NetworkBehaviour
 
     public void SetMovementBehavior(string movementBehavior)
     {
-
+        Behaviour = movementBehavior;
     }
 
 

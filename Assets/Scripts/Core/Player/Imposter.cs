@@ -80,10 +80,10 @@ public class Imposter : NetworkBehaviour
         }
 
         playerState.SetAttacking(true);
+        playerMovement.SetMovementBehavior(MovementBehaviour.STUNNING);
 
-        playerMovement.Behaviour = MovementBehaviour.STUNNING;
         await Awaitable.WaitForSecondsAsync(attackStunDuration);
-        playerMovement.Behaviour = MovementBehaviour.DEFAULT;
+        playerMovement.SetMovementBehavior(MovementBehaviour.DEFAULT);
 
         await Awaitable.WaitForSecondsAsync(attackCoolDown - attackStunDuration);
         playerState.SetAttacking(false);

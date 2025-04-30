@@ -219,9 +219,9 @@ public class Player : NetworkBehaviour
 
         playerState.SetPoking(true);
 
-        PlayerMovement.Behaviour = MovementBehaviour.STUNNING;
+        PlayerMovement.SetMovementBehavior(MovementBehaviour.STUNNING);
         await Awaitable.WaitForSecondsAsync(pokeStunDuration);
-        PlayerMovement.Behaviour = MovementBehaviour.DEFAULT;
+        PlayerMovement.SetMovementBehavior(MovementBehaviour.DEFAULT);
 
         await Awaitable.WaitForSecondsAsync(pokeCoolDown - pokeStunDuration);
         playerState.SetPoking(false);
@@ -257,12 +257,12 @@ public class Player : NetworkBehaviour
             return;
 
         playerState.SetStunning(true);
-        PlayerMovement.Behaviour = MovementBehaviour.STUNNING;
+        PlayerMovement.SetMovementBehavior(MovementBehaviour.STUNNING);
 
-        await Awaitable.WaitForSecondsAsync(DefaultPlayerConfig.Player.STUN_DURATION);
+        await Awaitable.WaitForSecondsAsync(DefaultPlayerConfig.Player.POKED_STUN_DURATION);
 
-        PlayerMovement.Behaviour = MovementBehaviour.DEFAULT;
         playerState.SetStunning(false);
+        PlayerMovement.SetMovementBehavior(MovementBehaviour.DEFAULT);
     }
 
 

@@ -234,6 +234,11 @@ public class PlayerState : NetworkBehaviour
         return true;
     }
 
+    public bool IsCanJump()
+    {
+        return PlayerMovement.Behaviour != MovementBehaviour.STUNNING;
+    }
+
     private void UpdateCanMove(bool previous, bool current)
     {
         if (PlayerMovement != null)
