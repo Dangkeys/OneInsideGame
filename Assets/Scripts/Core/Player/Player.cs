@@ -10,7 +10,7 @@ public class Player : NetworkBehaviour
 
     [Header("References")]
     [field: SerializeField] public CinemachineCamera VirtualCamera { get; private set; }
-    [field: SerializeField] public InputReader InputReader { get; private set; }
+    public InputReader InputReader { get; private set; }
     [field: SerializeField] public GameObject Hitbox { get; private set; }
     [field: SerializeField] public CharacterController CharacterController { get; private set; }
     [field: SerializeField] public PlayerMovement PlayerMovement { get; private set; }
@@ -40,19 +40,16 @@ public class Player : NetworkBehaviour
     private Imposter imposter;
     public Inventory Inventory;
     //public static event Action<Inventory> OnRefreshInventory;
-
+    public AbilityDataSO AbilityData { get; private set; }
+    public event Action OnAbilityDataChanged;
     //--------------------------------------
     // Unity Lifecycle Methods
     //--------------------------------------
 
     void Awake()
     {
-        playerManager = OneInsideLevelSystem.Instance.PlayerManager;
-
-        CrewmateCharacterID.Value = CharacterManager.Instance.DefaultCrewmateCharacter.ID;
-        ImposterCharacterID.Value = CharacterManager.Instance.DefaultImposterCharacter.ID;
-
-        CurrentCharacterID.Value = CrewmateCharacterID.Value;
+        playerManager = OneInsideLevelSystem.Instance.PlayerSystem;
+        InputReader = InputReader.Instance;
 
         Inventory = new Inventory();
         //OnRefreshInventory?.Invoke(Inventory);
@@ -65,6 +62,15 @@ public class Player : NetworkBehaviour
 
         playerRenderer = CharacterManager.GetCharacterSkin(PlayerVisual).GetComponent<Renderer>();
         defaultPlayerMaterial = playerRenderer.material;
+
+        if (IsServer)
+        {
+            CrewmateCharacterID.Value = CharacterManager.Instance.DefaultCrewmateCharacter.ID;
+            ImposterCharacterID.Value = CharacterManager.Instance.DefaultImposterCharacter.ID;
+        }
+
+
+        CurrentCharacterID.Value = CrewmateCharacterID.Value;
 
         Role.OnValueChanged += OnRoleChanged;
         IsAlive.OnValueChanged += OnAliveChanged;
@@ -278,5 +284,11 @@ public class Player : NetworkBehaviour
                     player.gameObject.SetActive(false);
             }
         }
+    }
+    [ClientRpc]
+    public void SetAbilityDataSOClientRpc(string abilityDataId, ClientRpcParams clientRpcParams)
+    {
+        AbilityData = OneInsideLevelSystem.Instance.AbilityAssignment.AbilityCollection.GetAbilityById(abilityDataId);
+        OnAbilityDataChanged?.Invoke();
     }
 }

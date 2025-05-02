@@ -48,6 +48,8 @@ public class QuestTuningSignal : QuestInfo, IInteractable
 
     public void Interact(InteractionData interactionData)
     {
+        if (index < 0)
+            return;
         if (!currentStatus)
         {
             UpdateDoQuest(true, interactionData);

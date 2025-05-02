@@ -8,14 +8,14 @@ using Unity.Netcode;
 public class RemoteSabotageUI : NetworkBehaviour
 {
     //Attached to Player //Send Signal
-    [field: SerializeField, Tooltip("Reference to the input system")]
-    public InputReader InputReader { get; private set; }
+    private InputReader inputReader;
     public static event Action SignalSabotageUIEvent;
     public override void OnNetworkSpawn()
     {
         if (!IsOwner)
             return;
-        InputReader.OpenSabotageUIEvent += SignalToOpenSabotageDevice;
+        inputReader = InputReader.Instance;
+        inputReader.OpenSabotageUIEvent += SignalToOpenSabotageDevice;
     }
 
     public void SignalToOpenSabotageDevice()
@@ -31,6 +31,6 @@ public class RemoteSabotageUI : NetworkBehaviour
     {
         if (!IsOwner)
             return;
-        InputReader.OpenSabotageUIEvent -= SignalToOpenSabotageDevice;
+        inputReader.OpenSabotageUIEvent -= SignalToOpenSabotageDevice;
     }
 }
