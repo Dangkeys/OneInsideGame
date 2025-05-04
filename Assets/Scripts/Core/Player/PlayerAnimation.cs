@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -21,12 +22,14 @@ public class PlayerAnimation : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         playerAnimator = GetComponent<Animator>();
-
         playerState = GetComponent<PlayerState>();
+
         playerState.Attacking.OnValueChanged += OnAttackingChanged;
+        playerState.Poking.OnValueChanged += OnPokingChanged;
         playerState.Stunning.OnValueChanged += OnStunningChanged;
         playerState.Walking.OnValueChanged += OnWalkingChanged;
         playerState.Running.OnValueChanged += OnRunningChanged;
+
         PlayerScript.IsAlive.OnValueChanged += OnAliveChanged;
 
         DisableRagdoll();
@@ -35,10 +38,13 @@ public class PlayerAnimation : NetworkBehaviour
     public override void OnNetworkDespawn()
     {
         playerState.Attacking.OnValueChanged -= OnAttackingChanged;
+        playerState.Poking.OnValueChanged -= OnPokingChanged;
         playerState.Stunning.OnValueChanged -= OnStunningChanged;
         playerState.Walking.OnValueChanged -= OnWalkingChanged;
         playerState.Running.OnValueChanged -= OnRunningChanged;
+
         PlayerScript.IsAlive.OnValueChanged -= OnAliveChanged;
+
     }
 
     //--------------------------------------
@@ -49,6 +55,14 @@ public class PlayerAnimation : NetworkBehaviour
         if (newValue)
         {
             playerAnimator.SetTrigger("Attack");
+        }
+    }
+
+    private void OnPokingChanged(bool previousValue, bool newValue)
+    {
+        if (newValue)
+        {
+            playerAnimator.SetTrigger("Poke");
         }
     }
 
@@ -75,6 +89,7 @@ public class PlayerAnimation : NetworkBehaviour
         if (newValue)
         {
             DisableRagdoll();
+            ResetAnimation();
         }
         else
         {
