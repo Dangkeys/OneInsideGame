@@ -275,7 +275,6 @@ GameObject:
   - component: {fileID: 2130162687114717125}
   - component: {fileID: 7815416263655673313}
   - component: {fileID: 1558291385074665207}
-  - component: {fileID: 2729509851161141685}
   - component: {fileID: 4824826090655842994}
   m_Layer: 3
   m_Name: Player
@@ -460,6 +459,8 @@ MonoBehaviour:
   <MainCameraTransform>k__BackingField: {fileID: 0}
   <AxisController>k__BackingField: {fileID: 2089346930791355492}
   <PlayerAnimation>k__BackingField: {fileID: 0}
+  <Behaviour>k__BackingField: Default
+  <FixedSpeed>k__BackingField: 6
   <WalkSpeed>k__BackingField: 4
   <RunSpeed>k__BackingField: 6
   <RotationSpeed>k__BackingField: 15
@@ -554,6 +555,8 @@ MonoBehaviour:
         byte0060: 0
         byte0061: 0
   <Attacking>k__BackingField:
+    m_InternalValue: 0
+  <Poking>k__BackingField:
     m_InternalValue: 0
   <Stunning>k__BackingField:
     m_InternalValue: 0
@@ -879,26 +882,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_RigLayers:
   - m_Rig: {fileID: 4464370892821545752}
-    m_Active: 1
-  m_Effectors: []
---- !u!114 &2729509851161141685
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 837731845563932383}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fff0960ef4ea6e04eac66b4a7fd2189d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_RigLayers:
-  - m_Rig: {fileID: 4464370892821545752}
-    m_Active: 1
-  - m_Rig: {fileID: 0}
-    m_Active: 1
-  - m_Rig: {fileID: 0}
     m_Active: 1
   m_Effectors: []
 --- !u!114 &4824826090655842994

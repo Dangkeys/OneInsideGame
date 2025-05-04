@@ -42,6 +42,12 @@ public class Player : NetworkBehaviour
     //public static event Action<Inventory> OnRefreshInventory;
     //public AbilityDataSO AbilityData { get; private set; }
     public event Action OnAbilityDataChanged;
+
+    private BoxCollider[] hitBoxes;
+
+    private float pokeStunDuration = DefaultPlayerConfig.Player.POKE_STUN_DURATION;
+    private float pokeCoolDown = DefaultPlayerConfig.Player.POKE_COOLDOWN;
+
     //--------------------------------------
     // Unity Lifecycle Methods
     //--------------------------------------
@@ -58,6 +64,8 @@ public class Player : NetworkBehaviour
     {
         playerState = GetComponent<PlayerState>();
         imposter = GetComponent<Imposter>();
+
+        hitBoxes = Hitbox.GetComponents<BoxCollider>();
 
         playerRenderer = CharacterManager.GetCharacterSkin(PlayerVisual).GetComponent<Renderer>();
         defaultPlayerMaterial = playerRenderer.material;
@@ -80,20 +88,18 @@ public class Player : NetworkBehaviour
 
         if (!IsOwner)
         {
-            // Other Player
             VirtualCamera.Priority = int.MinValue;
         }
         else
         {
-            // Owner Player
+            InputReader.AttackEvent += OnAttack;
 
             CurrentCharacterID.OnValueChanged += OnCharacterIDChanged;
 
             playerState.SetAttacking(false);
-            playerState.SetStunning(false);
+            playerState.SetPoking(false);
             playerState.SetWalking(false);
             playerState.SetRunning(false);
-            playerState.SetAlive(true);
 
             if (playerManager != null)
             {
@@ -104,6 +110,8 @@ public class Player : NetworkBehaviour
 
     public override void OnNetworkDespawn()
     {
+        InputReader.AttackEvent -= OnAttack;
+
         Role.OnValueChanged -= OnRoleChanged;
         IsAlive.OnValueChanged -= OnAliveChanged;
 
@@ -155,42 +163,112 @@ public class Player : NetworkBehaviour
             playerState.SetAliveServerRpc(true);
             playerState.SetHealthServerRpc(playerState.MaxHealth.Value);
         }
-
-        // if (Input.GetKeyDown(KeyCode.Alpha1))
-        // {
-        //     SetCharacterIDServerRpc("Psycho");
-        // }
-        // if (Input.GetKeyDown(KeyCode.Alpha2))
-        // {
-        //     SetCharacterIDServerRpc("Warewolf");
-        // }
     }
 
     //--------------------------------------
     // Damage & Health Methods
     //--------------------------------------
 
-    [ServerRpc(RequireOwnership = false)]
-    public void TakeDamageServerRpc(float damage = DefaultPlayerConfig.Imposter.DAMAGE, ServerRpcParams serverRpcParams = default)
+    public Player GetPlayerInHitbox()
     {
-        // Check if the sender is an Imposter and the target (this player) is alive
-        if (PlayerSystem.GetPlayerRoleByClientId(serverRpcParams.Receive.SenderClientId) == PlayerRole.Imposter && IsAlive.Value)
+        var AllHitCharacters = HitboxUtilities.GetTouchingObjects(new HitboxUtilities.HitboxParams
         {
-            TakeDamage(damage);
+            Hitboxs = hitBoxes,
+            Type = HitboxUtilities.ColliderType.CharacterController,
+            Exclude = new Collider[] { CharacterController }
+        });
+
+        GameObject closestCharacter = GameUtilities.GetClosetTarget(transform.position, AllHitCharacters);
+        Player targetPlayerScript = null;
+
+        if (closestCharacter != null)
+        {
+            targetPlayerScript = closestCharacter.GetComponent<Player>();
+        }
+
+        return targetPlayerScript;
+    }
+
+    private void OnAttack()
+    {
+        if (!playerState.IsCanMove() || !IsAlive.Value || PlayerMovement.Behaviour == MovementBehaviour.STUNNING)
+            return;
+
+        Player targetPlayerScript = GetPlayerInHitbox();
+        switch (Role.Value)
+        {
+            case PlayerRole.Imposter:
+                if (imposter.Transformed.Value)
+                {
+                    imposter.Attack(targetPlayerScript);
+                }
+                else
+                {
+                    Poke(targetPlayerScript);
+                }
+                break;
+            default:
+                Poke(targetPlayerScript);
+                break;
         }
     }
 
-    private async void TakeDamage(float damage)
+    private async void Poke(Player targetPlayerScript)
     {
-        if (playerState.Stunning.Value || !IsAlive.Value)
+        if (playerState.Poking.Value)
+            return;
+
+        if (targetPlayerScript)
+        {
+            targetPlayerScript.TakeDamageServerRpc(0);
+        }
+
+        playerState.SetPoking(true);
+
+        PlayerMovement.SetMovementBehavior(MovementBehaviour.STUNNING);
+        await Awaitable.WaitForSecondsAsync(pokeStunDuration);
+        PlayerMovement.SetMovementBehavior(MovementBehaviour.DEFAULT);
+
+        await Awaitable.WaitForSecondsAsync(pokeCoolDown - pokeStunDuration);
+        playerState.SetPoking(false);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void TakeDamageServerRpc(float damage = DefaultPlayerConfig.Imposter.DAMAGE, ServerRpcParams serverRpcParams = default)
+    {
+        Player senderPlayer = PlayerSystem.GetPlayerByClientId(serverRpcParams.Receive.SenderClientId);
+
+        if (!senderPlayer.IsAlive.Value)
+            return;
+
+        if (senderPlayer.Role.Value != PlayerRole.Imposter)
+        {
+            damage = 0;
+        }
+
+        if (IsAlive.Value)
+        {
+            if (damage > 0)
+            {
+                playerState.ChangeHealthServerRpc(damage);
+
+            }
+            Stunning();
+        }
+    }
+
+    private async void Stunning()
+    {
+        if (!IsAlive.Value)
             return;
 
         playerState.SetStunning(true);
-        playerState.TakeDamageServerRpc(damage);
+        PlayerMovement.SetMovementBehavior(MovementBehaviour.STUNNING);
 
-        await Awaitable.WaitForSecondsAsync(DefaultPlayerConfig.Crewmate.STUN_DURATION);
+        await Awaitable.WaitForSecondsAsync(DefaultPlayerConfig.Player.POKED_STUN_DURATION);
 
         playerState.SetStunning(false);
+        PlayerMovement.SetMovementBehavior(MovementBehaviour.DEFAULT);
     }
 
 
