@@ -13,6 +13,9 @@ public class VoteSystem : NetworkBehaviour
     [field: SerializeField] public float VotingTimerMax = 60f;
     public NetworkVariable<float> VotingTimer = new NetworkVariable<float>();
     private NetworkVariable<VoteState> state = new NetworkVariable<VoteState>(VoteState.WaitingToVote);
+
+    //Key is the clientId of the player who is voting
+    //Value is the clientId of the player who is being voted for
     public NetworkVariable<Dictionary<ulong, ulong>> VoteRegistry { get; private set; } =
         new NetworkVariable<Dictionary<ulong, ulong>>(new Dictionary<ulong, ulong>());
 
@@ -121,7 +124,7 @@ public class VoteSystem : NetworkBehaviour
     {
         Dictionary<ulong, ulong> voteResults = new Dictionary<ulong, ulong>();
 
-        foreach (KeyValuePair<ulong, ulong> vote in VoteRegistry.Value.Where(v => v.Value != NO_VOTE))
+        foreach (KeyValuePair<ulong, ulong> vote in VoteRegistry.Value)
         {
             if (voteResults.ContainsKey(vote.Value))
             {
@@ -166,11 +169,17 @@ public class VoteSystem : NetworkBehaviour
                 UIManager.Instance.ShowMessage("No votes were cast");
                 break;
             case 1:
-                UIManager.Instance.ShowMessage($"{GetPlayerName(mostVotedPlayers[0])} has been voted to be the impostor by {highestVoteCount} players");
+                if (mostVotedPlayers[0] == NO_VOTE)
+                {
+                    UIManager.Instance.ShowMessage("Tie vote!");
+                }
+                else
+                {
+                    UIManager.Instance.ShowMessage($"{GetPlayerName(mostVotedPlayers[0])} has been voted to be the impostor by {highestVoteCount} players");
+                }
                 break;
             default:
-                string tiedPlayers = string.Join(", ", mostVotedPlayers.Select(GetPlayerName));
-                UIManager.Instance.ShowMessage($"Tie vote! Players {tiedPlayers} each received {highestVoteCount} votes");
+                UIManager.Instance.ShowMessage("Tie vote!");
                 break;
         }
     }
@@ -191,36 +200,44 @@ public class VoteSystem : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void VoteTargetPlayerServerRpc(ulong clientId, ServerRpcParams serverRpcParams = default)
+    public void VoteTargetPlayerServerRpc(ulong targetClientId, ServerRpcParams serverRpcParams = default)
     {
-        ulong votingPlayerId = serverRpcParams.Receive.SenderClientId;
-
-        if (votingPlayerId == clientId)
+        ulong voterClientId = serverRpcParams.Receive.SenderClientId;
+        Player voter = PlayerSystem.GetPlayerByClientId(voterClientId);
+        Player targetPlayer = PlayerSystem.GetPlayerByClientId(targetClientId);
+        if (voterClientId == targetClientId)
         {
-            Debug.LogWarning($"{GetPlayerName(clientId)} attempted to vote for themselves");
+            Debug.LogWarning($"Player {GetPlayerName(voterClientId)} attempted to vote for themselves");
+            return;
+        }
+
+        if (!voter.IsAlive.Value || !targetPlayer.IsAlive.Value)
+        {
+            Debug.LogWarning($"Player {GetPlayerName(voterClientId)} attempted to vote for {GetPlayerName(targetClientId)} while dead");
             return;
         }
 
         Dictionary<ulong, ulong> newDictionary = new Dictionary<ulong, ulong>(VoteRegistry.Value)
         {
-            [votingPlayerId] = clientId
+            [voterClientId] = targetClientId
         };
         VoteRegistry.Value = newDictionary;
     }
     private string GetPlayerName(ulong clientId)
     {
-        //TODO Refactor this into a shared method in netcode manager
-        if (networkPlayerData != null &&
-            networkPlayerData.ClientIdToAuth.Value.TryGetValue(clientId, out FixedString32Bytes authId) &&
-            networkPlayerData.AuthIdToUserData.Value.TryGetValue(authId, out UserDataDto userData))
+
+        NetworkPlayerData networkPlayerData = ConnectionManager.Instance.NetworkPlayerData;
+        UserDataDto userData = networkPlayerData.GetUserDataFromClientId(clientId);
+        
+        if (userData == null)
         {
-            if (clientId == NetworkManager.Singleton.LocalClientId)
-            {
-                return $"{userData.Name} (You)";
-            }
-            return userData.Name.ToString();
+            return clientId == NetworkManager.Singleton.LocalClientId ? "You" : $"Player {clientId}";
         }
 
-        return clientId == NetworkManager.Singleton.LocalClientId ? "You" : $"Player {clientId}";
+        if (clientId == NetworkManager.Singleton.LocalClientId)
+        {
+            return $"{userData.Name} (You)";
+        }
+        return userData.Name.ToString();
     }
 }
