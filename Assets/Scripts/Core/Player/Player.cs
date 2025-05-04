@@ -40,7 +40,7 @@ public class Player : NetworkBehaviour
     private Imposter imposter;
     public Inventory Inventory;
     //public static event Action<Inventory> OnRefreshInventory;
-    public AbilityDataSO AbilityData { get; private set; }
+    //public AbilityDataSO AbilityData { get; private set; }
     public event Action OnAbilityDataChanged;
     //--------------------------------------
     // Unity Lifecycle Methods
