@@ -39,8 +39,7 @@ public class Player : NetworkBehaviour
     private PlayerSystem playerManager;
     private Imposter imposter;
     public Inventory Inventory;
-    //public static event Action<Inventory> OnRefreshInventory;
-    //public AbilityDataSO AbilityData { get; private set; }
+    public AbilityDataSO AbilityData { get; private set; }
     public event Action OnAbilityDataChanged;
 
     private BoxCollider[] hitBoxes;
