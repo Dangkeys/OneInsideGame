@@ -9,6 +9,7 @@ public class Spaceship : MonoBehaviour
     private Vector2 movement = Vector2.zero;
     private RectTransform field;
     private RectTransform rectTransform;
+    [SerializeField] private Canvas canvas;
 
     private void Awake()
     {
@@ -31,7 +32,7 @@ public class Spaceship : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector2 desiredPosition = spaceshipRigidbody2D.position + movement * speed * Time.fixedDeltaTime;
+        Vector2 desiredPosition = spaceshipRigidbody2D.position + movement * speed * canvas.scaleFactor * Time.fixedDeltaTime;
 
         Vector2 clampedPosition = ClampPosition(desiredPosition);
 

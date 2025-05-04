@@ -17,9 +17,10 @@ public class OneInsideLevelSystem : SingletonNetwork<OneInsideLevelSystem>
     public NetworkVariable<GameState> State = new NetworkVariable<GameState>(GameState.WaitingToStart);
 
     [field: SerializeField] public int ImposterAmount { get; private set; } = OneInside.Constants.Player.MAX_IMPOSTERS;
-    [field: SerializeField] public PlayerSystem PlayerManager;
-    [field: SerializeField] public VoteSystem VoteManager;
-    [field: SerializeField] public RoleSystem RoleManager;
+    [field: SerializeField] public PlayerSystem PlayerSystem;
+    [field: SerializeField] public VoteSystem VoteSystem;
+    [field: SerializeField] public RoleSystem RoleSystem;
+    [field: SerializeField] public AbilityAssignment AbilityAssignment;
     // [field: SerializeField] public VivoxManager VivoxManager;
 
     [field: SerializeField] public GameObject PlayersContainer;

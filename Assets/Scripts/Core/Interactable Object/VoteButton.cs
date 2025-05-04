@@ -5,7 +5,7 @@ public class VoteButton : MonoBehaviour, IInteractable
     public void Interact(InteractionData interactionData)
     {
         if(!OneInsideLevelSystem.Instance) return;
-        OneInsideLevelSystem.Instance.VoteManager.RaiseVoteStartServerRpc();
+        OneInsideLevelSystem.Instance.VoteSystem.RaiseVoteStartServerRpc();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

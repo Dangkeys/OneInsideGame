@@ -363,7 +363,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 30eed4d6f2fd71b4ab42b11849f2389b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9b607c9a488b290449a98c25d5068a48, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -494,6 +494,9 @@ MonoBehaviour:
   imageCaptures:
   - {fileID: 11400000, guid: c3145a361245a3242bbfd1be9ea31902, type: 2}
   - {fileID: 11400000, guid: c8b80f27219876e4e9c11c5396f10c2f, type: 2}
+  - {fileID: 11400000, guid: fb519796553975f46bdff198f93e3ed8, type: 2}
+  - {fileID: 11400000, guid: 17e84bc8657d9c946b30c0c107fcc3d8, type: 2}
+  - {fileID: 11400000, guid: a92ff1174b8180346a3d2a5a51c2c068, type: 2}
   image: {fileID: 7081983921702345127}
   timeToFinished: 10
   loadScreen: {fileID: 7629318205042839943}
@@ -620,6 +623,7 @@ GameObject:
   - component: {fileID: 2742108163078288640}
   - component: {fileID: 1939554206316342383}
   - component: {fileID: 845519875398784346}
+  - component: {fileID: 3339135849699334253}
   m_Layer: 5
   m_Name: text
   m_TagString: Untagged
@@ -674,7 +678,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Senting ....
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -745,6 +749,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &3339135849699334253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9033826032041155294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b74085b872a4cd4ab42845f5bc37efd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initText: 'Sending '
+  text: ...
 --- !u!1 &9182137451985268905
 GameObject:
   m_ObjectHideFlags: 0
@@ -781,7 +799,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -10, y: -66}
+  m_AnchoredPosition: {x: -149, y: -102}
   m_SizeDelta: {x: 1000, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3576779271578950249

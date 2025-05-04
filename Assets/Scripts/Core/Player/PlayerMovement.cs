@@ -7,11 +7,11 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-[RequireComponent(typeof(InputReader), typeof(CharacterController))]
+[RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : NetworkBehaviour
 {
     [Header("References")]
-    [field: SerializeField] public InputReader InputReader { get; private set; }
+    public InputReader InputReader { get; private set; }
     [field: SerializeField] public CharacterController CharacterController { get; private set; }
     [field: SerializeField] public Transform MainCameraTransform { get; private set; }
     [field: SerializeField] public CinemachineInputAxisController AxisController { get; private set; }
@@ -48,7 +48,8 @@ public class PlayerMovement : NetworkBehaviour
 
     void Awake()
     {
-        playerManager = OneInsideLevelSystem.Instance.PlayerManager;
+        playerManager = OneInsideLevelSystem.Instance.PlayerSystem;
+        InputReader = InputReader.Instance;
     }
 
     void OnEnable()
@@ -186,6 +187,19 @@ public class PlayerMovement : NetworkBehaviour
         if (AxisController)
             AxisController.enabled = shouldMove;
     }
+
+    public void SetWalkSpeed(float speed)
+    {
+        WalkSpeed = speed;
+        Sprint(false);
+    }
+
+    public void SetRunSpeed(float speed)
+    {
+        RunSpeed = speed;
+        Sprint(true);
+    }
+
 
     private void OnDrawGizmos()
     {

@@ -193,6 +193,8 @@ public class OneInsideGameManager : Singleton<OneInsideGameManager>
             Debug.LogWarning(e);
         }
 
+        await UserDataManager.Instance.LoadAbilitiesFromCloudSave();
+
         if (shouldLoadScene)
         {
             NotifyGameStateChanged(GameEvent.LoadingMainMenu);
