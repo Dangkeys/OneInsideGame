@@ -14,4 +14,7 @@ public class ItemAssets : MonoBehaviour
     public Sprite IngredientCSprite;
     public Sprite IngredientDSprite;
     public Sprite IngredientESprite;
+    public Sprite ItemASprite;
+    public Sprite ItemBSprite;
+    public Sprite ItemCSprite;
 }

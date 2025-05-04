@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class Inventory
-{
+{ 
     public bool IsFull = false;
     private List<Item> itemList = new List<Item>();
     public static event Action<Inventory> OnRefreshInventory;
@@ -22,6 +23,53 @@ public class Inventory
             return;
         }
         itemList.Add(item);
+        OnRefreshInventory?.Invoke(this);
+    }
+    public void CraftItemA(){
+
+        bool hasIngredientA = false;
+        bool hasIngredientB = false;
+
+        for (int i = 0; i < itemList.Count; i++)
+        {
+            if (itemList[i].IType == Item.ItemType.IngredientA)
+            {
+                hasIngredientA = true;
+                break;
+            }
+        }
+        for (int i = 0; i < itemList.Count; i++)
+        {
+            if (itemList[i].IType == Item.ItemType.IngredientB)
+            {
+                hasIngredientB = true;
+                break;
+            }
+        }
+        if(hasIngredientA == false || hasIngredientB == false)
+        {
+            return;
+        }
+
+        for (int i = 0; i < itemList.Count; i++)
+        {
+            if (itemList[i].IType == Item.ItemType.IngredientA)
+            {
+                itemList.RemoveAt(i);
+                break;
+            }
+        }
+
+        for (int i = 0; i < itemList.Count; i++)
+        {
+            if (itemList[i].IType == Item.ItemType.IngredientB)
+            {
+                itemList.RemoveAt(i);
+                break;
+            }
+        }
+    
+        itemList.Add(new Item { IType = Item.ItemType.ItemA });
         OnRefreshInventory?.Invoke(this);
     }
 

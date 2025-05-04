@@ -14,15 +14,28 @@ public class UIInventory : NetworkBehaviour
 
     private void RefreshInventory(Inventory inv)
     {
-        Inventory inventory = inv;
-        int i=0; //Indicate each slot in the inventory
-        foreach (Item item in inventory.GetItemList())
+        int itemCount = inv.GetItemList().Count;
+
+        for (int i = 0; i < ItemSlots.Length; i++)
         {
-            if(item != null)
+            if (i < itemCount)
             {
-                ItemSlots[i].GetComponent<Image>().sprite = item.GetSprite(); //Set the item in the slot
-                i++;
+                ItemSlots[i].GetComponent<Image>().sprite = inv.GetItemList()[i].GetSprite(); //Set the item in the slot
+            }
+            else
+            {
+                ItemSlots[i].GetComponent<Image>().sprite = null; //Clear the slot if no item is present
             }
         }
+        
+        // int i=0;
+        // foreach (Item item in inv.GetItemList())
+        // {
+        //     if(item != null)
+        //     {
+        //         ItemSlots[i].GetComponent<Image>().sprite = item.GetSprite(); //Set the item in the slot
+        //         i++;
+        //     }
+        // }
     }
 }

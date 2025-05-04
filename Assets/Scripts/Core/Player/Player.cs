@@ -39,7 +39,6 @@ public class Player : NetworkBehaviour
     private PlayerSystem playerManager;
     private Imposter imposter;
     public Inventory Inventory;
-    //public static event Action<Inventory> OnRefreshInventory;
 
     //--------------------------------------
     // Unity Lifecycle Methods
@@ -55,7 +54,6 @@ public class Player : NetworkBehaviour
         CurrentCharacterID.Value = CrewmateCharacterID.Value;
 
         Inventory = new Inventory();
-        //OnRefreshInventory?.Invoke(Inventory);
     }
 
     public override void OnNetworkSpawn()
@@ -68,6 +66,8 @@ public class Player : NetworkBehaviour
 
         Role.OnValueChanged += OnRoleChanged;
         IsAlive.OnValueChanged += OnAliveChanged;
+
+        Crafting.OnCraftItemA += CraftItemA;
 
 
 
@@ -257,6 +257,15 @@ public class Player : NetworkBehaviour
         {
             gameObject.SetActive(!PlayerSystem.GetLocalPlayerScript().IsAlive.Value);
         }
+    }
+
+    //--------------------------------------
+    // Crafting Handling
+    //--------------------------------------
+
+    private void CraftItemA()
+    {
+        Inventory.CraftItemA();
     }
 
 

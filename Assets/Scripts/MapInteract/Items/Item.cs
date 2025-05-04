@@ -8,7 +8,10 @@ public class Item
         IngredientB,
         IngredientC,
         IngredientD,
-        IngredientE
+        IngredientE,
+        ItemA,
+        ItemB,
+        ItemC
     }
 
     public ItemType IType;
@@ -27,6 +30,12 @@ public class Item
                 return ItemAssets.Instance.IngredientDSprite;
             case ItemType.IngredientE:
                 return ItemAssets.Instance.IngredientESprite;
+            case ItemType.ItemA:
+                return ItemAssets.Instance.ItemASprite;
+            case ItemType.ItemB:
+                return ItemAssets.Instance.ItemBSprite;
+            case ItemType.ItemC:
+                return ItemAssets.Instance.ItemCSprite;
             default:
                 return null;
         }
