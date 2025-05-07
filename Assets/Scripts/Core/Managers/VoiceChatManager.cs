@@ -16,8 +16,9 @@ public class VoiceChatManager : Singleton<VoiceChatManager>
     public async Task InitializeAsync()
     {
         await VivoxService.Instance.InitializeAsync();
-        BindSessionEvents(true);
+        // BindSessionEvents(true);
     }
+
 
     public static async Task LoginAsync()
     {
@@ -39,10 +40,11 @@ public class VoiceChatManager : Singleton<VoiceChatManager>
         await VivoxService.Instance.LeaveChannelAsync(channelToLeave);
     }
 
-    public static async void JoinPositionalChannelAsync(string channelName)
+    public static async Task JoinPositionalChannelAsync(string channelName)
     {
         ChannelOptions channelOptions = new ChannelOptions();
         Channel3DProperties channel3DProperties = new Channel3DProperties();
+        Debug.Log("JoinPositionalChannelAsync" + channelName);
         await VivoxService.Instance.JoinPositionalChannelAsync(channelName, ChatCapability.TextAndAudio, channel3DProperties, channelOptions);
     }
 
@@ -61,6 +63,11 @@ public class VoiceChatManager : Singleton<VoiceChatManager>
     {
         await VivoxService.Instance.LeaveChannelAsync(channelName);
     }
+    public static void Set3DPosition(GameObject gameObject, string channelName)
+    {
+        VivoxService.Instance.Set3DPosition(gameObject, channelName);
+    }
+
 
     public static async void LogoutOfVivoxAsync()
     {

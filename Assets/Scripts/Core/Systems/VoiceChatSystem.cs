@@ -1,5 +1,6 @@
 using System;
 using IKVM.Reflection.Emit;
+using Unity.Services.Vivox;
 using UnityEngine;
 
 public class VoiceChatSystem : MonoBehaviour
@@ -7,15 +8,20 @@ public class VoiceChatSystem : MonoBehaviour
     private string aliveChannelName = "alive";
     private string deadChannelName = "dead";
     public string CurrentChannelName;
+    private Player localPlayer;
     private void Start()
     {
         var currentLobby = LobbyManager.Instance.CurrentLobby;
-        aliveChannelName = currentLobby.Id + "_alive";
-        deadChannelName = currentLobby.Id + "_dead";
+
+        if (currentLobby != null)
+        {
+            aliveChannelName = currentLobby.Id + "_alive";
+            deadChannelName = currentLobby.Id + "_dead";
+        }
         CurrentChannelName = aliveChannelName;
 
-        VoiceChatManager.JoinPositionalChannelAsync(CurrentChannelName);
-        OneInsideLevelSystem.Instance.PlayerSystem.OnAllPlayersSpawnInTheGame += SubscribeWhenPlayerDied;
+
+        OneInsideLevelSystem.Instance.PlayerSystem.OnAllPlayersSpawnInTheGame += OnAllPlayersSpawn;
         OneInsideLevelSystem.Instance.VoteSystem.OnStateChanged += VoteStateChanged;
     }
 
@@ -39,11 +45,24 @@ public class VoiceChatSystem : MonoBehaviour
         }
     }
 
-    private void SubscribeWhenPlayerDied()
+    private async void OnAllPlayersSpawn()
     {
-        Player player = PlayerSystem.GetLocalPlayerScript();
-        player.IsAlive.OnValueChanged += ChangeVoicechatChannel;
+        localPlayer = PlayerSystem.GetLocalPlayerScript();
+        await VoiceChatManager.JoinPositionalChannelAsync(CurrentChannelName);
+        Set3DPosition();
+        Debug.Log("ActiveChannels" + VivoxService.Instance.ActiveChannels.Count);
+        localPlayer.PlayerMovement.OnMove += Set3DPosition;
+        localPlayer.IsAlive.OnValueChanged += ChangeVoicechatChannel;
     }
+
+    private void Set3DPosition()
+    {
+        if(VivoxService.Instance.ActiveChannels.ContainsKey(CurrentChannelName))
+        {
+            VoiceChatManager.Set3DPosition(localPlayer.gameObject, CurrentChannelName);
+        }
+    }
+
 
     private void ChangeVoicechatChannel(bool previousValue, bool newValue)
     {
@@ -58,6 +77,11 @@ public class VoiceChatSystem : MonoBehaviour
     private void OnDestroy()
     {
         VoiceChatManager.LeaveAllChannels();
+        if (localPlayer != null)
+        {
+            localPlayer.PlayerMovement.OnMove -= Set3DPosition;
+            localPlayer.IsAlive.OnValueChanged -= ChangeVoicechatChannel;
+        }
     }
 
 }
