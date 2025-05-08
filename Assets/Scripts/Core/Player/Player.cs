@@ -38,6 +38,7 @@ public class Player : NetworkBehaviour
     private Material defaultPlayerMaterial;
     private PlayerSystem playerManager;
     private Imposter imposter;
+    public Inventory Inventory;
     public AbilityDataSO AbilityData { get; private set; }
     public event Action OnAbilityDataChanged;
 
@@ -45,7 +46,6 @@ public class Player : NetworkBehaviour
 
     private float pokeStunDuration = DefaultPlayerConfig.Player.POKE_STUN_DURATION;
     private float pokeCoolDown = DefaultPlayerConfig.Player.POKE_COOLDOWN;
-    public Inventory Inventory;
 
     //--------------------------------------
     // Unity Lifecycle Methods
