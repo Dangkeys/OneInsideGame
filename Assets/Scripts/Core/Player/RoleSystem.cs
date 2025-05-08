@@ -8,9 +8,10 @@ public class RoleSystem : NetworkBehaviour
 {
 
     PlayerSystem playerManager;
+    public event Action OnRolesAssignmentComplete;
     void Awake()
     {
-      playerManager = OneInsideLevelSystem.Instance.PlayerManager;  
+        playerManager = OneInsideLevelSystem.Instance.PlayerSystem;
     }
     public override void OnNetworkSpawn()
     {
@@ -27,7 +28,9 @@ public class RoleSystem : NetworkBehaviour
                 AssignRandomRoles(currentLobby.Data.TryGetValue(OneInside.Constants.Lobby.KEY_IMPOSTER_AMOUNT, out var imposters)
                     ? int.Parse(imposters.Value)
                     : OneInside.Constants.Player.MIN_IMPOSTERS);
-            }else{
+            }
+            else
+            {
                 //TODO add configuration
                 AssignRandomRoles(OneInsideLevelSystem.Instance.ImposterAmount);
             }
@@ -60,6 +63,7 @@ public class RoleSystem : NetworkBehaviour
             }
 
         }
+        OnRolesAssignmentComplete?.Invoke();
     }
 
 }

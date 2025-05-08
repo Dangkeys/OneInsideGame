@@ -5,12 +5,14 @@ using UnityEngine;
 public abstract class QuestInfo : NetworkBehaviour
 {
     protected bool currentStatus = false;
-    public event System.Action<bool> questInfoStatus;
+    public event System.Action<int, bool> questInfoStatus;
     private PlayerMovement playerMovement;
+    protected int index = -1;
 
-    public void Init()
+    public void Init(int newIndex)
     {
         StartCoroutine(WaitForSpawnAndUpdate());
+        UpdateQuestIndexServerRpc(newIndex);
     }
 
     private IEnumerator WaitForSpawnAndUpdate()
@@ -21,6 +23,8 @@ public abstract class QuestInfo : NetworkBehaviour
 
     protected void BreakQuest()
     {
+        if (index < 0)
+            return;
         if (IsSpawned && currentStatus)
         {
             UpdateQuestStatusServerRpc(false);
@@ -30,6 +34,8 @@ public abstract class QuestInfo : NetworkBehaviour
 
     protected void FinishQuest()
     {
+        if (index < 0)
+            return;
         if (IsSpawned && !currentStatus)
         {
             UpdateQuestStatusServerRpc(true);
@@ -40,7 +46,9 @@ public abstract class QuestInfo : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void UpdateQuestStatusServerRpc(bool status)
     {
-        questInfoStatus?.Invoke(status);
+        if (index < 0)
+            return;
+        questInfoStatus?.Invoke(index, status);
         if (!IsHost)
         {
             UpdateQuestStatus(status);
@@ -87,8 +95,31 @@ public abstract class QuestInfo : NetworkBehaviour
         }
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    private void UpdateQuestIndexServerRpc(int index)
+    {
+        if (!IsHost)
+        {
+            UpdateQuestIndex(index);
+        }
+        UpdateQuestIndexClientRpc(index);
+    }
+
+    [ClientRpc]
+    private void UpdateQuestIndexClientRpc(int index)
+    {
+        UpdateQuestIndex(index);
+    }
+
+    private void UpdateQuestIndex(int newIndex)
+    {
+        index = newIndex;
+    }
+
     protected void UpdateDoQuest(bool doQuest, InteractionData interactionData)
     {
+        if (index < 0)
+            return;
         if (!playerMovement && interactionData != null)
         {
             playerMovement = interactionData.Interactor.gameObject.GetComponent<PlayerMovement>();

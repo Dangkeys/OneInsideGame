@@ -210,11 +210,7 @@ public class ConnectionManager : SingletonNetwork<ConnectionManager>
 
     public static void TransmitUserData()
     {
-        var userDataDto = new UserDataDto
-        {
-            AuthId = AuthenticationService.Instance.PlayerId,
-            Name = AuthenticationService.Instance.PlayerName
-        };
+        var userDataDto = UserDataManager.Instance.GetUserData();
 
         string payload = JsonUtility.ToJson(userDataDto);
         byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);

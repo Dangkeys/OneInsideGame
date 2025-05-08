@@ -15,8 +15,6 @@ using UnityEngine.SceneManagement;
 public class OneInsideGameManager : Singleton<OneInsideGameManager>
 {
     public event Action<GameEvent, string> OnGameStateChanged;
-    
-
 
     async void Start()
     {
@@ -41,9 +39,8 @@ public class OneInsideGameManager : Singleton<OneInsideGameManager>
 
     public async Task HostMatch(CreateLobbyDto createLobbyDto)
     {
-
         NotifyGameStateChanged(GameEvent.CreatingLobby);
-        
+
         CreateLobbyAllocationResponseDto responseDto = await LobbyManager.Instance.CreateLobbyAsync(createLobbyDto);
         if (responseDto == null)
         {
@@ -52,13 +49,7 @@ public class OneInsideGameManager : Singleton<OneInsideGameManager>
         }
 
         ConnectionManager.InitializeHostRelayTransport(responseDto);
-
-
-        NotifyGameStateChanged(GameEvent.LoadingLobbyScene);
-        
-        await Loader.LoadNetwork(GameScene.LobbyScene);
-
-        NotifyGameStateChanged(GameEvent.LobbySceneLoaded);
+        await LoadLobbyScene();
     }
 
     public async Task QuickJoinMatchAsync()
@@ -66,20 +57,9 @@ public class OneInsideGameManager : Singleton<OneInsideGameManager>
         NotifyGameStateChanged(GameEvent.JoiningLobby);
         
         JoinLobbyAllocationResponseDto responseDto = await LobbyManager.Instance.QuickJoinAsync();
-
-        if (responseDto == null)
-        {
-            NotifyGameStateChanged(GameEvent.OperationFailed, "Failed to join lobby");
-            return;
-        }
-
-        ConnectionManager.InitializeClientRelayTransport(responseDto);
-
-        NotifyGameStateChanged(GameEvent.LoadingLobbyScene);
+        if (!HandleJoinResponse(responseDto)) return;
         
-        await Loader.LoadNetwork(GameScene.LobbyScene);
-
-        NotifyGameStateChanged(GameEvent.LobbySceneLoaded);
+        await LoadLobbyScene();
     }
 
     public async Task JoinMatchByCodeAsync(string joinCode)
@@ -87,20 +67,9 @@ public class OneInsideGameManager : Singleton<OneInsideGameManager>
         NotifyGameStateChanged(GameEvent.JoiningLobby);
         
         JoinLobbyAllocationResponseDto responseDto = await LobbyManager.Instance.JoinLobbyByCodeAsync(joinCode);
-
-        if (responseDto == null)
-        {
-            NotifyGameStateChanged(GameEvent.OperationFailed, "Failed to join lobby");
-            return;
-        }
-
-        ConnectionManager.InitializeClientRelayTransport(responseDto);
-
-        NotifyGameStateChanged(GameEvent.LoadingLobbyScene);
+        if (!HandleJoinResponse(responseDto)) return;
         
-        await Loader.LoadNetwork(GameScene.LobbyScene);
-
-        NotifyGameStateChanged(GameEvent.LobbySceneLoaded);
+        await LoadLobbyScene();
     }
 
     public async Task JoinMatchByLobbyIdAsync(string lobbyId)
@@ -108,18 +77,27 @@ public class OneInsideGameManager : Singleton<OneInsideGameManager>
         NotifyGameStateChanged(GameEvent.JoiningLobby);
         
         JoinLobbyAllocationResponseDto responseDto = await LobbyManager.Instance.JoinLobbyByIdAsync(lobbyId);
+        if (!HandleJoinResponse(responseDto)) return;
+        
+        await LoadLobbyScene();
+    }
+
+    private bool HandleJoinResponse(JoinLobbyAllocationResponseDto responseDto)
+    {
         if (responseDto == null)
         {
             NotifyGameStateChanged(GameEvent.OperationFailed, "Failed to join lobby");
-            return;
+            return false;
         }
-        
+
         ConnectionManager.InitializeClientRelayTransport(responseDto);
+        return true;
+    }
 
+    private async Task LoadLobbyScene()
+    {
         NotifyGameStateChanged(GameEvent.LoadingLobbyScene);
-        
         await Loader.LoadNetwork(GameScene.LobbyScene);
-
         NotifyGameStateChanged(GameEvent.LobbySceneLoaded);
     }
 
@@ -133,14 +111,11 @@ public class OneInsideGameManager : Singleton<OneInsideGameManager>
         }
 
         await LobbyManager.Instance.UpdateCurrentLobbyAsync(new UpdateLobbyDto(isLocked: true));
-        
         NotifyGameStateChanged(GameEvent.StartingGame);
-        
         await Loader.LoadNetwork(GameScene.MainScene);
-        
         NotifyGameStateChanged(GameEvent.GameStarted);
     }
-    
+
     [Command]
     public async Task StopGame()
     {
@@ -152,11 +127,8 @@ public class OneInsideGameManager : Singleton<OneInsideGameManager>
         }
 
         await LobbyManager.Instance.UpdateCurrentLobbyAsync(new UpdateLobbyDto(isLocked: false));
-        
         NotifyGameStateChanged(GameEvent.StoppingGame);
-        
         await Loader.LoadNetwork(GameScene.LobbyScene);
-        
         NotifyGameStateChanged(GameEvent.GameStopped);
     }
 
@@ -183,22 +155,24 @@ public class OneInsideGameManager : Singleton<OneInsideGameManager>
         try
         {
             NotifyGameStateChanged(GameEvent.InitializingVivox);
-            await VivoxService.Instance.InitializeAsync();
+            await VoiceChatManager.Instance.InitializeAsync();
 
             NotifyGameStateChanged(GameEvent.LoggingIntoVivox);
-            await VivoxService.Instance.LoginAsync();
+            await VoiceChatManager.LoginAsync();
         }
         catch (RequestFailedException e)
         {
             Debug.LogWarning(e);
         }
 
+        await UserDataManager.Instance.LoadAbilitiesFromCloudSave();
+
         if (shouldLoadScene)
         {
             NotifyGameStateChanged(GameEvent.LoadingMainMenu);
             await SceneManager.LoadSceneAsync(GameScene.MainMenuScene.ToString());
         }
-        
+
         NotifyGameStateChanged(GameEvent.GameInitialized);
     }
 
@@ -208,7 +182,7 @@ public class OneInsideGameManager : Singleton<OneInsideGameManager>
         {
             message = gameEvent.ToString();
         }
-        
+
         OnGameStateChanged?.Invoke(gameEvent, message);
     }
 }

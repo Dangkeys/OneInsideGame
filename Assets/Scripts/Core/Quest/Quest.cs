@@ -7,7 +7,7 @@ public class Quest : ScriptableObject
     [SerializeField] private string questDescription;
     [SerializeField] private string questObjectName;
     private QuestInfo questInfo;
-    public event System.Action<bool> questStatus;
+    public event System.Action<int, bool> questStatus;
 
     public string GetGameObjectName()
     {
@@ -29,8 +29,8 @@ public class Quest : ScriptableObject
         }
     }
 
-    private void HandleQuestStatus(bool status)
+    private void HandleQuestStatus(int index, bool status)
     {
-        questStatus?.Invoke(status);
+        questStatus?.Invoke(index, status);
     }
 }

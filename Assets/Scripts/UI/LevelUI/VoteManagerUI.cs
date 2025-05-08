@@ -16,7 +16,7 @@ public class VoteManagerUI : NetworkBehaviour
     NetworkPlayerData networkPlayerData;
     void Awake()
     {
-        if(OneInsideGameManager.Instance == null)
+        if (OneInsideGameManager.Instance == null)
         {
             Debug.LogWarning("OneInsideGameManager.Instance is null");
             return;
@@ -31,7 +31,7 @@ public class VoteManagerUI : NetworkBehaviour
             Debug.LogWarning("OneInsideLevelManager.Instance is null");
             return;
         }
-        voteManager = OneInsideLevelSystem.Instance.VoteManager;
+        voteManager = OneInsideLevelSystem.Instance.VoteSystem;
         voteManager.OnStateChanged += StateChanged;
         voteManager.VotingTimer.OnValueChanged += VotingTimerChanged;
         voteManager.VoteRegistry.OnValueChanged += VoteDictionaryChanged;
@@ -70,10 +70,24 @@ public class VoteManagerUI : NetworkBehaviour
         {
             Destroy(child.gameObject);
         }
+
+        Player localPlayer = PlayerSystem.GetLocalPlayerScript();
+
+
         foreach (var vote in voteManager.VoteRegistry.Value)
         {
             VoteItem voteItem = Instantiate(voteItemPrefab, voteItemParent);
-            voteItem.Initialise(GetPlayerName(vote.Key), vote.Key, vote.Value != VoteSystem.NO_VOTE);
+
+            Player player = PlayerSystem.GetPlayerByClientId(vote.Key);
+
+            if (!localPlayer.IsAlive.Value)
+            {
+                voteItem.Initialise(GetPlayerName(vote.Key), vote.Key, vote.Value != VoteSystem.NO_VOTE, false);
+            }
+            else
+            {
+                voteItem.Initialise(GetPlayerName(vote.Key), vote.Key, vote.Value != VoteSystem.NO_VOTE, player.IsAlive.Value);
+            }
         }
     }
     private string GetPlayerName(ulong clientId)
