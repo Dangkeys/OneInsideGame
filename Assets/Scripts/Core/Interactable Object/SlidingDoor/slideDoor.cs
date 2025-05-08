@@ -19,12 +19,12 @@ public class SlideDoor : NetworkBehaviour, IInteractable
     {
         if (!DoorOpen)
         {
-            DoorAnim.SetTrigger("DoorOpen");
+            DoorAnim.SetTrigger("Open");
             DoorOpen = true;
         }
         else if (DoorOpen)
         {
-            DoorAnim.SetTrigger("DoorClose");
+            DoorAnim.SetTrigger("Close");
             DoorOpen = false;
         }
     }
