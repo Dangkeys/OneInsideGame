@@ -9,6 +9,7 @@ public class Meteorite : MonoBehaviour
     private RectTransform rectTransform;
     public event System.Action<bool> onHit;
     private float speed;
+    [SerializeField] private Canvas canvas;
 
     private void Awake()
     {
@@ -24,9 +25,10 @@ public class Meteorite : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(IsInField())
+        if (IsInField())
         {
-            meteoriteRigidbody2D.linearVelocity = Vector3.left * speed;
+            float adjustedSpeed = speed * canvas.scaleFactor;
+            meteoriteRigidbody2D.linearVelocity = Vector3.left * adjustedSpeed;
         }
         else
         {
@@ -61,9 +63,9 @@ public class Meteorite : MonoBehaviour
         return (1 - (value - min) / (max - min));
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.CompareTag("Spaceship"))
+        if (collision.collider.CompareTag("Spaceship"))
         {
             onHit?.Invoke(true);
             NewSpawnMeteorite();

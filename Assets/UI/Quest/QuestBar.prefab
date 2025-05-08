@@ -38,7 +38,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 600, y: -100}
+  m_AnchoredPosition: {x: 810, y: -100}
   m_SizeDelta: {x: 1000, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2365604961783848918
@@ -140,7 +140,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 882496462
+  GlobalObjectIdHash: 4096564335
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -167,12 +167,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   quests:
-  - {fileID: 11400000, guid: a6bfd21aaa5fb1d4f9c1d41e1666c8db, type: 2}
-  - {fileID: 11400000, guid: 9e085d20d63767649a3ca1d2e237ea37, type: 2}
   - {fileID: 11400000, guid: 25f464b649789364f9e1b1e14f43bcbb, type: 2}
   - {fileID: 11400000, guid: c5bb2fc0b07eb974dbf11e354008110c, type: 2}
-  maxQuest: 2
-  questLocation: []
+  - {fileID: 11400000, guid: 90f00bf16d3042e4094059a8e1004bab, type: 2}
+  - {fileID: 11400000, guid: da0874ccdbe94f4488d8071958382be0, type: 2}
+  - {fileID: 11400000, guid: 39fedc3f301a8424ab3806b7c637179f, type: 2}
+  - {fileID: 11400000, guid: 534d197efcabc93418b2c9519972b7ec, type: 2}
+  - {fileID: 11400000, guid: e09ae579e2963d847a728726114a4aa1, type: 2}
+  - {fileID: 11400000, guid: 2889d2183b93c494ebd38586557a68ac, type: 2}
+  maxQuest: 4
+  questLocation:
+  - {fileID: 11400000, guid: 2328e2f2e58a0294aaf07c144190d8d3, type: 2}
+  - {fileID: 11400000, guid: 2097aeaf1b4f5004eb2fd57460694c07, type: 2}
+  - {fileID: 11400000, guid: 8d4c5cd2c557c2447ac4de7cbc4f317c, type: 2}
+  - {fileID: 11400000, guid: ea9e8eaab49014444a40901440f311f7, type: 2}
 --- !u!1 &7691068249078687992
 GameObject:
   m_ObjectHideFlags: 0
