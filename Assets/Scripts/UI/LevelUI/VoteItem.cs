@@ -13,7 +13,7 @@ public class VoteItem : MonoBehaviour
     private ulong playerId;
     private VoteSystem voteManager;
 
-    private void Start() 
+    private void Start()
     {
         InitializeVoteManager();
     }
@@ -24,7 +24,7 @@ public class VoteItem : MonoBehaviour
         {
             voteManager = OneInsideLevelSystem.Instance.VoteSystem;
             voteManager.VoteRegistry.OnValueChanged += OnVoteDictionaryChanged;
-            
+
             if (voteManager.VoteRegistry.Value.ContainsKey(NetworkManager.Singleton.LocalClientId))
             {
                 UpdateVisualState(voteManager.VoteRegistry.Value);
@@ -54,10 +54,10 @@ public class VoteItem : MonoBehaviour
         UpdateVisualState(newValue);
     }
 
-    public void Initialise(string playerName,ulong playerId, bool hasVoted)
+    public void Initialise(string playerName, ulong playerId, bool hasVoted, bool isAlive)
     {
         this.playerId = playerId;
-        if(playerId == NetworkManager.Singleton.LocalClientId)
+        if (playerId == NetworkManager.Singleton.LocalClientId || !isAlive)
         {
             voteButton.gameObject.SetActive(false);
         }
@@ -66,13 +66,14 @@ public class VoteItem : MonoBehaviour
 
         voteButton.onClick.RemoveAllListeners();
         voteButton.onClick.AddListener(Vote);
-        
+
         InitializeVoteManager();
     }
 
     private void UpdateVisualState(Dictionary<ulong, ulong> votes)
     {
-        if (votes == null) return;
+        if (votes == null)
+            return;
 
         bool isSelectedByLocalPlayer = false;
         if (votes.TryGetValue(NetworkManager.Singleton.LocalClientId, out ulong votedFor))
