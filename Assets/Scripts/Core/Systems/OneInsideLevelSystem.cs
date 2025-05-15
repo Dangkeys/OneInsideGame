@@ -41,7 +41,6 @@ public class OneInsideLevelSystem : SingletonNetwork<OneInsideLevelSystem>
 
     private void OnCrewMateLost()
     {
-        Debug.Log("OnCrewMateLost");
         if (IsServer)
         {
             SetGameState(GameState.ImposterWin);
@@ -136,7 +135,6 @@ public class OneInsideLevelSystem : SingletonNetwork<OneInsideLevelSystem>
         if (!IsServer)
             return;
         IsEndGameCollapse.Value = isEndGameCollapse;
-        Debug.Log("IsEndGameCollapse.Value = " + isEndGameCollapse);
     }
 
     public void SetGameState(GameState state)

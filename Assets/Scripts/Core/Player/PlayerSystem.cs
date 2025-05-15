@@ -31,11 +31,9 @@ public class PlayerSystem : NetworkBehaviour
     private void DetermineGameOver()
     {
         if(IsServer){
-            Debug.Log("DetermineGameOver");
             var CrewmateAliveCount = GetAllPlayer(player => player.Role.Value == PlayerRole.Crewmate && player.IsAlive.Value).Count;
             if (CrewmateAliveCount == 0)
             {
-            Debug.Log("OnCrewMateLost");
                 OnCrewMateLost?.Invoke();
             }
         }

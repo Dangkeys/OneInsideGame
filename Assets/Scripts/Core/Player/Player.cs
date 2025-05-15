@@ -315,7 +315,6 @@ public class Player : NetworkBehaviour
         }
         else
         {
-            Debug.Log("OnAnyPlayerDeath");
             OnAnyPlayerDeath?.Invoke();
             EnableSpectator();
         }
