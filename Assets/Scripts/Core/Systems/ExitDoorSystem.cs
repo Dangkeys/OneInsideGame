@@ -1,5 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
+using System.Collections.Generic;
+
 public class ExitDoorSystem : MonoBehaviour
 {
     [SerializeField] private ExitDoor[] doors;
@@ -22,15 +24,14 @@ public class ExitDoorSystem : MonoBehaviour
         {
             if (NetworkManager.Singleton.IsServer)
             {
-                Debug.Log("OnIsEndGameCollapseChanged");
-                for (int i = 0; i < amountOfDoorsToOpen; i++)
+                List<ExitDoor> shuffledDoors = ShuffleUtility.GetShuffledList(doors);
+                
+                int doorsToOpen = Mathf.Min(amountOfDoorsToOpen, doors.Length);
+                for (int i = 0; i < doorsToOpen; i++)
                 {
-                    doors[Random.Range(0, doors.Length)].OpenDoor();
+                    shuffledDoors[i].OpenDoor();
                 }
             }
-
         }
     }
-
-
 }
