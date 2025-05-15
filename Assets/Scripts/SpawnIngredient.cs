@@ -1,37 +1,34 @@
 using UnityEngine;
 using Unity.Netcode;
+using Unity.VisualScripting;
 
 public class SpawnIngredient : NetworkBehaviour
-{    
-    public GameObject IngredientArray;
-    public Transform SpawnPointArray;
-
+{
+    [field: SerializeField] public ItemCollectionSO IngredientCollection { get; private set; }
+    [field: SerializeField] public Transform SpawnPointArray {get; private set; }
     public override void OnNetworkSpawn()
     {
-        SpawnIngredientServerRpc();
-    }
-
-    [ServerRpc (RequireOwnership = false)]
-    private void SpawnIngredientServerRpc()
-    {
-        SpawnIngredientClientRpc();
-    }
-
-    [ClientRpc]
-    private void SpawnIngredientClientRpc()
-    {
-        int j = 0;
-        for(int i = 0; i < SpawnPointArray.transform.childCount; i++)
+        if (IsServer)
         {
-            if(j >= IngredientArray.transform.childCount)
+            int j = 0;
+            for (int i = 0; i < SpawnPointArray.transform.childCount; i++)
             {
-                j = 0;
+                if (j >= IngredientCollection.Ingredients.Count)
+                {
+                    j = 0;
+                }
+                
+                NetworkObject ingredientPrefab = IngredientCollection.Ingredients[j];
+                Transform spawnPoint = SpawnPointArray.GetChild(i);
+
+                var instance = Instantiate(ingredientPrefab, spawnPoint.position, Quaternion.identity);
+
+                var instanceNetworkObject = instance.GetComponent<NetworkObject>();
+               instanceNetworkObject.Spawn();
+
+                j++;
             }
-            GameObject ingredientPrefab = IngredientArray.transform.GetChild(j).gameObject;
-            Transform spawnPoint = SpawnPointArray.GetChild(i);
-            Instantiate(ingredientPrefab, spawnPoint.position, Quaternion.identity);
-            j++;
         }
-        
     }
+
 }

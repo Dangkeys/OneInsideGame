@@ -85,7 +85,7 @@ namespace OneInside.Utils.CloudSave
         /// Loads all data from cloud storage
         /// </summary>
         /// <returns>Dictionary containing all saved data</returns>
-        public static async Task<Dictionary<string, Item>> LoadAllData()
+        public static async Task<Dictionary<string, Unity.Services.CloudSave.Models.Item>> LoadAllData()
         {
             try
             {
@@ -94,7 +94,7 @@ namespace OneInside.Utils.CloudSave
             catch (Exception e)
             {
                 Debug.LogError($"Error loading all data: {e.Message}");
-                return new Dictionary<string, Item>();
+                return new Dictionary<string, Unity.Services.CloudSave.Models.Item>();
             }
         }
 

@@ -9,7 +9,18 @@ public class PickupItem : NetworkBehaviour,IInteractable
         if (interactionData.Interactor.TryGetComponent<Player>(out Player player))
         {
             player.Inventory.AddItem(gameObject.GetComponent<ItemWorld>().GetItem()); //Add the item to the inventory
-            if(!player.Inventory.IsFull) Destroy(gameObject); //Destroy the item in the world
+            if(!player.Inventory.IsFull){
+                DespawnItemServerRpc();
+            } 
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void DespawnItemServerRpc()
+    {
+        if (TryGetComponent<NetworkObject>(out NetworkObject networkObject))
+        {
+            networkObject.Despawn(true);
         }
     }
 }
