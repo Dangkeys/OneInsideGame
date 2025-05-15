@@ -14,6 +14,8 @@ public class PlayerSystem : NetworkBehaviour
 
     public event Action OnResetALlPlayerPosition;
 
+    public static event Action OnCrewMateLost;
+
     public event Action<bool> OnEnableAllPlayersMovement;
     private OneInsideLevelSystem oneInsideLevelManager;
 
@@ -23,7 +25,23 @@ public class PlayerSystem : NetworkBehaviour
     {
         oneInsideLevelManager = OneInsideLevelSystem.Instance;
         voteManager = oneInsideLevelManager.VoteSystem;
+        Player.OnAnyPlayerDeath += DetermineGameOver;
     }
+
+    private void DetermineGameOver()
+    {
+        if(IsServer){
+            Debug.Log("DetermineGameOver");
+            var CrewmateAliveCount = GetAllPlayer(player => player.Role.Value == PlayerRole.Crewmate && player.IsAlive.Value).Count;
+            if (CrewmateAliveCount == 0)
+            {
+            Debug.Log("OnCrewMateLost");
+                OnCrewMateLost?.Invoke();
+            }
+        }
+    }
+
+
 
 
     public override void OnNetworkSpawn()
@@ -55,8 +73,6 @@ public class PlayerSystem : NetworkBehaviour
                     OnAllPlayersInTheGameClientRpc();
                 }
 
-                break;
-            case GameState.GameOver:
                 break;
         }
     }

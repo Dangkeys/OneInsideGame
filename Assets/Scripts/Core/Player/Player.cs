@@ -29,6 +29,9 @@ public class Player : NetworkBehaviour
 
     public NetworkVariable<FixedString64Bytes> CurrentCharacterID = new NetworkVariable<FixedString64Bytes>();
 
+
+    public static event Action OnAnyPlayerDeath;
+
     //--------------------------------------
     // Private Variables
     //--------------------------------------
@@ -312,6 +315,8 @@ public class Player : NetworkBehaviour
         }
         else
         {
+            Debug.Log("OnAnyPlayerDeath");
+            OnAnyPlayerDeath?.Invoke();
             EnableSpectator();
         }
     }
