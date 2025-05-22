@@ -8,43 +8,54 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+using QFSW.QC;
+
 public class OneInsideLevelSystem : SingletonNetwork<OneInsideLevelSystem>
 {
 
 
     [field: SerializeField] public float GamePlayingTimerMax = 600f;
-    public NetworkVariable<float> GamePlayTimer = new NetworkVariable<float>();
-    public NetworkVariable<GameState> State = new NetworkVariable<GameState>(GameState.WaitingToStart);
+    [field: SerializeField] public NetworkVariable<float> GamePlayTimer { get; private set; } = new NetworkVariable<float>();
+    [field: SerializeField] public NetworkVariable<GameState> State { get; private set; } = new NetworkVariable<GameState>(GameState.WaitingToStart);
+    [field: SerializeField] public NetworkVariable<bool> IsEndGameCollapse { get; private set; } = new NetworkVariable<bool>(false);
 
     [field: SerializeField] public int ImposterAmount { get; private set; } = OneInside.Constants.Player.MAX_IMPOSTERS;
     [field: SerializeField] public PlayerSystem PlayerSystem;
     [field: SerializeField] public VoteSystem VoteSystem;
     [field: SerializeField] public RoleSystem RoleSystem;
     [field: SerializeField] public AbilityAssignment AbilityAssignment;
-    // [field: SerializeField] public VivoxManager VivoxManager;
 
     [field: SerializeField] public GameObject PlayersContainer;
     [field: SerializeField] public GameObject DeadBodiesContainer;
 
-    private OneInsideGameManager oneInsideGameManager;
     public static GameObject Players { get; private set; }
     public static GameObject DeadBodies { get; private set; }
 
     protected override void Awake()
     {
         base.Awake();
-        oneInsideGameManager = OneInsideGameManager.Instance;
         Players = PlayersContainer;
         DeadBodies = DeadBodiesContainer;
+        PlayerSystem.OnCrewMateLost += OnCrewMateLost;
+    }
+
+    private void OnCrewMateLost()
+    {
+        if (IsServer)
+        {
+            SetGameState(GameState.ImposterWin);
+        }
     }
 
     public override void OnNetworkSpawn()
     {
+
         if (IsServer)
         {
             NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnSceneLoadComplete;
-            State.OnValueChanged += StateChanged;
         }
+        State.OnValueChanged += StateChanged;
+
 
     }
 
@@ -65,24 +76,33 @@ public class OneInsideLevelSystem : SingletonNetwork<OneInsideLevelSystem>
                     GamePlayTimer.Value = GamePlayingTimerMax;
                 }
                 break;
-            case GameState.GameOver:
-                if (IsServer)
-                {
-                    if (LobbyManager.Instance.CurrentLobby != null)
-                    {
-                        await OneInsideGameManager.Instance.LeaveMatchAsync();
+            case GameState.CrewmateWin:
+                UIManager.Instance.ShowMessage("Crewmate Win");
 
-                        //TODO fix the stop game function
-                        // PlayerManager.ClearAllPlayers();
-                        // await OneInsideGameManager.Instance.StopGame();
-                    }
-                    else
-                    {
-                        NetworkManager.Singleton.Shutdown();
-                    }
-                }
 
                 break;
+            case GameState.ImposterWin:
+                UIManager.Instance.ShowMessage("Imposter Win");
+                await GameOver();
+                break;
+        }
+    }
+    private async Task GameOver()
+    {
+        if (IsServer)
+        {
+            if (LobbyManager.Instance.CurrentLobby != null)
+            {
+                await OneInsideGameManager.Instance.LeaveMatchAsync();
+
+                //TODO fix the stop game function
+                // PlayerManager.ClearAllPlayers();
+                // await OneInsideGameManager.Instance.StopGame();
+            }
+            else
+            {
+                NetworkManager.Singleton.Shutdown();
+            }
         }
     }
 
@@ -105,8 +125,16 @@ public class OneInsideLevelSystem : SingletonNetwork<OneInsideLevelSystem>
 
         if (GamePlayTimer.Value < 0)
         {
-            State.Value = GameState.GameOver;
+            State.Value = GameState.ImposterWin;
         }
+    }
+
+    [Command]
+    public void SetIsEndGameCollapse(bool isEndGameCollapse)
+    {
+        if (!IsServer)
+            return;
+        IsEndGameCollapse.Value = isEndGameCollapse;
     }
 
     public void SetGameState(GameState state)
