@@ -72,6 +72,9 @@ public class PlayerMovement : NetworkBehaviour
 
     private PlayerSystem playerManager;
 
+
+    public event Action OnMove;
+
     /*
     -------------------------------------------------------
     Unity Lifecycle Methods
@@ -175,6 +178,7 @@ public class PlayerMovement : NetworkBehaviour
 
         if (isMoving)
         {
+            OnMove?.Invoke();
             Vector3 targetDirection = Quaternion.Euler(0f, MainCameraTransform.eulerAngles.y, 0f) * moveInput;
             float targetAngle = Mathf.Atan2(targetDirection.x, targetDirection.z) * Mathf.Rad2Deg;
 
