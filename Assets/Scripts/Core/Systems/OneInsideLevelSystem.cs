@@ -86,16 +86,16 @@ public class OneInsideLevelSystem : SingletonNetwork<OneInsideLevelSystem>
                     // });
                 }
                 break;
-            // case GameState.FinishedAllQuest:
-            //     if (IsServer)
-            //     {
-            //         List<Player> allImposter = PlayerSystem.GetImposterPlayers();
-            //         foreach (Player player in allImposter)
-            //         {
-            //             player.GetComponent<Imposter>().ForceTransform.Value = true;
-            //         }
-            //     }
-            //     break;
+            case GameState.FinishedAllQuest:
+                if (IsServer)
+                {
+                    List<Player> allImposter = PlayerSystem.GetImposterPlayers();
+                    foreach (Player player in allImposter)
+                    {
+                        player.GetComponent<Imposter>().ForceTransform.Value = true;
+                    }
+                }
+                break;
             case GameState.CrewmateWin:
                 UIManager.Instance.ShowMessage("Crewmate Win");
 
