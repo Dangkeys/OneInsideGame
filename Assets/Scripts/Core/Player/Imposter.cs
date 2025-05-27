@@ -115,16 +115,18 @@ public class Imposter : NetworkBehaviour
         serverTransformationActiveTimer?.Cancel();
         Transformed.Value = true;
         if (player.CurrentCharacterID.Value != player.ImposterCharacterID.Value)
-            player.ServerSetCharacterID(player.ImposterCharacterID.Value);
+            player.SetCharacterIDServerRpc(player.ImposterCharacterID.Value);
     }
 
     void DisableTransformed()
     {
         serverTransformationActiveTimer?.Cancel();
         serverTransformationActiveTimer = null;
+        if (!Transformed.Value)
+            return;
         Transformed.Value = false;
         if (player.CurrentCharacterID.Value != player.CrewmateCharacterID.Value)
-            player.ServerSetCharacterID(player.CrewmateCharacterID.Value);
+            player.SetCharacterIDServerRpc(player.CrewmateCharacterID.Value);
     }
 
     private void OnForceTransformUpdate(bool oldValue, bool newValue)
