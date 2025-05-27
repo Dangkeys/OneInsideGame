@@ -74,6 +74,26 @@ public class OneInsideLevelSystem : SingletonNetwork<OneInsideLevelSystem>
                 if (IsServer)
                 {
                     GamePlayTimer.Value = GamePlayingTimerMax;
+
+                    // Test
+                    // Timer.Create(10, (remainingTime) =>
+                    // {
+                    //     Debug.Log("GamePlayingTimer TimeLeft: " + remainingTime);
+                    // }, () =>
+                    // {
+                    //     Debug.Log("GamePlayingTimer Finished!");
+                    //     State.Value = GameState.FinishedAllQuest;
+                    // });
+                }
+                break;
+            case GameState.FinishedAllQuest:
+                if (IsServer)
+                {
+                    List<Player> allImposter = PlayerSystem.GetImposterPlayers();
+                    foreach (Player player in allImposter)
+                    {
+                        player.GetComponent<Imposter>().ForceTransform.Value = true;
+                    }
                 }
                 break;
             case GameState.CrewmateWin:

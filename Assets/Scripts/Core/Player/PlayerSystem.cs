@@ -196,6 +196,11 @@ public class PlayerSystem : NetworkBehaviour
         return GetAllPlayer(player => !player.GetComponent<Player>().IsAlive.Value && (includeSelf || !player.IsOwner));
     }
 
+    public static List<Player> GetImposterPlayers()
+    {
+        return GetAllPlayer(player => player.Role.Value == PlayerRole.Imposter);
+    }
+
     public static Player GetPlayerByClientId(ulong clientId)
     {
         return GetAllPlayer((player) => player.OwnerClientId == clientId)[0];

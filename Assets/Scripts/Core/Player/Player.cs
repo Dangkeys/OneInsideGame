@@ -73,10 +73,8 @@ public class Player : NetworkBehaviour
         {
             CrewmateCharacterID.Value = CharacterManager.Instance.DefaultCrewmateCharacter.ID;
             ImposterCharacterID.Value = CharacterManager.Instance.DefaultImposterCharacter.ID;
+            CurrentCharacterID.Value = CrewmateCharacterID.Value;
         }
-
-
-        CurrentCharacterID.Value = CrewmateCharacterID.Value;
 
         Role.OnValueChanged += OnRoleChanged;
         IsAlive.OnValueChanged += OnAliveChanged;
