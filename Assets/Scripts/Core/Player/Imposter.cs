@@ -20,6 +20,13 @@ public class Imposter : NetworkBehaviour
     public NetworkVariable<float> TransformationCooldownTime = new NetworkVariable<float>(DefaultPlayerConfig.Imposter.TRANSFORMATION_COOLDOWN_TIME);
     public NetworkVariable<float> TransformationTime = new NetworkVariable<float>(DefaultPlayerConfig.Imposter.TRANSFORMATION_TIME);
 
+    public NetworkVariable<float> AttackStunDuration = new NetworkVariable<float>(DefaultPlayerConfig.Imposter.ATTACK_STUN_DURATION);
+
+    public NetworkVariable<float> BasedAttackCooldown = new NetworkVariable<float>(DefaultPlayerConfig.Imposter.ATTACK_COOLDOWN);
+    public NetworkVariable<float> AttackCoolDown = new NetworkVariable<float>(DefaultPlayerConfig.Imposter.ATTACK_COOLDOWN);
+
+    public NetworkVariable<float> EndGameCoolDownFactor = new NetworkVariable<float>(DefaultPlayerConfig.Imposter.END_GAME_COOLDOWN_FACTOR);
+
     //--------------------------------------
     // Private Variables
     //--------------------------------------
@@ -33,8 +40,6 @@ public class Imposter : NetworkBehaviour
     private Timer serverTransformationCooldownTimer;
     private Timer serverTransformationActiveTimer;
 
-    private float attackStunDuration = DefaultPlayerConfig.Imposter.ATTACK_STUN_DURATION;
-    private float attackCoolDown = DefaultPlayerConfig.Imposter.ATTACK_COOLDOWN;
 
     //--------------------------------------
     // Initialization & Cleanup
@@ -57,7 +62,7 @@ public class Imposter : NetworkBehaviour
 
         if (IsServer)
         {
-            ForceTransform.OnValueChanged += OnForceTransformUpdate;
+            ForceTransform.OnValueChanged += OnServerForceTransformUpdate;
         }
     }
 
@@ -72,7 +77,7 @@ public class Imposter : NetworkBehaviour
 
         if (IsServer)
         {
-            ForceTransform.OnValueChanged -= OnForceTransformUpdate;
+            ForceTransform.OnValueChanged -= OnServerForceTransformUpdate;
         }
     }
 
@@ -98,10 +103,10 @@ public class Imposter : NetworkBehaviour
         playerState.SetAttacking(true);
         playerMovement.SetMovementBehavior(MovementBehaviour.STUNNING);
 
-        await Awaitable.WaitForSecondsAsync(attackStunDuration);
+        await Awaitable.WaitForSecondsAsync(AttackStunDuration.Value);
         playerMovement.SetMovementBehavior(MovementBehaviour.DEFAULT);
 
-        await Awaitable.WaitForSecondsAsync(attackCoolDown - attackStunDuration);
+        await Awaitable.WaitForSecondsAsync(AttackCoolDown.Value - AttackStunDuration.Value);
         playerState.SetAttacking(false);
     }
 
@@ -129,15 +134,17 @@ public class Imposter : NetworkBehaviour
             player.SetCharacterIDServerRpc(player.CrewmateCharacterID.Value);
     }
 
-    private void OnForceTransformUpdate(bool oldValue, bool newValue)
+    private void OnServerForceTransformUpdate(bool oldValue, bool newValue)
     {
         if (newValue)
         {
             EnableTransformed();
+            AttackCoolDown.Value = BasedAttackCooldown.Value * EndGameCoolDownFactor.Value;
         }
         else
         {
             DisableTransformed();
+            AttackCoolDown.Value = BasedAttackCooldown.Value;
         }
     }
 
@@ -232,7 +239,5 @@ public class Imposter : NetworkBehaviour
             localTransformationActiveTimer = null;
 
         }
-
-
     }
 }
