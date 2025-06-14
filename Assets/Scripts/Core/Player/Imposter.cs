@@ -20,10 +20,23 @@ public class Imposter : NetworkBehaviour
     public NetworkVariable<float> TransformationCooldownTime = new NetworkVariable<float>(DefaultPlayerConfig.Imposter.TRANSFORMATION_COOLDOWN_TIME);
     public NetworkVariable<float> TransformationTime = new NetworkVariable<float>(DefaultPlayerConfig.Imposter.TRANSFORMATION_TIME);
 
-    public NetworkVariable<float> AttackStunDuration = new NetworkVariable<float>(DefaultPlayerConfig.Imposter.ATTACK_STUN_DURATION);
+    public NetworkVariable<float> BasedAttackStunDuration = new NetworkVariable<float>(DefaultPlayerConfig.Imposter.ATTACK_STUN_DURATION,
+           NetworkVariableReadPermission.Everyone,
+           NetworkVariableWritePermission.Server
+    );
+    public NetworkVariable<float> AttackStunDuration = new NetworkVariable<float>(DefaultPlayerConfig.Imposter.ATTACK_STUN_DURATION,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
 
-    public NetworkVariable<float> BasedAttackCooldown = new NetworkVariable<float>(DefaultPlayerConfig.Imposter.ATTACK_COOLDOWN);
-    public NetworkVariable<float> AttackCoolDown = new NetworkVariable<float>(DefaultPlayerConfig.Imposter.ATTACK_COOLDOWN);
+    public NetworkVariable<float> BasedAttackCooldown = new NetworkVariable<float>(DefaultPlayerConfig.Imposter.ATTACK_COOLDOWN,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
+    public NetworkVariable<float> AttackCoolDown = new NetworkVariable<float>(DefaultPlayerConfig.Imposter.ATTACK_COOLDOWN,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
 
     public NetworkVariable<float> EndGameCoolDownFactor = new NetworkVariable<float>(DefaultPlayerConfig.Imposter.END_GAME_COOLDOWN_FACTOR);
 
@@ -139,11 +152,13 @@ public class Imposter : NetworkBehaviour
         if (newValue)
         {
             EnableTransformed();
+            AttackStunDuration.Value = BasedAttackStunDuration.Value * EndGameCoolDownFactor.Value;
             AttackCoolDown.Value = BasedAttackCooldown.Value * EndGameCoolDownFactor.Value;
         }
         else
         {
             DisableTransformed();
+            AttackStunDuration.Value = BasedAttackStunDuration.Value;
             AttackCoolDown.Value = BasedAttackCooldown.Value;
         }
     }
