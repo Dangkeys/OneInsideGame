@@ -33,12 +33,15 @@ public class Imposter : NetworkBehaviour
         NetworkVariableReadPermission.Everyone,
         NetworkVariableWritePermission.Server
     );
-    public NetworkVariable<float> AttackCoolDown = new NetworkVariable<float>(DefaultPlayerConfig.Imposter.ATTACK_COOLDOWN,
+    public NetworkVariable<float> AttackCooldown = new NetworkVariable<float>(DefaultPlayerConfig.Imposter.ATTACK_COOLDOWN,
         NetworkVariableReadPermission.Everyone,
         NetworkVariableWritePermission.Server
     );
 
     public NetworkVariable<float> EndGameCoolDownFactor = new NetworkVariable<float>(DefaultPlayerConfig.Imposter.END_GAME_COOLDOWN_FACTOR);
+
+    public Timer ServerTransformationCooldownTimer;
+    public Timer ServerTransformationActiveTimer;
 
     //--------------------------------------
     // Private Variables
@@ -49,9 +52,6 @@ public class Imposter : NetworkBehaviour
 
     private Timer localTransformationCooldownTimer;
     private Timer localTransformationActiveTimer;
-
-    private Timer serverTransformationCooldownTimer;
-    private Timer serverTransformationActiveTimer;
 
 
     //--------------------------------------
@@ -119,7 +119,7 @@ public class Imposter : NetworkBehaviour
         await Awaitable.WaitForSecondsAsync(AttackStunDuration.Value);
         playerMovement.SetMovementBehavior(MovementBehaviour.DEFAULT);
 
-        await Awaitable.WaitForSecondsAsync(AttackCoolDown.Value - AttackStunDuration.Value);
+        await Awaitable.WaitForSecondsAsync(AttackCooldown.Value - AttackStunDuration.Value);
         playerState.SetAttacking(false);
     }
 
@@ -127,39 +127,45 @@ public class Imposter : NetworkBehaviour
     // Transformation Methods
     //--------------------------------------
 
-    void EnableTransformed()
+    void EnableTransformed(Player player)
     {
-        serverTransformationCooldownTimer?.Cancel();
-        serverTransformationActiveTimer?.Cancel();
+        Imposter imposter = player.GetComponent<Imposter>();
+
+        imposter.ServerTransformationCooldownTimer?.Cancel();
+        imposter.ServerTransformationActiveTimer?.Cancel();
         Transformed.Value = true;
+        Debug.Log("Transformed");
+        Debug.Log(player.CurrentCharacterID.Value != player.ImposterCharacterID.Value);
         if (player.CurrentCharacterID.Value != player.ImposterCharacterID.Value)
-            player.SetCharacterIDServerRpc(player.ImposterCharacterID.Value);
+            player.ServerSetCharacterID(player, player.ImposterCharacterID.Value);
     }
 
-    void DisableTransformed()
+    void DisableTransformed(Player player)
     {
-        serverTransformationActiveTimer?.Cancel();
-        serverTransformationActiveTimer = null;
+        Imposter imposter = player.GetComponent<Imposter>();
+
+        imposter.ServerTransformationActiveTimer?.Cancel();
+        imposter.ServerTransformationActiveTimer = null;
         if (!Transformed.Value)
             return;
         Transformed.Value = false;
         if (player.CurrentCharacterID.Value != player.CrewmateCharacterID.Value)
-            player.SetCharacterIDServerRpc(player.CrewmateCharacterID.Value);
+            player.ServerSetCharacterID(player, player.CrewmateCharacterID.Value);
     }
 
     private void OnServerForceTransformUpdate(bool oldValue, bool newValue)
     {
         if (newValue)
         {
-            EnableTransformed();
+            EnableTransformed(player);
             AttackStunDuration.Value = BasedAttackStunDuration.Value * EndGameCoolDownFactor.Value;
-            AttackCoolDown.Value = BasedAttackCooldown.Value * EndGameCoolDownFactor.Value;
+            AttackCooldown.Value = BasedAttackCooldown.Value * EndGameCoolDownFactor.Value;
         }
         else
         {
-            DisableTransformed();
+            DisableTransformed(player);
             AttackStunDuration.Value = BasedAttackStunDuration.Value;
-            AttackCoolDown.Value = BasedAttackCooldown.Value;
+            AttackCooldown.Value = BasedAttackCooldown.Value;
         }
     }
 
@@ -180,7 +186,11 @@ public class Imposter : NetworkBehaviour
     [ServerRpc]
     private void ToggleTransformationServerRpc(ServerRpcParams rpcParams = default)
     {
-        if (player.Role.Value != PlayerRole.Imposter || !player.GetComponent<PlayerState>().IsCanMove() || ForceTransform.Value)
+        Debug.Log(rpcParams.Receive.SenderClientId);
+        Player thisPlayer = PlayerSystem.GetPlayerByClientId(rpcParams.Receive.SenderClientId);
+        Imposter thisImposter = thisPlayer.GetComponent<Imposter>();
+
+        if (thisPlayer.Role.Value != PlayerRole.Imposter || !thisPlayer.GetComponent<PlayerState>().IsCanMove() || thisImposter.ForceTransform.Value)
             return;
 
         if (!Transformed.Value)
@@ -188,23 +198,24 @@ public class Imposter : NetworkBehaviour
             if (!CanTransformed.Value)
                 return;
 
-            EnableTransformed();
+            EnableTransformed(thisPlayer);
             CanTransformed.Value = false;
 
-            serverTransformationCooldownTimer = Timer.Create(TransformationCooldownTime.Value, null, () =>
-                    {
-                        CanTransformed.Value = true;
-                        serverTransformationCooldownTimer = null;
-                    });
-            serverTransformationActiveTimer = Timer.Create(TransformationActiveTime.Value, null, () =>
+            thisImposter.ServerTransformationCooldownTimer = Timer.Create(TransformationCooldownTime.Value, null, () =>
             {
-                DisableTransformed();
-                serverTransformationActiveTimer = null;
+                CanTransformed.Value = true;
+                ServerTransformationCooldownTimer = null;
+            });
+
+            thisImposter.ServerTransformationActiveTimer = Timer.Create(TransformationActiveTime.Value, null, () =>
+            {
+                DisableTransformed(thisPlayer);
+                thisImposter.ServerTransformationActiveTimer = null;
             });
         }
         else
         {
-            DisableTransformed();
+            DisableTransformed(thisPlayer);
         }
     }
 
@@ -232,7 +243,7 @@ public class Imposter : NetworkBehaviour
 
             localTransformationCooldownTimer = Timer.Create(TransformationCooldownTime.Value, (remainingTime) =>
             {
-                Debug.Log("Transformation Cooldown TimeLeft: " + remainingTime);
+                // Debug.Log("Transformation Cooldown TimeLeft: " + remainingTime);
             }, () =>
             {
                 Debug.Log("Transformation Cooldown Finished!");
@@ -241,7 +252,7 @@ public class Imposter : NetworkBehaviour
 
             localTransformationActiveTimer = Timer.Create(TransformationActiveTime.Value, (remainingTime) =>
             {
-                Debug.Log("Transformation Active TimeLeft: " + remainingTime);
+                // Debug.Log("Transformation Active TimeLeft: " + remainingTime);
             }, () =>
             {
                 Debug.Log("Transformation Active Finished!");

@@ -76,14 +76,14 @@ public class OneInsideLevelSystem : SingletonNetwork<OneInsideLevelSystem>
                     GamePlayTimer.Value = GamePlayingTimerMax;
 
                     // Test
-                    Timer.Create(10, (remainingTime) =>
-                    {
-                        Debug.Log("GamePlayingTimer TimeLeft: " + remainingTime);
-                    }, () =>
-                    {
-                        Debug.Log("GamePlayingTimer Finished!");
-                        State.Value = GameState.FinishedAllQuest;
-                    });
+                    // Timer.Create(10, (remainingTime) =>
+                    // {
+                    //     // Debug.Log("GamePlayingTimer TimeLeft: " + remainingTime);
+                    // }, () =>
+                    // {
+                    //     Debug.Log("GamePlayingTimer Finished!");
+                    //     State.Value = GameState.FinishedAllQuest;
+                    // });
                 }
                 break;
             case GameState.FinishedAllQuest:
