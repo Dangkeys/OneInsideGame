@@ -78,7 +78,7 @@ public class OneInsideLevelSystem : SingletonNetwork<OneInsideLevelSystem>
                     // Test
                     // Timer.Create(10, (remainingTime) =>
                     // {
-                    //     Debug.Log("GamePlayingTimer TimeLeft: " + remainingTime);
+                    //     // Debug.Log("GamePlayingTimer TimeLeft: " + remainingTime);
                     // }, () =>
                     // {
                     //     Debug.Log("GamePlayingTimer Finished!");
@@ -92,7 +92,8 @@ public class OneInsideLevelSystem : SingletonNetwork<OneInsideLevelSystem>
                     List<Player> allImposter = PlayerSystem.GetImposterPlayers();
                     foreach (Player player in allImposter)
                     {
-                        player.GetComponent<Imposter>().ForceTransform.Value = true;
+                        var playerImposter = player.GetComponent<Imposter>();
+                        playerImposter.ForceTransform.Value = true;
                     }
                 }
                 break;

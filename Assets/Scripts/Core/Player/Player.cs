@@ -24,10 +24,19 @@ public class Player : NetworkBehaviour
     public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>(PlayerRole.None);
 
     [Header("Characters")]
-    public NetworkVariable<FixedString64Bytes> CrewmateCharacterID = new NetworkVariable<FixedString64Bytes>();
-    public NetworkVariable<FixedString64Bytes> ImposterCharacterID = new NetworkVariable<FixedString64Bytes>();
+    public NetworkVariable<FixedString64Bytes> CrewmateCharacterID = new NetworkVariable<FixedString64Bytes>("",
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
+    public NetworkVariable<FixedString64Bytes> ImposterCharacterID = new NetworkVariable<FixedString64Bytes>("",
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
 
-    public NetworkVariable<FixedString64Bytes> CurrentCharacterID = new NetworkVariable<FixedString64Bytes>();
+    public NetworkVariable<FixedString64Bytes> CurrentCharacterID = new NetworkVariable<FixedString64Bytes>("",
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
 
 
     public static event Action OnAnyPlayerDeath;
@@ -132,15 +141,15 @@ public class Player : NetworkBehaviour
         CharacterManager.Instance.ChangeCharacterServerRpc(newValue.ToString());
     }
 
-    [ServerRpc]
-    public void SetCharacterIDServerRpc(FixedString64Bytes character)
-    {
-        CurrentCharacterID.Value = character;
-    }
+    // [ServerRpc]
+    // public void SetCharacterIDServerRpc(FixedString64Bytes character)
+    // {
+    //     CurrentCharacterID.Value = character;
+    // }
 
-    public void ServerSetCharacterID(FixedString64Bytes newValue)
+    public void ServerSetCharacterID(Player player, FixedString64Bytes newValue)
     {
-        CharacterManager.Instance.ChangeCharacterClientRpc(OwnerClientId, newValue.ToString(), Character.SearchType.Default);
+        CharacterManager.Instance.ChangeCharacterClientRpc(player.OwnerClientId, newValue.ToString(), Character.SearchType.Default);
     }
 
 
