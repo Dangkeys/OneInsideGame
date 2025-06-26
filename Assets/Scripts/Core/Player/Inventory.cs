@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Unity.Netcode;
 using UnityEngine;
 
 public class Inventory
-{ 
+{
     public bool IsFull = false;
     private List<Item> itemList = new List<Item>();
     public static event Action<Inventory> OnRefreshInventory;
@@ -71,6 +72,19 @@ public class Inventory
     
         itemList.Add(new Item { IType = Item.ItemType.ItemA });
         OnRefreshInventory?.Invoke(this);
+    }
+
+    public Item.ItemType DropItem()
+    {
+        if (itemList.Count > 0)
+        {
+            Item.ItemType itemToDrop = itemList[itemList.Count - 1].IType;
+            itemList.RemoveAt(itemList.Count - 1);
+            OnRefreshInventory?.Invoke(this);
+
+            return itemToDrop;
+        }
+        return Item.ItemType.None;
     }
 
     public List<Item> GetItemList()

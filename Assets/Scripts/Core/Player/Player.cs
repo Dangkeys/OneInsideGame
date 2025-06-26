@@ -1,4 +1,6 @@
 using System;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using OneInside.Constants;
 using Unity.Cinemachine;
 using Unity.Collections;
@@ -39,6 +41,8 @@ public class Player : NetworkBehaviour
     private PlayerSystem playerManager;
     private Imposter imposter;
     public Inventory Inventory;
+    [SerializeField] private ItemCollectionSO itemCollection;
+    private GameObject dropHitbox;
     public AbilityDataSO AbilityData { get; private set; }
     public event Action OnAbilityDataChanged;
 
@@ -81,7 +85,8 @@ public class Player : NetworkBehaviour
         Role.OnValueChanged += OnRoleChanged;
         IsAlive.OnValueChanged += OnAliveChanged;
 
-        Crafting.OnCraftItemA += CraftItemA;
+        InventoryEdit.OnCraftItemA += CraftItemA;
+        InventoryEdit.OnDropItem += DropItem;
 
 
 
@@ -344,12 +349,50 @@ public class Player : NetworkBehaviour
     }
 
     //--------------------------------------
-    // Crafting Handling
+    // Inventory Editting Handling
     //--------------------------------------
 
     private void CraftItemA()
     {
         Inventory.CraftItemA();
+    }
+
+    private void DropItem()
+    {
+        NetworkObject itemToDrop = null;
+        Item.ItemType droppedItem = Inventory.DropItem();
+        if(droppedItem != Item.ItemType.None)
+        {
+            switch (droppedItem)
+            {
+                case Item.ItemType.IngredientA:
+                    itemToDrop = itemCollection.Ingredients[0];
+                    break;
+                case Item.ItemType.IngredientB:
+                    itemToDrop = itemCollection.Ingredients[1];
+                    break;
+                case Item.ItemType.IngredientC:
+                    itemToDrop = itemCollection.Ingredients[2];
+                    break;
+                case Item.ItemType.IngredientD:
+                    itemToDrop = itemCollection.Ingredients[3];
+                    break;
+                case Item.ItemType.IngredientE:
+                    itemToDrop = itemCollection.Ingredients[4];
+                    break;
+                case Item.ItemType.ItemA:
+                    itemToDrop = itemCollection.Items[0];
+                    break;
+                case Item.ItemType.ItemB:
+                    itemToDrop = itemCollection.Items[1];
+                    break;
+                case Item.ItemType.ItemC:
+                    itemToDrop = itemCollection.Items[2];
+                    break;
+            }
+            NetworkObject itemObject = Instantiate(itemToDrop, dropHitbox.transform.position, Quaternion.identity);
+            itemObject.GetComponent<NetworkObject>().Spawn();
+        }
     }
 
 

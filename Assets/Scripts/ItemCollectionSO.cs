@@ -4,7 +4,8 @@ using UnityEngine;
 
 [CreateAssetMenu(fileName = "ItemCollectionSO", menuName = "ScriptableObjects/Items")]
 
-public class ItemCollectionSO: ScriptableObject
+public class ItemCollectionSO : ScriptableObject
 {
-    [field: SerializeField] public List<NetworkObject> Ingredients {get; private set; }
+    [field: SerializeField] public List<NetworkObject> Ingredients { get; private set; }
+    [field: SerializeField] public List<NetworkObject> Items { get; private set; }
 }

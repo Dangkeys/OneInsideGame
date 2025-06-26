@@ -5,7 +5,7 @@ using Unity.VisualScripting;
 public class SpawnIngredient : NetworkBehaviour
 {
     [field: SerializeField] public ItemCollectionSO IngredientCollection { get; private set; }
-    [field: SerializeField] public Transform SpawnPointArray {get; private set; }
+    [field: SerializeField] public Transform SpawnPointArray { get; private set; }
     public override void OnNetworkSpawn()
     {
         if (IsServer)
@@ -24,11 +24,11 @@ public class SpawnIngredient : NetworkBehaviour
                 var instance = Instantiate(ingredientPrefab, spawnPoint.position, Quaternion.identity);
 
                 var instanceNetworkObject = instance.GetComponent<NetworkObject>();
-               instanceNetworkObject.Spawn();
+                instanceNetworkObject.Spawn();
 
                 j++;
             }
         }
     }
-
+    
 }

@@ -28,14 +28,5 @@ public class UIInventory : NetworkBehaviour
             }
         }
         
-        // int i=0;
-        // foreach (Item item in inv.GetItemList())
-        // {
-        //     if(item != null)
-        //     {
-        //         ItemSlots[i].GetComponent<Image>().sprite = item.GetSprite(); //Set the item in the slot
-        //         i++;
-        //     }
-        // }
     }
 }

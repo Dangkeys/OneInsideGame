@@ -4,6 +4,7 @@ public class Item
 {
     public enum ItemType
     {
+        None,
         IngredientA,
         IngredientB,
         IngredientC,
