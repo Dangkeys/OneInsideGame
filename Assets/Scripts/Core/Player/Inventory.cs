@@ -10,14 +10,9 @@ public class Inventory
     private List<Item> itemList = new List<Item>();
     public static event Action<Inventory> OnRefreshInventory;
 
-    public Inventory()
-    {
-        
-    }
-
     public void AddItem(Item item)
     {
-        if(itemList.Count > 5)
+        if(itemList.Count >= 5)
         {
             Debug.Log("Inventory is full!");
             IsFull = true;

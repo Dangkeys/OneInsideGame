@@ -23,7 +23,7 @@ public class SpawnIngredient : NetworkBehaviour
 
                 var instance = Instantiate(ingredientPrefab, spawnPoint.position, Quaternion.identity);
 
-                var instanceNetworkObject = instance.GetComponent<NetworkObject>();
+                NetworkObject instanceNetworkObject = instance.GetComponent<NetworkObject>();
                 instanceNetworkObject.Spawn();
 
                 j++;

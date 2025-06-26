@@ -41,8 +41,8 @@ public class Player : NetworkBehaviour
     private PlayerSystem playerManager;
     private Imposter imposter;
     public Inventory Inventory;
-    [SerializeField] private ItemCollectionSO itemCollection;
-    private GameObject dropHitbox;
+    [SerializeField] ItemCollectionSO itemCollection;
+    [SerializeField] GameObject dropHitbox;
     public AbilityDataSO AbilityData { get; private set; }
     public event Action OnAbilityDataChanged;
 
@@ -361,7 +361,7 @@ public class Player : NetworkBehaviour
     {
         NetworkObject itemToDrop = null;
         Item.ItemType droppedItem = Inventory.DropItem();
-        if(droppedItem != Item.ItemType.None)
+        if (droppedItem != Item.ItemType.None)
         {
             switch (droppedItem)
             {
@@ -390,8 +390,16 @@ public class Player : NetworkBehaviour
                     itemToDrop = itemCollection.Items[2];
                     break;
             }
+
             NetworkObject itemObject = Instantiate(itemToDrop, dropHitbox.transform.position, Quaternion.identity);
-            itemObject.GetComponent<NetworkObject>().Spawn();
+            if (itemObject.TryGetComponent<NetworkObject>(out NetworkObject networkObject))
+            {
+                networkObject.Spawn();
+            }
+            else
+            {
+                Debug.LogError("Dropped item does not have an Item component.");
+            }
         }
     }
 
