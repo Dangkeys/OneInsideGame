@@ -16,6 +16,7 @@ public class HitboxUtilities : MonoBehaviour
         public string Tag { get; set; } = null;
         public ColliderType Type { get; set; } = ColliderType.Any; // "Type" instead of "ColliderType"
         public Collider[] Exclude { get; set; } = null; // Colliders to exclude
+        public GameObject[] ExcludeGameObjects { get; set; } = null; // GameObjects to exclude
     }
 
     //----------------------------------------------------------------------------------------
@@ -29,6 +30,24 @@ public class HitboxUtilities : MonoBehaviour
     {
         List<Collider> touchingColliders = new List<Collider>();
         HashSet<Collider> excludeSet = parameters.Exclude != null ? new HashSet<Collider>(parameters.Exclude) : null;
+        HashSet<GameObject> excludeGameObjectSet = new HashSet<GameObject>();
+        if (parameters.Exclude != null)
+        {
+            foreach (Collider excludedCollider in parameters.Exclude)
+            {
+                if (excludedCollider != null)
+                {
+                    if (excludedCollider is CharacterController)
+                    {
+                        excludeGameObjectSet.Add(excludedCollider.gameObject);
+                    }
+                    else
+                    {
+                        excludeSet.Add(excludedCollider);
+                    }
+                }
+            }
+        }
 
         foreach (BoxCollider hitbox in parameters.Hitboxs)
         {
@@ -40,10 +59,11 @@ public class HitboxUtilities : MonoBehaviour
             foreach (Collider collider in colliders)
             {
                 if (collider != hitbox &&
-                    (excludeSet == null || !excludeSet.Contains(collider)) && // Exclude check
+                    (excludeSet == null || !excludeSet.Contains(collider)) &&
+                    (parameters.ExcludeGameObjects == null || !IsGameObjectInExcludeList(collider.gameObject, parameters.ExcludeGameObjects)) &&
+                    (!excludeGameObjectSet.Contains(collider.gameObject)) &&
                     (string.IsNullOrEmpty(parameters.Tag) || collider.CompareTag(parameters.Tag)))
                 {
-                    // Filter by collider type
                     if (parameters.Type == ColliderType.Any ||
                         (parameters.Type == ColliderType.CharacterController && collider.GetComponent<CharacterController>() != null) ||
                         (parameters.Type == ColliderType.Other && collider.GetComponent<CharacterController>() == null))
@@ -108,4 +128,16 @@ public class HitboxUtilities : MonoBehaviour
     }
 
     //----------------------------------------------------------------------------------------
+
+    private static bool IsGameObjectInExcludeList(GameObject target, GameObject[] excludeList)
+    {
+        foreach (GameObject go in excludeList)
+        {
+            if (target == go)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }

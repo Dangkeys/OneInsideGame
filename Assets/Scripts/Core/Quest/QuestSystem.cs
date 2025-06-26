@@ -108,7 +108,7 @@ public class QuestSystem : NetworkBehaviour
             scoreBar.size = percent;
             if(percent >= 1)
             {
-                Debug.Log("Win");
+                OneInsideLevelSystem.Instance.SetIsEndGameCollapse(true);
             }
         }
         else

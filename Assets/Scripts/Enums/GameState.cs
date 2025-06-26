@@ -1,6 +1,8 @@
-   public enum GameState
-    {
-        WaitingToStart,
-        GamePlaying,
-        GameOver,
-    }
+public enum GameState
+{
+    WaitingToStart,
+    GamePlaying,
+    FinishedAllQuest,
+    CrewmateWin,
+    ImposterWin,
+}

@@ -276,6 +276,7 @@ GameObject:
   - component: {fileID: 7815416263655673313}
   - component: {fileID: 1558291385074665207}
   - component: {fileID: 4824826090655842994}
+  - component: {fileID: 1146399031114656589}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -899,6 +900,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+--- !u!136 &1146399031114656589
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 837731845563932383}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 2.4420962
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.7210481, z: 0}
 --- !u!1 &1276935818764176119
 GameObject:
   m_ObjectHideFlags: 0
@@ -2766,7 +2790,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5586246770640912673}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.04673969, y: 0.8675118, z: -0.08305426, w: -0.48820162}
+  m_LocalRotation: {x: -0.046823587, y: 0.8672097, z: -0.083085366, w: -0.48872465}
   m_LocalPosition: {x: 2.638482, y: 2.0954895, z: 1.6018139}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
