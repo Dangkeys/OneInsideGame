@@ -589,6 +589,7 @@ MonoBehaviour:
   <Hitbox>k__BackingField: {fileID: 3435790326839173604}
   <CharacterController>k__BackingField: {fileID: 4450134948998468091}
   <PlayerMovement>k__BackingField: {fileID: 295962568890882461}
+  handHitbox: {fileID: 4950377500501009888}
   <SpectatorMaterial>k__BackingField: {fileID: 2100000, guid: 820158f1bc8fa7a4faa58682e23b1cee, type: 2}
   <PlayerVisual>k__BackingField: {fileID: 8896104640911753412}
   IsAlive:
@@ -865,12 +866,26 @@ MonoBehaviour:
     m_InternalValue: 1
   Transformed:
     m_InternalValue: 0
+  ForceTransform:
+    m_InternalValue: 0
   TransformationActiveTime:
     m_InternalValue: 10
   TransformationCooldownTime:
     m_InternalValue: 20
   TransformationTime:
     m_InternalValue: 0.5
+  BasedAttackStunDuration:
+    m_InternalValue: 1.5
+  AttackStunDuration:
+    m_InternalValue: 1.5
+  BasedAttackCooldown:
+    m_InternalValue: 2
+  AttackCooldown:
+    m_InternalValue: 2
+  EndGameCoolDownFactor:
+    m_InternalValue: 0.5
+  ServerTransformationCooldownTimer: {fileID: 0}
+  ServerTransformationActiveTimer: {fileID: 0}
 --- !u!114 &1558291385074665207
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2790,7 +2805,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5586246770640912673}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.046823587, y: 0.8672097, z: -0.083085366, w: -0.48872465}
+  m_LocalRotation: {x: -0.04673969, y: 0.8675118, z: -0.0830543, w: -0.48820156}
   m_LocalPosition: {x: 2.638482, y: 2.0954895, z: 1.6018139}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0

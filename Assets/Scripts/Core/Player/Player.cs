@@ -16,6 +16,7 @@ public class Player : NetworkBehaviour
     [field: SerializeField] public GameObject Hitbox { get; private set; }
     [field: SerializeField] public CharacterController CharacterController { get; private set; }
     [field: SerializeField] public PlayerMovement PlayerMovement { get; private set; }
+    [SerializeField] GameObject handHitbox;
 
     [Header("Spectator")]
     [field: SerializeField] public Material SpectatorMaterial { get; private set; }
@@ -62,6 +63,7 @@ public class Player : NetworkBehaviour
 
     private float pokeStunDuration = DefaultPlayerConfig.Player.POKE_STUN_DURATION;
     private float pokeCoolDown = DefaultPlayerConfig.Player.POKE_COOLDOWN;
+    
 
     //--------------------------------------
     // Unity Lifecycle Methods
@@ -98,6 +100,13 @@ public class Player : NetworkBehaviour
         InventoryEdit.OnCraftItemA += CraftItemA;
         InventoryEdit.OnDropItem += DropItem;
 
+        InputReader.Hold2ndItem += HoldItemBySlot;
+        InputReader.Hold3rdItem += HoldItemBySlot;
+        InputReader.Hold4thItem += HoldItemBySlot;
+        InputReader.Hold5thItem += HoldItemBySlot;
+        InputReader.Hold1stItem += HoldItemBySlot;
+
+        Inventory.OnRefreshInventory += ForceHoldItem;
 
 
         if (!IsOwner)
@@ -368,39 +377,44 @@ public class Player : NetworkBehaviour
         Inventory.CraftItemA();
     }
 
+    public NetworkObject GetNetworkObjectFromIType(Item.ItemType itype)
+    {
+        switch (itype)
+        {
+            case Item.ItemType.IngredientA:
+                return itemCollection.Ingredients[0];
+            case Item.ItemType.IngredientB:
+                return itemCollection.Ingredients[1];
+            case Item.ItemType.IngredientC:
+                return itemCollection.Ingredients[2];
+            case Item.ItemType.IngredientD:
+                return itemCollection.Ingredients[3];
+            case Item.ItemType.IngredientE:
+                return itemCollection.Ingredients[4];
+            case Item.ItemType.ItemA:
+                return itemCollection.Items[0];
+            case Item.ItemType.ItemB:
+                return itemCollection.Items[1];
+            case Item.ItemType.ItemC:
+                return itemCollection.Items[2];
+        }
+        return itemCollection.PlaceHolder;
+    }
+
+    private void ClearHand()
+    {
+        foreach(Transform child in handHitbox.transform){
+            Destroy(child.gameObject);
+        }
+    }
+
     private void DropItem()
     {
         NetworkObject itemToDrop = null;
         Item.ItemType droppedItem = Inventory.DropItem();
         if (droppedItem != Item.ItemType.None)
         {
-            switch (droppedItem)
-            {
-                case Item.ItemType.IngredientA:
-                    itemToDrop = itemCollection.Ingredients[0];
-                    break;
-                case Item.ItemType.IngredientB:
-                    itemToDrop = itemCollection.Ingredients[1];
-                    break;
-                case Item.ItemType.IngredientC:
-                    itemToDrop = itemCollection.Ingredients[2];
-                    break;
-                case Item.ItemType.IngredientD:
-                    itemToDrop = itemCollection.Ingredients[3];
-                    break;
-                case Item.ItemType.IngredientE:
-                    itemToDrop = itemCollection.Ingredients[4];
-                    break;
-                case Item.ItemType.ItemA:
-                    itemToDrop = itemCollection.Items[0];
-                    break;
-                case Item.ItemType.ItemB:
-                    itemToDrop = itemCollection.Items[1];
-                    break;
-                case Item.ItemType.ItemC:
-                    itemToDrop = itemCollection.Items[2];
-                    break;
-            }
+            itemToDrop = GetNetworkObjectFromIType(droppedItem);
 
             NetworkObject itemObject = Instantiate(itemToDrop, dropHitbox.transform.position, Quaternion.identity);
             if (itemObject.TryGetComponent<NetworkObject>(out NetworkObject networkObject))
@@ -412,6 +426,18 @@ public class Player : NetworkBehaviour
                 Debug.LogError("Dropped item does not have an Item component.");
             }
         }
+    }
+
+    private void HoldItemBySlot(int slotNum)
+    {
+        ClearHand();
+        var itemToHold = Inventory.GetItemFromSlot(slotNum);
+        MeshRenderer item = Instantiate(GetNetworkObjectFromIType(itemToHold).GetComponent<MeshRenderer>(), handHitbox.transform); //Create object at handSlot
+    }
+
+    private void ForceHoldItem(Inventory inv) //Forced player to hold the first item after inventory refresh
+    {
+        HoldItemBySlot(1);
     }
 
 

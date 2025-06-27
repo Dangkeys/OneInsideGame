@@ -8,4 +8,5 @@ public class ItemCollectionSO : ScriptableObject
 {
     [field: SerializeField] public List<NetworkObject> Ingredients { get; private set; }
     [field: SerializeField] public List<NetworkObject> Items { get; private set; }
+    [SerializeField] public NetworkObject PlaceHolder;
 }

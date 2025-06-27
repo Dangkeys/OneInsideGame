@@ -121,6 +121,51 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Hold1stItem",
+                    "type": "Button",
+                    "id": "c4bbec8f-1ae3-4f8f-a18f-3ed64991d970",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Hold2ndItem",
+                    "type": "Button",
+                    "id": "358c06e4-5654-4616-9900-485a59f0accc",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Hold3rdItem",
+                    "type": "Button",
+                    "id": "bebdc870-3786-448e-96f6-d4f947949b79",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Hold4thItem",
+                    "type": "Button",
+                    "id": "434ac503-aca7-40c4-8018-a6598ff46b9f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Hold5thItem",
+                    "type": "Button",
+                    "id": "e4e7ef1d-7a08-4a30-acfb-d6e1677fdf10",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -572,6 +617,61 @@
                     "processors": "",
                     "groups": "",
                     "action": "UseAbility",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6cd6aeac-3331-4d9f-830c-85bdcedb3490",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Hold1stItem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7d592664-8d08-4b1c-aee5-4c0cf5a9109a",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Hold3rdItem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e772dcad-e33c-4e75-83ec-97cb01079d49",
+                    "path": "<Keyboard>/4",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Hold4thItem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a62ea7b5-97aa-43f6-866d-d25d428a1989",
+                    "path": "<Keyboard>/5",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Hold5thItem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "036186b9-a4a2-4016-b0cd-b58408dcbf2e",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Hold2ndItem",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

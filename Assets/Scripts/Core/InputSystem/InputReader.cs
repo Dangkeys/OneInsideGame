@@ -19,7 +19,11 @@ public class InputReader : Singleton<InputReader>, IPlayerActions
     public Action OpenSabotageUIEvent;
 
     public Action UseAbilityEvent;
-
+    public static Action<int> Hold1stItem;
+    public static Action<int> Hold2ndItem;
+    public static Action<int> Hold3rdItem;
+    public static Action<int> Hold4thItem;
+    public static Action<int> Hold5thItem;
     private void Start()
     {
         Initialize();
@@ -135,7 +139,8 @@ public class InputReader : Singleton<InputReader>, IPlayerActions
 
     public void OnOpenSabotageWindow(InputAction.CallbackContext context)
     {
-        if(context.started){
+        if (context.started)
+        {
             OpenSabotageUIEvent?.Invoke();
         }
     }
@@ -145,6 +150,46 @@ public class InputReader : Singleton<InputReader>, IPlayerActions
         if (context.performed)
         {
             UseAbilityEvent?.Invoke();
+        }
+    }
+
+    public void OnHold1stItem(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            Hold1stItem?.Invoke(1);
+        }
+    }
+
+    public void OnHold2ndItem(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            Hold2ndItem?.Invoke(2);
+        }
+    }
+
+    public void OnHold3rdItem(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            Hold3rdItem?.Invoke(3);
+        }
+    }
+
+    public void OnHold4thItem(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            Hold4thItem?.Invoke(4);
+        }
+    }
+    
+    public void OnHold5thItem(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            Hold5thItem?.Invoke(5);
         }
     }
 }

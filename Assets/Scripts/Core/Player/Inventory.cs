@@ -12,7 +12,7 @@ public class Inventory
 
     public void AddItem(Item item)
     {
-        if(itemList.Count >= 5)
+        if (itemList.Count >= 5)
         {
             Debug.Log("Inventory is full!");
             IsFull = true;
@@ -21,7 +21,8 @@ public class Inventory
         itemList.Add(item);
         OnRefreshInventory?.Invoke(this);
     }
-    public void CraftItemA(){
+    public void CraftItemA()
+    {
 
         bool hasIngredientA = false;
         bool hasIngredientB = false;
@@ -42,7 +43,7 @@ public class Inventory
                 break;
             }
         }
-        if(hasIngredientA == false || hasIngredientB == false)
+        if (hasIngredientA == false || hasIngredientB == false)
         {
             return;
         }
@@ -64,7 +65,7 @@ public class Inventory
                 break;
             }
         }
-    
+
         itemList.Add(new Item { IType = Item.ItemType.ItemA });
         OnRefreshInventory?.Invoke(this);
     }
@@ -85,5 +86,21 @@ public class Inventory
     public List<Item> GetItemList()
     {
         return itemList;
+    }
+
+    public Item.ItemType GetItemFromSlot(int slotNum)
+    {
+        if (slotNum > 0 && slotNum <= 5)
+        {
+            if (slotNum <= itemList.Count)
+            {
+                return itemList[slotNum - 1].IType;
+            }
+            return Item.ItemType.None;
+        }
+        else
+        {
+            return Item.ItemType.None;
+        }
     }
 }

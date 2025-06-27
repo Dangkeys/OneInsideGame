@@ -16,4 +16,5 @@ public class InventoryEdit : NetworkBehaviour
     {
         OnDropItem?.Invoke();
     }
+    
 }

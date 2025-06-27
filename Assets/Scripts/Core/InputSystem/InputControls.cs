@@ -207,6 +207,51 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Hold1stItem"",
+                    ""type"": ""Button"",
+                    ""id"": ""c4bbec8f-1ae3-4f8f-a18f-3ed64991d970"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Hold2ndItem"",
+                    ""type"": ""Button"",
+                    ""id"": ""358c06e4-5654-4616-9900-485a59f0accc"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Hold3rdItem"",
+                    ""type"": ""Button"",
+                    ""id"": ""bebdc870-3786-448e-96f6-d4f947949b79"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Hold4thItem"",
+                    ""type"": ""Button"",
+                    ""id"": ""434ac503-aca7-40c4-8018-a6598ff46b9f"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Hold5thItem"",
+                    ""type"": ""Button"",
+                    ""id"": ""e4e7ef1d-7a08-4a30-acfb-d6e1677fdf10"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -658,6 +703,61 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""UseAbility"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6cd6aeac-3331-4d9f-830c-85bdcedb3490"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Hold1stItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7d592664-8d08-4b1c-aee5-4c0cf5a9109a"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Hold3rdItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e772dcad-e33c-4e75-83ec-97cb01079d49"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Hold4thItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a62ea7b5-97aa-43f6-866d-d25d428a1989"",
+                    ""path"": ""<Keyboard>/5"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Hold5thItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""036186b9-a4a2-4016-b0cd-b58408dcbf2e"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Hold2ndItem"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1258,6 +1358,11 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         m_Player_OpenSabotageWindow = m_Player.FindAction("Open Sabotage Window", throwIfNotFound: true);
         m_Player_Transformation = m_Player.FindAction("Transformation", throwIfNotFound: true);
         m_Player_UseAbility = m_Player.FindAction("UseAbility", throwIfNotFound: true);
+        m_Player_Hold1stItem = m_Player.FindAction("Hold1stItem", throwIfNotFound: true);
+        m_Player_Hold2ndItem = m_Player.FindAction("Hold2ndItem", throwIfNotFound: true);
+        m_Player_Hold3rdItem = m_Player.FindAction("Hold3rdItem", throwIfNotFound: true);
+        m_Player_Hold4thItem = m_Player.FindAction("Hold4thItem", throwIfNotFound: true);
+        m_Player_Hold5thItem = m_Player.FindAction("Hold5thItem", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1364,6 +1469,11 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_OpenSabotageWindow;
     private readonly InputAction m_Player_Transformation;
     private readonly InputAction m_Player_UseAbility;
+    private readonly InputAction m_Player_Hold1stItem;
+    private readonly InputAction m_Player_Hold2ndItem;
+    private readonly InputAction m_Player_Hold3rdItem;
+    private readonly InputAction m_Player_Hold4thItem;
+    private readonly InputAction m_Player_Hold5thItem;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1427,6 +1537,26 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/UseAbility".
         /// </summary>
         public InputAction @UseAbility => m_Wrapper.m_Player_UseAbility;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Hold1stItem".
+        /// </summary>
+        public InputAction @Hold1stItem => m_Wrapper.m_Player_Hold1stItem;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Hold2ndItem".
+        /// </summary>
+        public InputAction @Hold2ndItem => m_Wrapper.m_Player_Hold2ndItem;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Hold3rdItem".
+        /// </summary>
+        public InputAction @Hold3rdItem => m_Wrapper.m_Player_Hold3rdItem;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Hold4thItem".
+        /// </summary>
+        public InputAction @Hold4thItem => m_Wrapper.m_Player_Hold4thItem;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Hold5thItem".
+        /// </summary>
+        public InputAction @Hold5thItem => m_Wrapper.m_Player_Hold5thItem;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1492,6 +1622,21 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
             @UseAbility.started += instance.OnUseAbility;
             @UseAbility.performed += instance.OnUseAbility;
             @UseAbility.canceled += instance.OnUseAbility;
+            @Hold1stItem.started += instance.OnHold1stItem;
+            @Hold1stItem.performed += instance.OnHold1stItem;
+            @Hold1stItem.canceled += instance.OnHold1stItem;
+            @Hold2ndItem.started += instance.OnHold2ndItem;
+            @Hold2ndItem.performed += instance.OnHold2ndItem;
+            @Hold2ndItem.canceled += instance.OnHold2ndItem;
+            @Hold3rdItem.started += instance.OnHold3rdItem;
+            @Hold3rdItem.performed += instance.OnHold3rdItem;
+            @Hold3rdItem.canceled += instance.OnHold3rdItem;
+            @Hold4thItem.started += instance.OnHold4thItem;
+            @Hold4thItem.performed += instance.OnHold4thItem;
+            @Hold4thItem.canceled += instance.OnHold4thItem;
+            @Hold5thItem.started += instance.OnHold5thItem;
+            @Hold5thItem.performed += instance.OnHold5thItem;
+            @Hold5thItem.canceled += instance.OnHold5thItem;
         }
 
         /// <summary>
@@ -1542,6 +1687,21 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
             @UseAbility.started -= instance.OnUseAbility;
             @UseAbility.performed -= instance.OnUseAbility;
             @UseAbility.canceled -= instance.OnUseAbility;
+            @Hold1stItem.started -= instance.OnHold1stItem;
+            @Hold1stItem.performed -= instance.OnHold1stItem;
+            @Hold1stItem.canceled -= instance.OnHold1stItem;
+            @Hold2ndItem.started -= instance.OnHold2ndItem;
+            @Hold2ndItem.performed -= instance.OnHold2ndItem;
+            @Hold2ndItem.canceled -= instance.OnHold2ndItem;
+            @Hold3rdItem.started -= instance.OnHold3rdItem;
+            @Hold3rdItem.performed -= instance.OnHold3rdItem;
+            @Hold3rdItem.canceled -= instance.OnHold3rdItem;
+            @Hold4thItem.started -= instance.OnHold4thItem;
+            @Hold4thItem.performed -= instance.OnHold4thItem;
+            @Hold4thItem.canceled -= instance.OnHold4thItem;
+            @Hold5thItem.started -= instance.OnHold5thItem;
+            @Hold5thItem.performed -= instance.OnHold5thItem;
+            @Hold5thItem.canceled -= instance.OnHold5thItem;
         }
 
         /// <summary>
@@ -1933,6 +2093,41 @@ public partial class @InputControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnUseAbility(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Hold1stItem" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnHold1stItem(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Hold2ndItem" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnHold2ndItem(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Hold3rdItem" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnHold3rdItem(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Hold4thItem" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnHold4thItem(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Hold5thItem" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnHold5thItem(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
