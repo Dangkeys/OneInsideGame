@@ -377,7 +377,7 @@ public class Player : NetworkBehaviour
         Inventory.CraftItemA();
     }
 
-    public NetworkObject GetNetworkObjectFromIType(Item.ItemType itype)
+    private NetworkObject GetNetworkObjectFromIType(Item.ItemType itype)
     {
         switch (itype)
         {
@@ -435,9 +435,9 @@ public class Player : NetworkBehaviour
         MeshRenderer item = Instantiate(GetNetworkObjectFromIType(itemToHold).GetComponent<MeshRenderer>(), handHitbox.transform); //Create object at handSlot
     }
 
-    private void ForceHoldItem(Inventory inv) //Forced player to hold the first item after inventory refresh
+    private void ForceHoldItem(Inventory inv) //Forced player to hold the lastest item after inventory refresh
     {
-        HoldItemBySlot(1);
+        HoldItemBySlot(inv.GetItemCount());
     }
 
 

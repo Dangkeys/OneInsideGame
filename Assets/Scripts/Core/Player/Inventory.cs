@@ -88,6 +88,11 @@ public class Inventory
         return itemList;
     }
 
+    public int GetItemCount()
+    {
+        return itemList.Count;
+    }
+
     public Item.ItemType GetItemFromSlot(int slotNum)
     {
         if (slotNum > 0 && slotNum <= 5)
