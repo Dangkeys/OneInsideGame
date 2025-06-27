@@ -63,7 +63,7 @@ public class Player : NetworkBehaviour
 
     private float pokeStunDuration = DefaultPlayerConfig.Player.POKE_STUN_DURATION;
     private float pokeCoolDown = DefaultPlayerConfig.Player.POKE_COOLDOWN;
-    
+
 
     //--------------------------------------
     // Unity Lifecycle Methods
@@ -403,28 +403,18 @@ public class Player : NetworkBehaviour
 
     private void ClearHand()
     {
-        foreach(Transform child in handHitbox.transform){
+        foreach (Transform child in handHitbox.transform)
+        {
             Destroy(child.gameObject);
         }
     }
 
     private void DropItem()
     {
-        NetworkObject itemToDrop = null;
         Item.ItemType droppedItem = Inventory.DropItem();
         if (droppedItem != Item.ItemType.None)
         {
-            itemToDrop = GetNetworkObjectFromIType(droppedItem);
-
-            NetworkObject itemObject = Instantiate(itemToDrop, dropHitbox.transform.position, Quaternion.identity);
-            if (itemObject.TryGetComponent<NetworkObject>(out NetworkObject networkObject))
-            {
-                networkObject.Spawn();
-            }
-            else
-            {
-                Debug.LogError("Dropped item does not have an Item component.");
-            }
+            SpawnObjectServerRPC(droppedItem);
         }
     }
 
@@ -465,5 +455,13 @@ public class Player : NetworkBehaviour
     {
         AbilityData = OneInsideLevelSystem.Instance.AbilityAssignment.AbilityCollection.GetAbilityById(abilityDataId);
         OnAbilityDataChanged?.Invoke();
+    }
+
+    [ServerRpc (RequireOwnership = false)]
+    private void SpawnObjectServerRPC(Item.ItemType itemType)
+    {
+        NetworkObject item = GetNetworkObjectFromIType(itemType);
+        NetworkObject itemObj = Instantiate(item, dropHitbox.transform.position, Quaternion.identity);
+        itemObj.Spawn();
     }
 }
